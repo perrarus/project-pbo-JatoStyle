@@ -4,7 +4,7 @@
  */
 package JatoStyle.gui;
 
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.services.AuthService;
 import java.awt.*;
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class EditMenuFrame extends JDialog {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditMenuFrame.class.getName());
 
     private DashboardRestoranFrame parent;
-    private Restoran restoran;
+    private Toko restoran;
     private int idMenu;
     private String currentImagePath;
 
@@ -41,7 +41,7 @@ public class EditMenuFrame extends JDialog {
     private JButton deleteBtn;
     private JButton cancelBtn;
 
-    public EditMenuFrame(DashboardRestoranFrame parent, Restoran restoran, int idMenu, String nama, int harga, int stok) {
+    public EditMenuFrame(DashboardRestoranFrame parent, Toko restoran, int idMenu, String nama, int harga, int stok) {
         super(parent, "Edit Menu", true);
         this.parent = parent;
         this.restoran = restoran;

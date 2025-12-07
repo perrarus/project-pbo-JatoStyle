@@ -4,7 +4,7 @@
  */
 package JatoStyle.gui;
 
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.services.AuthService;
 import java.awt.*;
 import javax.swing.*;
@@ -21,12 +21,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class TambahMenuFrame extends JDialog {
+public class TambahItemFrame extends JDialog {
     
-    private static final Logger logger = Logger.getLogger(TambahMenuFrame.class.getName());
+    private static final Logger logger = Logger.getLogger(TambahItemFrame.class.getName());
 
     private DashboardRestoranFrame parent;
-    private Restoran restoran;
+    private Toko restoran;
     private AuthService auth = new AuthService();
     private String imagePath;
 
@@ -38,8 +38,8 @@ public class TambahMenuFrame extends JDialog {
     private JButton saveBtn;
     private JButton cancelBtn;
 
-    public TambahMenuFrame(DashboardRestoranFrame parent, Restoran restoran) {
-        super(parent, "Tambah Menu", true);
+    public TambahItemFrame(DashboardRestoranFrame parent, Toko restoran) {
+        super(parent, "Tambah Item", true);
         this.parent = parent;
         this.restoran = restoran;
         initUI();
@@ -61,8 +61,8 @@ public class TambahMenuFrame extends JDialog {
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Label dan field untuk Nama Menu
-        JLabel lblNama = new JLabel("Nama Menu*");
+        // Label dan field untuk Nama Item
+        JLabel lblNama = new JLabel("Nama Item*");
         lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 12));
         lblNama.setForeground(new Color(0, 51, 79)); // #00334F
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.2;
@@ -162,7 +162,7 @@ public class TambahMenuFrame extends JDialog {
 
     private void browseImage() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Pilih Gambar Menu");
+        fileChooser.setDialogTitle("Pilih Gambar Item");
         fileChooser.setAcceptAllFileFilterUsed(false);
         
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -211,10 +211,10 @@ public class TambahMenuFrame extends JDialog {
             // Gunakan static getConnection() dari Konektor
             conn = JatoStyle.Konektor.getConnection();
             
-            // Insert data menu ke database
+            // Insert data Item ke database
             String safeNama = nama.replace("'", "''");
             String insertSql = String.format(
-                "INSERT INTO menu (id_restoran, nama_menu, harga, stok, status_habis) " +
+                "INSERT INTO item (id_restoran, nama_item, harga, stok, status_habis) " +
                 "VALUES (%d, '%s', %d, %d, %d)",
                 restoran.getIdRestoran(),
                 safeNama,
@@ -227,39 +227,39 @@ public class TambahMenuFrame extends JDialog {
             pstmt = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.executeUpdate();
             
-            // Dapatkan ID menu yang baru dibuat
+            // Dapatkan ID Item yang baru dibuat
             rs = pstmt.getGeneratedKeys();
-            int newMenuId = -1;
+            int newItemId = -1;
             if (rs.next()) {
-                newMenuId = rs.getInt(1);
-                System.out.println("Menu baru dibuat dengan ID: " + newMenuId);
+                newItemId = rs.getInt(1);
+                System.out.println("Item baru dibuat dengan ID: " + newItemId);
             }
             
             // Jika ada gambar, simpan gambar
-            if (imagePath != null && newMenuId != -1) {
+            if (imagePath != null && newItemId != -1) {
                 File imageFile = new File(imagePath);
                 fis = new FileInputStream(imageFile);
                 
-                // Update menu dengan gambar
+                // Update Item dengan gambar
                 PreparedStatement pstmt2 = conn.prepareStatement(
-                    "UPDATE menu SET gambar = ? WHERE id_menu = ?"
+                    "UPDATE item SET gambar = ? WHERE id_item = ?"
                 );
                 pstmt2.setBinaryStream(1, fis, (int) imageFile.length());
-                pstmt2.setInt(2, newMenuId);
+                pstmt2.setInt(2, newItemId);
                 pstmt2.executeUpdate();
                 pstmt2.close();
                 
                 // Juga simpan ke folder images
-                saveImageToFolder(imageFile, newMenuId);
+                saveImageToFolder(imageFile, newItemId);
             }
             
-            JOptionPane.showMessageDialog(this, "Menu berhasil ditambahkan!");
+            JOptionPane.showMessageDialog(this, "Item berhasil ditambahkan!");
             dispose();
-            if (parent != null) parent.refreshAfterAddMenu();
+            if (parent != null) parent.refreshAfterAddItem();
             
         } catch (Exception e) {
-            logger.severe("Gagal menambahkan menu: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, "Gagal menambahkan menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            logger.severe("Gagal menambahkan item: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal menambahkan item: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } finally {
             // Tutup resources
@@ -270,21 +270,21 @@ public class TambahMenuFrame extends JDialog {
         }
     }
 
-    private void saveImageToFolder(File imageFile, int menuId) {
+    private void saveImageToFolder(File imageFile, int itemId) {
         try {
-            // Buat folder images/menu jika belum ada
-            File imagesDir = new File("images/menu");
+            // Buat folder images/item jika belum ada
+            File imagesDir = new File("images/item");
             if (!imagesDir.exists()) {
                 imagesDir.mkdirs();
             }
             
-            // Salin file ke folder images/menu
-            String newFileName = "menu_" + menuId + getFileExtension(imageFile.getName());
-            Path destination = Paths.get("images/menu", newFileName);
+            // Salin file ke folder images/item
+            String newFileName = "item_" + itemId + getFileExtension(imageFile.getName());
+            Path destination = Paths.get("images/item", newFileName);
             Files.copy(imageFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
             
             // Update path di database
-            String updatePathSql = "UPDATE menu SET gambar_path = '" + destination.toString() + "' WHERE id_menu = " + menuId;
+            String updatePathSql = "UPDATE item SET gambar_path = '" + destination.toString() + "' WHERE id_item = " + itemId;
             auth.getKonektor().query(updatePathSql);
             
             System.out.println("Gambar disimpan di: " + destination.toString());

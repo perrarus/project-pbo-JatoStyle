@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 import java.awt.Color;
 import javax.swing.BorderFactory;
 import java.awt.Cursor;
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 
 public class LoginFrame extends javax.swing.JFrame {
     
@@ -228,7 +228,7 @@ public class LoginFrame extends javax.swing.JFrame {
 
         try {
             // coba login sbg resto
-            Restoran resto = authService.loginRestoran(email, password);
+            Toko resto = authService.loginRestoran(email, password);
             if (resto != null) {
                 JOptionPane.showMessageDialog(this, "Login Berhasil! (Restoran)");
                 new DashboardRestoranFrame(resto).setVisible(true);

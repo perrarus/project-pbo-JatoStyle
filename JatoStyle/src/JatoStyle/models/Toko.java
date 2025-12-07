@@ -6,24 +6,24 @@ package JatoStyle.models;
 
 import java.sql.Time;
 
-public class Restoran {
-    private int idRestoran;
+public class Toko {
+    private int idToko;
     private int idAdmin;
-    private String namaRestoran;
+    private String namaToko;
     private String email;
     private String password;
     private Time jamBuka;
     private Time jamTutup;
     
-    public Restoran() {}
+    public Toko() {}
     
     // setter getter
-    public int getIdRestoran() { return idRestoran; }
-    public void setIdRestoran(int idRestoran) { this.idRestoran = idRestoran; }
+    public int getIdToko() { return idToko; }
+    public void setIdToko(int idToko) { this.idToko = idToko; }
     public int getIdAdmin() { return idAdmin; }
     public void setIdAdmin(int idAdmin) { this.idAdmin = idAdmin; }
-    public String getNamaRestoran() { return namaRestoran; }
-    public void setNamaRestoran(String namaRestoran) { this.namaRestoran = namaRestoran; }
+    public String getNamaToko() { return namaToko; }
+    public void setNamaToko(String namaToko) { this.namaToko = namaToko; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }

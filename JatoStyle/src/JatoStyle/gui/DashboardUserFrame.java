@@ -5,7 +5,7 @@
 package JatoStyle.gui;
 
 import JatoStyle.models.User;
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.models.Keranjang;
 import JatoStyle.services.KeranjangService;
 import javax.swing.*;
@@ -781,7 +781,7 @@ private void showTransactionDetail(int rowIndex) {
         verticalScrollBar.setUnitIncrement(16); // smooth scrolling
     }
         
-    private boolean isRestoBuka(Restoran resto, java.sql.Time currentTime) {
+    private boolean isRestoBuka(Toko resto, java.sql.Time currentTime) {
         try {
             if (resto.getJamBuka() == null || resto.getJamTutup() == null) {
                 return false;
@@ -1303,7 +1303,7 @@ private void showTransactionDetail(int rowIndex) {
         try {
             System.out.println("Loading restoran dari database...");
 
-            List<Restoran> restoranList = authService.getAllRestoran();
+            List<Toko> restoranList = authService.getAllRestoran();
 
             if (restoranList.isEmpty()) {
                 System.out.println("Tidak ada data restoran ditemukan");
@@ -1320,7 +1320,7 @@ private void showTransactionDetail(int rowIndex) {
             System.out.println("Waktu sekarang: " + currentTime);
 
             for (int i = 0; i < restoranList.size(); i++) {
-                Restoran resto = restoranList.get(i);
+                Toko resto = restoranList.get(i);
                 String jamBuka = "08:00";
                 String jamTutup = "22:00";
 
@@ -1613,12 +1613,12 @@ private void showTransactionDetail(int rowIndex) {
     private void bukaRestoranFrame(int idResto, String namaResto) {
         try {
             // ambil data restoran lengkap dari database
-            List<Restoran> restoranList = authService.getAllRestoran();
-            Restoran selectedRestoran = null;
+            List<Toko> restoranList = authService.getAllRestoran();
+            Toko selectedRestoran = null;
 
             // cari restoran berdasarkan ID
             for (int i = 0; i < restoranList.size(); i++) {
-                Restoran r = restoranList.get(i);
+                Toko r = restoranList.get(i);
                 if (r.getIdRestoran() == idResto) {
                     selectedRestoran = r;
                     break;

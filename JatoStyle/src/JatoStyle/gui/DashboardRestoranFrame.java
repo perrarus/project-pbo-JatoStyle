@@ -4,7 +4,7 @@
  */
 package JatoStyle.gui;
 
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.services.AuthService;
 import java.awt.*;
 import javax.swing.*;
@@ -28,7 +28,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DashboardRestoranFrame.class.getName());
 
-    private Restoran currentRestoran;
+    private Toko currentRestoran;
     private JPanel menuContainer;
     private JPanel transaksiContainer;
     private JPanel wrapper;
@@ -46,7 +46,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
     
     private TransactionService transactionService = new TransactionService();
 
-    public DashboardRestoranFrame(Restoran restoran) {
+    public DashboardRestoranFrame(Toko restoran) {
         this.currentRestoran = restoran;
         initComponents();
         setLocationRelativeTo(null);
@@ -687,7 +687,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
     }
     
     private void openTambahMenuFrame() {
-        TambahMenuFrame dialog = new TambahMenuFrame(this, currentRestoran);
+        TambahItemFrame dialog = new TambahItemFrame(this, currentRestoran);
         dialog.setVisible(true);
     }
     

@@ -4,7 +4,7 @@
  */
 package JatoStyle.gui;
 
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.models.User;
 import JatoStyle.services.AuthService;
 import java.awt.*;
@@ -19,7 +19,7 @@ public class RestoranFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RestoranFrame.class.getName());
     private User currentUser;
-    private Restoran currentRestoran;
+    private Toko currentRestoran;
     private JPanel menuContainer;
     private JScrollPane scrollPane;
     private AuthService auth = new AuthService();
@@ -28,7 +28,7 @@ public class RestoranFrame extends javax.swing.JFrame {
     /**
      * Creates new form RestoranFrame
      */
-    public RestoranFrame(User user, Restoran restoran) {
+    public RestoranFrame(User user, Toko restoran) {
         this.currentUser = user;
         this.currentRestoran = restoran;
         initComponents();

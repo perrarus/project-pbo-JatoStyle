@@ -5,7 +5,7 @@
 package JatoStyle.gui;
 
 import JatoStyle.models.User;
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.models.Review;
 import JatoStyle.services.ReviewService;
 import javax.swing.*;
@@ -19,7 +19,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LihatReviewFrame.class.getName());
     private User currentUser;
-    private Restoran currentRestoran;
+    private Toko currentRestoran;
     private ReviewService reviewService;
     private JPanel reviewContainer;
     private Review userReview;
@@ -27,7 +27,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
     /**
      * Creates new form LihatReviewFrame
      */
-    public LihatReviewFrame(User user, Restoran restoran, ReviewService reviewService) {
+    public LihatReviewFrame(User user, Toko restoran, ReviewService reviewService) {
         this.currentUser = user;
         this.currentRestoran = restoran;
         this.reviewService = reviewService;

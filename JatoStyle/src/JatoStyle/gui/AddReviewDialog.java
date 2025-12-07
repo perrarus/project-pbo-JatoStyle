@@ -5,7 +5,7 @@
 package JatoStyle.gui;
 
 import JatoStyle.models.User;
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import JatoStyle.models.Review;
 import JatoStyle.services.ReviewService;
 import javax.swing.*;
@@ -16,7 +16,7 @@ import java.awt.event.*;
 public class AddReviewDialog extends JDialog {
     
     private User currentUser;
-    private Restoran currentRestoran;
+    private Toko currentRestoran;
     private ReviewService reviewService;
     private Review existingReview;
     private boolean reviewSaved = false;
@@ -30,7 +30,7 @@ public class AddReviewDialog extends JDialog {
     /**
      * Creates new form AddReviewDialog
      */
-    public AddReviewDialog(JFrame parent, User user, Restoran restoran, 
+    public AddReviewDialog(JFrame parent, User user, Toko restoran, 
                       ReviewService reviewService, Review existingReview) {
         super(parent, "Add/Edit Review", true);
         this.currentUser = user;

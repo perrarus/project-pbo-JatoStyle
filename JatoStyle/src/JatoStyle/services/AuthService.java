@@ -7,7 +7,7 @@ package JatoStyle.services;
 import JatoStyle.Konektor;
 import JatoStyle.models.User;
 import JatoStyle.models.Admin;
-import JatoStyle.models.Restoran;
+import JatoStyle.models.Toko;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,7 +167,7 @@ public class AuthService {
     }
     
     // login restoran
-    public Restoran loginRestoran(String email, String password) {
+    public Toko loginRestoran(String email, String password) {
         try {
             // validasi email sebelum login
             if (!isValidEmail(email)) {
@@ -187,7 +187,7 @@ public class AuthService {
                 
                 // verifikasi password
                 if (PasswordHasher.verifyPassword(password, storedHash)) {
-                    Restoran restoran = new Restoran();
+                    Toko restoran = new Toko();
                     restoran.setIdRestoran(rs.getInt("id_restoran"));
                     restoran.setIdAdmin(rs.getInt("id_admin"));
                     restoran.setNamaRestoran(rs.getString("nama_restoran"));
@@ -232,14 +232,14 @@ public class AuthService {
     }
     
     // get semua restoran
-    public List<Restoran> getAllRestoran() {
-        List<Restoran> restoranList = new ArrayList<>();
+    public List<Toko> getAllRestoran() {
+        List<Toko> restoranList = new ArrayList<>();
         try {
             String sql = "SELECT * FROM restoran ORDER BY nama_restoran";
             ResultSet rs = konektor.getData(sql);
             
             while (rs.next()) {
-                Restoran restoran = new Restoran();
+                Toko restoran = new Toko();
                 restoran.setIdRestoran(rs.getInt("id_restoran"));
                 restoran.setNamaRestoran(rs.getString("nama_restoran"));
                 restoran.setEmail(rs.getString("email"));
