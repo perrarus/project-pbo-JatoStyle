@@ -571,7 +571,7 @@ private JPanel createStokPanel(int stok) {
                 auth.getKonektor().query(updateSql);
             } else {
                 // insert item baru
-                String insertSql = "INSERT INTO keranjang (id_user, id_item, jumlah, catatan, status_checkout) " +
+                String insertSql = "INSERT INTO keranjang (id_user, id_item, jumlah, status_checkout) " +
                                  "VALUES (" + currentUser.getIdUser() + ", " + idItem + ", 1, '', 0)";
                 auth.getKonektor().query(insertSql);
             }
