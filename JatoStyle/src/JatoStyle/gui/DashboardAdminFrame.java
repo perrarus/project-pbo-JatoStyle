@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import JatoStyle.models.Admin;
 import javax.swing.table.DefaultTableCellRenderer;
 import JatoStyle.services.PasswordHasher;
+import java.sql.SQLException;
 
 public class DashboardAdminFrame extends JFrame {
     
@@ -93,75 +94,99 @@ public class DashboardAdminFrame extends JFrame {
     }
     
     private void styleTables() {
-        JTable[] tables = { usersTable, tokoTable };
-        for (JTable t : tables) {
-            t.setRowHeight(32);
-            t.setShowGrid(false);
+    JTable[] tables = { usersTable, tokoTable };
+    for (JTable t : tables) {
+        t.setRowHeight(32);
+        t.setShowGrid(false);
 
-            // warna background + font tabel
-            t.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
-            t.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
-            t.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        // warna background + font tabel
+        t.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
+        t.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
+        t.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 
-            t.getTableHeader().setOpaque(true);
-            t.getTableHeader().setPreferredSize(new Dimension(0, 35));
-            t.getTableHeader().setBorder(BorderFactory.createMatteBorder(
-                0, 0, 2, 0, new Color(149, 189, 226) // #95BDE2 - DIUBAH
-            ));
+        t.getTableHeader().setOpaque(true);
+        t.getTableHeader().setPreferredSize(new Dimension(0, 35));
+        t.getTableHeader().setBorder(BorderFactory.createMatteBorder(
+            0, 0, 2, 0, new Color(149, 189, 226) // #95BDE2 - DIUBAH
+        ));
 
-            // header renderer - WARNA [30,73,138]
-            DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
-                @Override
-                public Component getTableCellRendererComponent(JTable table, Object value,
-                        boolean isSelected, boolean hasFocus, int row, int column) {
-                    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        // header renderer - WARNA [30,73,138]
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-                    // set semua style
-                    setHorizontalAlignment(JLabel.CENTER);
-                    setFont(new Font("Bahnschrift", Font.BOLD, 13));
-                    setBackground(new Color(30, 73, 138));  // [30,73,138] - DIUBAH
-                    setForeground(Color.WHITE);  // FONT HEADER putih
-                    setBorder(BorderFactory.createEmptyBorder());
+                // set semua style
+                setHorizontalAlignment(JLabel.CENTER);
+                setFont(new Font("Bahnschrift", Font.BOLD, 13));
+                setBackground(new Color(30, 73, 138));  // [30,73,138] - DIUBAH
+                setForeground(Color.WHITE);  // FONT HEADER putih
+                setBorder(BorderFactory.createEmptyBorder());
 
-                    return this;
-                }
-            };
-
-            // apply ke semua kolom header
-            for (int i = 0; i < t.getColumnCount(); i++) {
-                t.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+                return this;
             }
+        };
 
-            // tabel border vertikal
-            DefaultTableCellRenderer center = new DefaultTableCellRenderer() {
-                @Override
-                public Component getTableCellRendererComponent(JTable table, Object value,
-                        boolean isSelected, boolean hasFocus, int row, int column) {
-                    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        // apply ke semua kolom header
+        for (int i = 0; i < t.getColumnCount(); i++) {
+            t.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+        }
 
-                    // garis vertikal di kanan setiap cell
-                    ((JLabel) c).setBorder(BorderFactory.createMatteBorder(
-                        0, 0, 0, 1, new Color(149, 189, 226) // #95BDE2 - DIUBAH
-                    ));
+        // Custom renderer untuk sel dengan handling selection yang benar
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-                    // set warna background dan foreground sel
+                // Garis vertikal di kanan setiap cell
+                ((JLabel) c).setBorder(BorderFactory.createMatteBorder(
+                    0, 0, 0, 1, new Color(149, 189, 226) // #95BDE2 - DIUBAH
+                ));
+
+                // Set warna berdasarkan selection state
+                if (isSelected) {
+                    // Warna saat row ter-select
+                    setBackground(new Color(30, 73, 138)); // [30,73,138] - lebih gelap/contrast
+                    setForeground(Color.WHITE); // teks putih saat selected
+                } else {
+                    // Warna normal saat tidak ter-select
                     setBackground(new Color(206, 220, 239)); // [206,220,239]
                     setForeground(new Color(0, 51, 79)); // #00334F
-
-                    return c;
                 }
-            };
-            center.setHorizontalAlignment(JLabel.CENTER);
-            center.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 
-            for (int i = 0; i < t.getColumnCount(); i++) {
-                t.getColumnModel().getColumn(i).setCellRenderer(center);
+                setHorizontalAlignment(JLabel.CENTER);
+                setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+
+                return c;
             }
+        };
 
-            t.setSelectionBackground(new Color(149, 189, 226, 100)); // #95BDE2 transparan - DIUBAH
-            t.setSelectionForeground(new Color(59, 31, 11)); // #3B1F0B
+        // Apply renderer ke semua kolom
+        for (int i = 0; i < t.getColumnCount(); i++) {
+            t.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
         }
+
+        // Juga set selection colors di table (untuk backup)
+        t.setSelectionBackground(new Color(30, 73, 138)); // [30,73,138] - DIUBAH
+        t.setSelectionForeground(Color.WHITE);
+        
+        // Optional: Highlight border saat row ter-select
+        t.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        t.setRowSelectionAllowed(true);
+        
+        // Tambahkan listener untuk debug (opsional)
+        t.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = t.getSelectedRow();
+                if (selectedRow != -1) {
+                    System.out.println("Row " + selectedRow + " selected in " + t.getName());
+                }
+            }
+        });
     }
+}
     
     private void setupUI() {
         JPanel wrapper = new JPanel(new BorderLayout());
@@ -600,29 +625,115 @@ public class DashboardAdminFrame extends JFrame {
     }
 
     private void deleteSelectedToko() {
-        int r = tokoTable.getSelectedRow();
-        if (r == -1) { JOptionPane.showMessageDialog(this, "Pilih toko dulu"); return; }
-        int id = (int) tokoModel.getValueAt(r, 0);
-        int ok = JOptionPane.showConfirmDialog(this, "Hapus toko ID " + id + " (akan menghapus item & keranjang terkait)?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (ok != JOptionPane.YES_OPTION) return;
-        try {
-            // 1. hapus keranjang terkait item dari toko
-            String delCart = "DELETE FROM keranjang " +
-                             "WHERE id_item IN (SELECT id_item FROM item WHERE id_toko = " + id + ")";
-            auth.getKonektor().query(delCart);
-
-            // 2. hapus semua item toko
-            auth.getKonektor().query("DELETE FROM item WHERE id_toko = " + id);
-
-            // 3. hapus toko
-            auth.getKonektor().query("DELETE FROM toko WHERE id_toko = " + id);
-
-            loadAllToko();
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "deleteSelectedToko", ex);
-            JOptionPane.showMessageDialog(this, "Gagal hapus toko: " + ex.getMessage());
-        }
+    int r = tokoTable.getSelectedRow();
+    if (r == -1) { 
+        JOptionPane.showMessageDialog(this, "Pilih toko dulu"); 
+        return; 
     }
+    
+    int id = (int) tokoModel.getValueAt(r, 0);
+    String namaToko = (String) tokoModel.getValueAt(r, 1);
+    
+    int ok = JOptionPane.showConfirmDialog(this, 
+        "HAPUS TOKO: " + namaToko + 
+        "\n\nIni akan menghapus SEMUA data terkait termasuk:" +
+        "\n• Semua pesanan dari toko ini" +
+        "\n• Semua item/menu toko" +
+        "\n• Semua keranjang yang berisi item toko ini" +
+        "\n• Semua detail pesanan" +
+        "\n\nTindakan ini TIDAK DAPAT DIBATALKAN!" +
+        "\n\nYakin ingin melanjutkan?", 
+        "Konfirmasi Penghapusan Toko", 
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.WARNING_MESSAGE);
+    
+    if (ok != JOptionPane.YES_OPTION) return;
+    
+    try {
+        // Dapatkan koneksi
+        java.sql.Connection conn = auth.getKonektor().getConnection();
+        boolean originalAutoCommit = conn.getAutoCommit();
+        
+        // Nonaktifkan autocommit untuk transaction
+        conn.setAutoCommit(false);
+        
+        try {
+            // URUTAN PENGHAPUSAN (dari child ke parent):
+            
+            // 1. Hapus keranjang yang berisi item dari toko ini
+            String delKeranjang = "DELETE k FROM keranjang k " +
+                                 "INNER JOIN item i ON k.id_item = i.id_item " +
+                                 "WHERE i.id_toko = " + id;
+            auth.getKonektor().query(delKeranjang);
+            logger.info("Keranjang terkait berhasil dihapus");
+            
+            // 2. Hapus detail_pesanan yang terkait item dari toko ini
+            String delDetail = "DELETE dp FROM detail_pesanan dp " +
+                              "INNER JOIN item i ON dp.id_item = i.id_item " +
+                              "WHERE i.id_toko = " + id;
+            auth.getKonektor().query(delDetail);
+            logger.info("Detail pesanan terkait berhasil dihapus");
+            
+            // 3. Hapus pesanan yang terkait toko ini
+            String delPesanan = "DELETE FROM pesanan WHERE id_toko = " + id;
+            auth.getKonektor().query(delPesanan);
+            logger.info("Pesanan terkait berhasil dihapus");
+            
+            // 4. Hapus semua item dari toko ini
+            String delItem = "DELETE FROM item WHERE id_toko = " + id;
+            auth.getKonektor().query(delItem);
+            logger.info("Item toko berhasil dihapus");
+            
+            // 5. Hapus toko itu sendiri
+            String delToko = "DELETE FROM toko WHERE id_toko = " + id;
+            auth.getKonektor().query(delToko);
+            logger.info("Toko berhasil dihapus");
+            
+            // Commit transaction
+            conn.commit();
+            
+            // Refresh data
+            loadAllToko();
+            
+            JOptionPane.showMessageDialog(this, 
+                "Toko '" + namaToko + "' berhasil dihapus beserta semua data terkait.", 
+                "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                
+        } catch (Exception ex) {
+            // Rollback jika ada error
+            try {
+                conn.rollback();
+                logger.info("Transaction rolled back due to error");
+            } catch (SQLException rollbackEx) {
+                logger.log(Level.WARNING, "Gagal rollback transaction", rollbackEx);
+            }
+            throw ex;
+        } finally {
+            // Kembalikan autocommit ke setting semula
+            try {
+                conn.setAutoCommit(originalAutoCommit);
+            } catch (SQLException e) {
+                logger.log(Level.WARNING, "Gagal mengembalikan autocommit", e);
+            }
+        }
+        
+    } catch (Exception ex) {
+        logger.log(Level.SEVERE, "Gagal menghapus toko ID " + id, ex);
+        
+        String errorMsg = "Gagal menghapus toko:\n" + ex.getMessage();
+        
+        // Berikan pesan error yang lebih spesifik
+        if (ex.getMessage().contains("foreign key constraint")) {
+            errorMsg += "\n\nMasih ada data yang terkait dengan toko ini " +
+                       "yang tidak bisa dihapus.\n" +
+                       "Pastikan semua data terkait sudah ditangani.";
+        }
+        
+        JOptionPane.showMessageDialog(this, 
+            errorMsg, 
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     
     private void styleButton(JButton btn, Color bg) {
         btn.setBackground(bg);
