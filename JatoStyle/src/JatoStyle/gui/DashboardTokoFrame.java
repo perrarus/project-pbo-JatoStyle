@@ -309,7 +309,7 @@ public class DashboardTokoFrame extends javax.swing.JFrame {
 
                         switch (status.toUpperCase()) {
                             case "PENDING":
-                            case "SEDANG DIBUAT":
+                            case "SEDANG DIKEMAS":
                                 label.setBackground(new Color(255, 193, 7));
                                 label.setForeground(isRowSelected(row) ? new Color(0, 51, 79) : Color.BLACK);
                                 break;
@@ -615,7 +615,7 @@ public class DashboardTokoFrame extends javax.swing.JFrame {
         
         switch (currentStatus.toUpperCase()) {
             case "PENDING":
-            case "SEDANG DIBUAT":
+            case "SEDANG DIKEMAS":
                 break;
             case "SEDANG DIANTAR":
                 btnMasak.setEnabled(false);
@@ -628,7 +628,7 @@ public class DashboardTokoFrame extends javax.swing.JFrame {
         }
         
         btnMasak.addActionListener(e -> {
-            updateStatusAndClose(idPesanan, "SEDANG DIBUAT", dialog);
+            updateStatusAndClose(idPesanan, "SEDANG DIKEMAS", dialog);
         });
         
         btnAntar.addActionListener(e -> {

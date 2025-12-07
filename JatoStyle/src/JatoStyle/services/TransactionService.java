@@ -197,170 +197,241 @@ public class TransactionService {
     }
     
     public boolean createTransactionFromKeranjang(int userId, List<Keranjang> items) {
-        if (items.isEmpty()) {
-            System.out.println("ERROR: Items keranjang kosong");
-            return false;
-        }
-        
-        System.out.println("=== DEBUG: Memulai createTransactionFromKeranjang");
-        System.out.println("User ID: " + userId);
-        System.out.println("Jumlah items: " + items.size());
-        
-        // tampilkan detail semua item
-        for (int i = 0; i < items.size(); i++) {
-            Keranjang k = items.get(i);
-            System.out.println("Item " + (i+1) + ": " + k.getNamaItem() + 
-                             " | Toko: " + k.getNamaToko() + 
-                             " | ID Toko: " + k.getIdToko() +
-                             " | ID Item: " + k.getIdItem());
-        }
-        
-        Connection conn = null;
-        boolean success = false;
-        
-        try {
-            conn = konektor.getConnection();
-            conn.setAutoCommit(false);
-            
-            // kelompokkan item keranjang berdasarkan Toko
-            Map<Integer, List<Keranjang>> groupedByToko = items.stream()
-                .collect(Collectors.groupingBy(Keranjang::getIdToko));
-            
-            System.out.println("Jumlah toko berbeda: " + groupedByToko.size());
-            
-            // cek apakah ada ID Toko yang 0 atau tidak valid
-            for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
-                int idToko = entry.getKey();
-                if (idToko <= 0) {
-                    System.out.println("❌ ERROR: ID Toko tidak valid: " + idToko);
-                    System.out.println("Items dengan ID Toko tidak valid:");
-                    for (Keranjang k : entry.getValue()) {
-                        System.out.println("  - " + k.getNamaItem() + " | Toko: " + k.getNamaToko());
-                    }
-                    throw new SQLException("ID Toko tidak valid: " + idToko);
-                }
-            }
-            
-            // buat transaksi untuk setiap toko
-            for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
-                int idToko = entry.getKey();
-                List<Keranjang> tokoItems = entry.getValue();
-                String namaToko = tokoItems.get(0).getNamaToko();
-                
-                System.out.println("Memproses toko: " + namaToko + " (ID: " + idToko + ")");
-                
-                // cek apakah toko ada di database
-                if (!isTokoExists(conn, idToko)) {
-                    System.out.println("❌ ERROR: Toko dengan ID " + idToko + " tidak ditemukan di database");
-                    throw new SQLException("Toko dengan ID " + idToko + " tidak ditemukan");
-                }
-                
-                // hitung total harga untuk toko ini
-                int totalHarga = 0;
-                for (Keranjang k : tokoItems) {
-                    totalHarga += k.getJumlah() * k.getHargaItem();
-                    System.out.println("  - Item: " + k.getNamaItem() + " x" + k.getJumlah() + " = Rp " + (k.getJumlah() * k.getHargaItem()));
-                }
-                
-                System.out.println("Total untuk " + namaToko + ": Rp " + totalHarga);
-                
-                // insert ke tabel pesanan
-                String insertPesananSQL = "INSERT INTO pesanan (id_user, id_toko, tanggal_pesan, status_pesanan) " +
-                                         "VALUES (?, ?, NOW(), 'PENDING')";
-                PreparedStatement pstmtPesanan = conn.prepareStatement(insertPesananSQL, Statement.RETURN_GENERATED_KEYS);
-                pstmtPesanan.setInt(1, userId);
-                pstmtPesanan.setInt(2, idToko);
-                int affectedRows = pstmtPesanan.executeUpdate();
-                
-                System.out.println("Insert pesanan - affected rows: " + affectedRows);
-                
-                // ambil ID pesanan yang baru dibuat
-                int idPesanan = -1;
-                ResultSet generatedKeys = pstmtPesanan.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    idPesanan = generatedKeys.getInt(1);
-                    System.out.println("ID Pesanan baru: " + idPesanan);
-                } else {
-                    System.out.println("Tidak mendapatkan generated keys!");
-                }
-                pstmtPesanan.close();
-                
-                if (idPesanan == -1) {
-                    throw new SQLException("Gagal mendapatkan ID pesanan");
-                }
-                
-                // insert ke  tabel detail_pesanan untuk setiap item
-                String insertDetailSQL = "INSERT INTO detail_pesanan (id_pesanan, id_item, jumlah, harga_satuan) " +
-                                       "VALUES (?, ?, ?, ?)";
-                PreparedStatement pstmtDetail = conn.prepareStatement(insertDetailSQL);
-                
-                int detailCount = 0;
-                for (Keranjang k : tokoItems) {
-                    // cek apakah item ada di database
-                    if (!isItemExists(conn, k.getIdItem())) {
-                        System.out.println("❌ ERROR: Item dengan ID " + k.getIdItem() + " tidak ditemukan");
-                        throw new SQLException("Item dengan ID " + k.getIdItem() + " tidak ditemukan");
-                    }
-                    
-                    pstmtDetail.setInt(1, idPesanan);
-                    pstmtDetail.setInt(2, k.getIdItem());
-                    pstmtDetail.setInt(3, k.getJumlah());
-                    pstmtDetail.setDouble(4, k.getHargaItem());
-                    pstmtDetail.addBatch();
-                    detailCount++;
-                    
-                    System.out.println("  - Detail: Pesanan#" + idPesanan + ", Item#" + k.getIdItem() + 
-                                     " x" + k.getJumlah() + " @Rp " + k.getHargaItem());
-                }
-                
-                int[] batchResults = pstmtDetail.executeBatch();
-                System.out.println("Insert detail - batch executed: " + batchResults.length + " items");
-                pstmtDetail.close();
-                
-                System.out.println("✓ Transaksi berhasil dibuat: Pesanan #" + idPesanan + 
-                                 " untuk " + namaToko + " - Total: Rp " + totalHarga);
-            }
-            
-            // hapus item keranjang yang sudah di-checkout
-            String deleteKeranjangSQL = "DELETE FROM keranjang WHERE id_user = ? AND status_checkout = 0";
-            PreparedStatement pstmtDelete = conn.prepareStatement(deleteKeranjangSQL);
-            pstmtDelete.setInt(1, userId);
-            int deletedRows = pstmtDelete.executeUpdate();
-            pstmtDelete.close();
-            
-            System.out.println("Deleted keranjang rows: " + deletedRows);
-            
-            // commit transaction
-            conn.commit();
-            success = true;
-            System.out.println("Transaction COMMIT berhasil");
-            
-        } catch (Exception e) {
-            System.out.println("ERROR di createTransactionFromKeranjang: " + e.getMessage());
-            e.printStackTrace();
-            
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    System.out.println("Rollback dilakukan");
-                } catch (SQLException ex) {
-                    System.out.println("Error saat rollback: " + ex.getMessage());
-                }
-            }
-            success = false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    System.out.println("Error saat close connection: " + e.getMessage());
-                }
-            }
-        }
-        
-        return success;
+    if (items.isEmpty()) {
+        System.out.println("ERROR: Items keranjang kosong");
+        return false;
     }
+    
+    System.out.println("=== DEBUG: Memulai createTransactionFromKeranjang");
+    System.out.println("User ID: " + userId);
+    System.out.println("Jumlah items: " + items.size());
+    
+    // tampilkan detail semua item
+    for (int i = 0; i < items.size(); i++) {
+        Keranjang k = items.get(i);
+        System.out.println("Item " + (i+1) + ": " + k.getNamaItem() + 
+                         " | Toko: " + k.getNamaToko() + 
+                         " | ID Toko: " + k.getIdToko() +
+                         " | ID Item: " + k.getIdItem() +
+                         " | Jumlah: " + k.getJumlah());
+    }
+    
+    Connection conn = null;
+    boolean success = false;
+    
+    try {
+        conn = konektor.getConnection();
+        conn.setAutoCommit(false);
+        
+        // kelompokkan item keranjang berdasarkan Toko
+        Map<Integer, List<Keranjang>> groupedByToko = items.stream()
+            .collect(Collectors.groupingBy(Keranjang::getIdToko));
+        
+        System.out.println("Jumlah toko berbeda: " + groupedByToko.size());
+        
+        // cek apakah ada ID Toko yang 0 atau tidak valid
+        for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
+            int idToko = entry.getKey();
+            if (idToko <= 0) {
+                System.out.println("❌ ERROR: ID Toko tidak valid: " + idToko);
+                System.out.println("Items dengan ID Toko tidak valid:");
+                for (Keranjang k : entry.getValue()) {
+                    System.out.println("  - " + k.getNamaItem() + " | Toko: " + k.getNamaToko());
+                }
+                throw new SQLException("ID Toko tidak valid: " + idToko);
+            }
+        }
+        
+        // Validasi stok sebelum memulai transaksi
+        System.out.println("=== VALIDASI STOK SEBELUM TRANSAKSI ===");
+        for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
+            List<Keranjang> tokoItems = entry.getValue();
+            for (Keranjang k : tokoItems) {
+                int stokTersedia = getStokItem(conn, k.getIdItem());
+                if (stokTersedia < k.getJumlah()) {
+                    String errorMsg = "Stok tidak cukup untuk item: " + k.getNamaItem() + 
+                                    " (Stok tersedia: " + stokTersedia + 
+                                    ", Jumlah dibeli: " + k.getJumlah() + ")";
+                    System.out.println("❌ " + errorMsg);
+                    throw new SQLException(errorMsg);
+                }
+                System.out.println("✓ Stok cukup: " + k.getNamaItem() + 
+                                 " (Stok: " + stokTersedia + 
+                                 ", Beli: " + k.getJumlah() + ")");
+            }
+        }
+        
+        // buat transaksi untuk setiap toko
+        for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
+            int idToko = entry.getKey();
+            List<Keranjang> tokoItems = entry.getValue();
+            String namaToko = tokoItems.get(0).getNamaToko();
+            
+            System.out.println("Memproses toko: " + namaToko + " (ID: " + idToko + ")");
+            
+            // cek apakah toko ada di database
+            if (!isTokoExists(conn, idToko)) {
+                System.out.println("❌ ERROR: Toko dengan ID " + idToko + " tidak ditemukan di database");
+                throw new SQLException("Toko dengan ID " + idToko + " tidak ditemukan");
+            }
+            
+            // hitung total harga untuk toko ini
+            int totalHarga = 0;
+            for (Keranjang k : tokoItems) {
+                totalHarga += k.getJumlah() * k.getHargaItem();
+                System.out.println("  - Item: " + k.getNamaItem() + 
+                                 " x" + k.getJumlah() + 
+                                 " = Rp " + (k.getJumlah() * k.getHargaItem()));
+            }
+            
+            System.out.println("Total untuk " + namaToko + ": Rp " + totalHarga);
+            
+            // insert ke tabel pesanan
+            String insertPesananSQL = "INSERT INTO pesanan (id_user, id_toko, tanggal_pesan, status_pesanan) " +
+                                     "VALUES (?, ?, NOW(), 'PENDING')";
+            PreparedStatement pstmtPesanan = conn.prepareStatement(insertPesananSQL, Statement.RETURN_GENERATED_KEYS);
+            pstmtPesanan.setInt(1, userId);
+            pstmtPesanan.setInt(2, idToko);
+            int affectedRows = pstmtPesanan.executeUpdate();
+            
+            System.out.println("Insert pesanan - affected rows: " + affectedRows);
+            
+            // ambil ID pesanan yang baru dibuat
+            int idPesanan = -1;
+            ResultSet generatedKeys = pstmtPesanan.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                idPesanan = generatedKeys.getInt(1);
+                System.out.println("ID Pesanan baru: " + idPesanan);
+            } else {
+                System.out.println("Tidak mendapatkan generated keys!");
+                throw new SQLException("Gagal mendapatkan ID pesanan");
+            }
+            pstmtPesanan.close();
+            
+            // insert ke tabel detail_pesanan untuk setiap item DAN update stok
+            String insertDetailSQL = "INSERT INTO detail_pesanan (id_pesanan, id_item, jumlah, harga_satuan) " +
+                                   "VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmtDetail = conn.prepareStatement(insertDetailSQL);
+            
+            String updateStokSQL = "UPDATE item SET stok = stok - ? WHERE id_item = ?";
+            PreparedStatement pstmtUpdateStok = conn.prepareStatement(updateStokSQL);
+            
+            int detailCount = 0;
+            for (Keranjang k : tokoItems) {
+                // cek apakah item ada di database
+                if (!isItemExists(conn, k.getIdItem())) {
+                    System.out.println("❌ ERROR: Item dengan ID " + k.getIdItem() + " tidak ditemukan");
+                    throw new SQLException("Item dengan ID " + k.getIdItem() + " tidak ditemukan");
+                }
+                
+                // Insert ke detail_pesanan
+                pstmtDetail.setInt(1, idPesanan);
+                pstmtDetail.setInt(2, k.getIdItem());
+                pstmtDetail.setInt(3, k.getJumlah());
+                pstmtDetail.setDouble(4, k.getHargaItem());
+                pstmtDetail.addBatch();
+                
+                // Update stok item (KURANGI STOK)
+                pstmtUpdateStok.setInt(1, k.getJumlah());
+                pstmtUpdateStok.setInt(2, k.getIdItem());
+                pstmtUpdateStok.addBatch();
+                
+                detailCount++;
+                
+                System.out.println("  - Detail: Pesanan#" + idPesanan + 
+                                 ", Item#" + k.getIdItem() + 
+                                 " x" + k.getJumlah() + 
+                                 " @Rp " + k.getHargaItem() +
+                                 " (akan kurangi stok " + k.getJumlah() + ")");
+            }
+            
+            // Execute batch untuk detail pesanan
+            int[] batchResults = pstmtDetail.executeBatch();
+            System.out.println("Insert detail - batch executed: " + batchResults.length + " items");
+            pstmtDetail.close();
+            
+            // Execute batch untuk update stok
+            int[] updateStokResults = pstmtUpdateStok.executeBatch();
+            System.out.println("Update stok - batch executed: " + updateStokResults.length + " items");
+            pstmtUpdateStok.close();
+            
+            // Verifikasi stok setelah update
+            for (Keranjang k : tokoItems) {
+                int stokSetelah = getStokItem(conn, k.getIdItem());
+                System.out.println("✓ Stok setelah update: " + k.getNamaItem() + 
+                                 " = " + stokSetelah);
+            }
+            
+            System.out.println("✓ Transaksi berhasil dibuat: Pesanan #" + idPesanan + 
+                             " untuk " + namaToko + " - Total: Rp " + totalHarga);
+        }
+        
+        // hapus item keranjang yang sudah di-checkout
+        String deleteKeranjangSQL = "DELETE FROM keranjang WHERE id_user = ? AND status_checkout = 0";
+        PreparedStatement pstmtDelete = conn.prepareStatement(deleteKeranjangSQL);
+        pstmtDelete.setInt(1, userId);
+        int deletedRows = pstmtDelete.executeUpdate();
+        pstmtDelete.close();
+        
+        System.out.println("Deleted keranjang rows: " + deletedRows);
+        
+        // commit transaction
+        conn.commit();
+        success = true;
+        System.out.println("Transaction COMMIT berhasil");
+        
+    } catch (Exception e) {
+        System.out.println("ERROR di createTransactionFromKeranjang: " + e.getMessage());
+        e.printStackTrace();
+        
+        if (conn != null) {
+            try {
+                conn.rollback();
+                System.out.println("Rollback dilakukan");
+            } catch (SQLException ex) {
+                System.out.println("Error saat rollback: " + ex.getMessage());
+            }
+        }
+        success = false;
+    } finally {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error saat close connection: " + e.getMessage());
+            }
+        }
+    }
+    
+    return success;
+}
+
+// Helper method untuk mendapatkan stok item
+private int getStokItem(Connection conn, int idItem) {
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    try {
+        String sql = "SELECT stok FROM item WHERE id_item = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, idItem);
+        rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("stok");
+        }
+        return 0;
+    } catch (Exception e) {
+        System.out.println("Error getting stok item: " + e.getMessage());
+        return 0;
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
     
     // method untuk cek apakah toko exists di database
     private boolean isTokoExists(Connection conn, int idToko) {
