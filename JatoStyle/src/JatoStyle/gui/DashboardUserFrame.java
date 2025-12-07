@@ -94,86 +94,123 @@ public class DashboardUserFrame extends javax.swing.JFrame {
         this(); // panggil constructor tanpa parameter
         this.currentUser = user;
         this.userLoginId = user.getIdUser();
-        haloNamaOutput.setText("Halo, " + user.getNama());
+        haloNamaOutput.setText("Welcome to JatoStyle!");
     }
     
     private void setupTransactionPanel() {
-        System.out.println("=== SETUP TRANSACTION PANEL ===");
+    System.out.println("=== SETUP TRANSACTION PANEL ===");
 
-        // setup Model Tabel
-        String[] columnNames = {"ID", "Tanggal", "Restoran", "Total Harga", "Status", "Detail"};
-        transactionTableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 5; // Kolom Detail bisa diklik
-            }
-
-            @Override
-            public Class<?> getColumnClass(int column) {
-                if (column == 5) {
-                    return JButton.class;
-                }
-                return Object.class;
-            }
-        };
-
-        // setup Tabel
-        transactionTable = new JTable(transactionTableModel);
-        transactionTable.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-        transactionTable.setRowHeight(35);
-        transactionTable.setBackground(new Color(250, 240, 227));
-        transactionTable.setSelectionBackground(new Color(241, 124, 42, 100));
-        transactionTable.setSelectionForeground(new Color(59, 31, 11));
-
-        // center alignment untuk semua kolom
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < transactionTable.getColumnCount(); i++) {
-            if (i != 2 && i != 5) { // Kolom Restoran dan Detail tidak di-center
-                transactionTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-            }
+    // setup Model Tabel
+    String[] columnNames = {"ID", "Tanggal", "Restoran", "Total Harga", "Status", "Detail"};
+    transactionTableModel = new DefaultTableModel(columnNames, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return column == 5; // Kolom Detail bisa diklik
         }
 
-        // left alignment untuk kolom resto
-        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-        transactionTable.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
+        @Override
+        public Class<?> getColumnClass(int column) {
+            if (column == 5) {
+                return JButton.class;
+            }
+            return Object.class;
+        }
+    };
 
-        // custom renderer untuk kolom detail (button)
-        transactionTable.getColumnModel().getColumn(5).setCellRenderer(new DetailButtonRenderer());
-        transactionTable.getColumnModel().getColumn(5).setCellEditor(new DetailButtonEditor(new JCheckBox()));
+    // setup Tabel
+    transactionTable = new JTable(transactionTableModel);
+    transactionTable.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+    transactionTable.setRowHeight(35);
+    transactionTable.setBackground(new Color(206, 220, 239));
+    transactionTable.setSelectionBackground(new Color(149, 189, 226, 100));
+    transactionTable.setSelectionForeground(new Color(59, 31, 11));
 
-        // styling header
-        JTableHeader header = transactionTable.getTableHeader();
-        header.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-        header.setBackground(new Color(241, 124, 42));
-        header.setForeground(Color.WHITE);
-        header.setReorderingAllowed(false);
-
-        // setup scroll pane
-        JScrollPane scrollPane = new JScrollPane(transactionTable);
-        scrollPane.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(229, 75, 31), 2),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-        scrollPane.getViewport().setBackground(new Color(250, 240, 227));
-
-        // tambahkan ke tab Transaksi
-        jPanel4.removeAll();
-        jPanel4.setLayout(new BorderLayout());
-        jPanel4.setBackground(new Color(250, 240, 227));
-        jPanel4.add(scrollPane, BorderLayout.CENTER);
-
-        System.out.println("Transaction panel setup completed");
+    // center alignment untuk semua kolom
+    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+    centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    centerRenderer.setBackground(new Color(206, 220, 239));
+    centerRenderer.setForeground(new Color(0, 51, 79));
+    
+    for (int i = 0; i < transactionTable.getColumnCount(); i++) {
+        if (i != 2 && i != 5) {
+            transactionTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
+    // left alignment untuk kolom resto
+    DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+    leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+    leftRenderer.setBackground(new Color(206, 220, 239));
+    leftRenderer.setForeground(new Color(0, 51, 79));
+    transactionTable.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
+
+    // custom renderer untuk kolom detail (button)
+    transactionTable.getColumnModel().getColumn(5).setCellRenderer(new DetailButtonRenderer());
+    transactionTable.getColumnModel().getColumn(5).setCellEditor(new DetailButtonEditor(new JCheckBox()));
+
+    // styling header - WARNA [30,73,138] - PERBAIKI DI SINI
+    JTableHeader header = transactionTable.getTableHeader();
+    header.setDefaultRenderer(new HeaderRenderer()); // GUNAKAN RENDERER KHUSUS
+    header.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+    header.setBackground(new Color(30, 73, 138));
+    header.setForeground(Color.WHITE);
+    header.setReorderingAllowed(false);
+
+    // setup scroll pane
+    JScrollPane scrollPane = new JScrollPane(transactionTable);
+    scrollPane.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(149, 189, 226), 2),
+        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+    ));
+    scrollPane.getViewport().setBackground(new Color(206, 220, 239));
+
+    // tambahkan ke tab Transaksi
+    jPanel4.removeAll();
+    jPanel4.setLayout(new BorderLayout());
+    jPanel4.setBackground(new Color(206, 220, 239));
+    jPanel4.add(scrollPane, BorderLayout.CENTER);
+
+    System.out.println("Transaction panel setup completed");
+    
+    // PASTIKAN HEADER DIPERBARUI LAGI SETELAH SETUP
+    if (transactionTable != null && transactionTable.getTableHeader() != null) {
+        JTableHeader tableHeader = transactionTable.getTableHeader();
+        tableHeader.setBackground(new Color(30, 73, 138));
+        tableHeader.setForeground(Color.WHITE);
+        tableHeader.repaint();
+    }
+}
+
+// Custom Header Renderer untuk memastikan warna header tetap [30,73,138]
+class HeaderRenderer implements TableCellRenderer {
+    private DefaultTableCellRenderer defaultRenderer = new DefaultTableCellRenderer();
+    
+    public HeaderRenderer() {
+        defaultRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        defaultRenderer.setBackground(new Color(30, 73, 138)); // [30,73,138]
+        defaultRenderer.setForeground(Color.WHITE);
+        defaultRenderer.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+        defaultRenderer.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(100, 100, 100)),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+    }
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+        defaultRenderer.setText(value != null ? value.toString() : "");
+        return defaultRenderer;
+    }
+}
+    
     // Custom renderer untuk tombol detail
     class DetailButtonRenderer extends JButton implements TableCellRenderer {
         public DetailButtonRenderer() {
             setOpaque(true);
             setText("Lihat Detail");
-            setBackground(new Color(229, 75, 31));
-            setForeground(Color.WHITE);
+            setBackground(new Color(0, 51, 79)); // #00334F
+            setForeground(new Color(206, 220, 239)); // #CEDCEF
             setFont(new Font("Bahnschrift", Font.PLAIN, 11));
             setFocusPainted(false);
             setBorderPainted(false);
@@ -184,9 +221,11 @@ public class DashboardUserFrame extends javax.swing.JFrame {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
-                setBackground(new Color(241, 124, 42));
+                setBackground(new Color(149, 189, 226)); // #95BDE2 saat dipilih
+                setForeground(new Color(59, 31, 11)); // #3B1F0B
             } else {
-                setBackground(new Color(229, 75, 31));
+                setBackground(new Color(0, 51, 79)); // #00334F default
+                setForeground(new Color(206, 220, 239)); // #CEDCEF
             }
             return this;
         }
@@ -203,8 +242,8 @@ public class DashboardUserFrame extends javax.swing.JFrame {
             super(checkBox);
             button = new JButton();
             button.setOpaque(true);
-            button.setBackground(new Color(229, 75, 31));
-            button.setForeground(Color.WHITE);
+            button.setBackground(new Color(0, 51, 79)); // #00334F
+            button.setForeground(new Color(206, 220, 239)); // #CEDCEF
             button.setFont(new Font("Bahnschrift", Font.PLAIN, 11));
             button.setFocusPainted(false);
             button.setBorderPainted(false);
@@ -226,6 +265,15 @@ public class DashboardUserFrame extends javax.swing.JFrame {
             button.setText(label);
             isPushed = true;
             selectedRow = row;
+
+            if (isSelected) {
+                button.setBackground(new Color(149, 189, 226)); // #95BDE2 saat dipilih
+                button.setForeground(new Color(59, 31, 11)); // #3B1F0B
+            } else {
+                button.setBackground(new Color(0, 51, 79)); // #00334F default
+                button.setForeground(new Color(206, 220, 239)); // #CEDCEF
+            }
+
             return button;
         }
 
@@ -243,128 +291,131 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     }
 
     // Method untuk menampilkan detail transaksi
-    private void showTransactionDetail(int rowIndex) {
-        try {
-            // Ambil ID transaksi dari kolom pertama (format: TRX0001)
-            String idString = transactionTableModel.getValueAt(rowIndex, 0).toString();
-            int idTransaksi = Integer.parseInt(idString.replace("TRX", ""));
+private void showTransactionDetail(int rowIndex) {
+    try {
+        // Ambil ID transaksi dari kolom pertama (format: TRX0001)
+        String idString = transactionTableModel.getValueAt(rowIndex, 0).toString();
+        int idTransaksi = Integer.parseInt(idString.replace("TRX", ""));
 
-            System.out.println("Menampilkan detail transaksi ID: " + idTransaksi);
+        System.out.println("Menampilkan detail transaksi ID: " + idTransaksi);
 
-            // Ambil data detail transaksi dari service
-            List<TransactionDetail> details = transactionService.getTransactionDetails(idTransaksi);
+        // Ambil data detail transaksi dari service
+        List<TransactionDetail> details = transactionService.getTransactionDetails(idTransaksi);
 
-            if (details.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "Tidak ditemukan detail untuk transaksi ini.", 
-                    "Detail Transaksi", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            // Buat dialog untuk menampilkan detail
-            JDialog detailDialog = new JDialog(this, "Detail Pesanan", true);
-            detailDialog.setLayout(new BorderLayout());
-            detailDialog.setSize(500, 400);
-            detailDialog.setLocationRelativeTo(this);
-
-            // Panel header
-            JPanel headerPanel = new JPanel(new BorderLayout());
-            headerPanel.setBackground(new Color(241, 124, 42));
-            headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-
-            JLabel headerLabel = new JLabel("Detail Pesanan #" + idString);
-            headerLabel.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-            headerLabel.setForeground(Color.WHITE);
-            headerPanel.add(headerLabel, BorderLayout.WEST);
-
-            // Ambil info restoran dan total
-            String namaRestoran = transactionTableModel.getValueAt(rowIndex, 2).toString();
-            String totalHarga = transactionTableModel.getValueAt(rowIndex, 3).toString();
-            String status = transactionTableModel.getValueAt(rowIndex, 4).toString();
-
-            JLabel infoLabel = new JLabel(namaRestoran + " | " + totalHarga + " | " + status);
-            infoLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-            infoLabel.setForeground(Color.WHITE);
-            headerPanel.add(infoLabel, BorderLayout.EAST);
-
-            // Panel detail menu
-            JPanel menuPanel = new JPanel();
-            menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-            menuPanel.setBackground(Color.WHITE);
-            menuPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-            int totalItems = 0;
-            int totalPrice = 0;
-
-            for (TransactionDetail detail : details) {
-                JPanel itemPanel = new JPanel(new BorderLayout());
-                itemPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                    BorderFactory.createEmptyBorder(8, 10, 8, 10)
-                ));
-                itemPanel.setBackground(Color.WHITE);
-
-                JLabel menuLabel = new JLabel(detail.getNamaMenu());
-                menuLabel.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-
-                JLabel detailLabel = new JLabel("Jumlah: " + detail.getJumlah() + 
-                                               " x Rp " + String.format("%,d", detail.getHargaSatuan()) + 
-                                               " = Rp " + String.format("%,d", detail.getSubtotal()));
-                detailLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-
-                JPanel leftPanel = new JPanel(new BorderLayout());
-                leftPanel.setBackground(Color.WHITE);
-                leftPanel.add(menuLabel, BorderLayout.NORTH);
-                leftPanel.add(detailLabel, BorderLayout.SOUTH);
-
-                itemPanel.add(leftPanel, BorderLayout.CENTER);
-                menuPanel.add(itemPanel);
-                menuPanel.add(Box.createVerticalStrut(8));
-
-                totalItems += detail.getJumlah();
-                totalPrice += detail.getSubtotal();
-            }
-
-            // Panel total
-            JPanel totalPanel = new JPanel(new BorderLayout());
-            totalPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(229, 75, 31)),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)
-            ));
-            totalPanel.setBackground(new Color(250, 240, 227));
-
-            JLabel totalItemsLabel = new JLabel("Total Items: " + totalItems);
-            totalItemsLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-
-            JLabel totalPriceLabel = new JLabel("Total: Rp " + String.format("%,d", totalPrice));
-            totalPriceLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-            totalPriceLabel.setForeground(new Color(59, 31, 11));
-
-            totalPanel.add(totalItemsLabel, BorderLayout.WEST);
-            totalPanel.add(totalPriceLabel, BorderLayout.EAST);
-
-            // Scroll pane untuk menu
-            JScrollPane scrollPane = new JScrollPane(menuPanel);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder());
-            scrollPane.getViewport().setBackground(Color.WHITE);
-
-            // Tambahkan semua komponen ke dialog
-            detailDialog.add(headerPanel, BorderLayout.NORTH);
-            detailDialog.add(scrollPane, BorderLayout.CENTER);
-            detailDialog.add(totalPanel, BorderLayout.SOUTH);
-
-            detailDialog.setVisible(true);
-
-        } catch (Exception e) {
-            System.out.println("Error menampilkan detail transaksi: " + e.getMessage());
-            e.printStackTrace();
+        if (details.isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Error menampilkan detail: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+                "Tidak ditemukan detail untuk transaksi ini.", 
+                "Detail Transaksi", 
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
+
+        // Buat dialog untuk menampilkan detail
+        JDialog detailDialog = new JDialog(this, "Detail Pesanan", true);
+        detailDialog.setLayout(new BorderLayout());
+        detailDialog.setSize(500, 400);
+        detailDialog.setLocationRelativeTo(this);
+
+        // Panel header - UBAH WARNA HEADER
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(0, 51, 79)); // #00334F
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+
+        JLabel headerLabel = new JLabel("Detail Pesanan #" + idString);
+        headerLabel.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+        headerLabel.setForeground(new Color(206, 220, 239)); // #CEDCEF
+        headerPanel.add(headerLabel, BorderLayout.WEST);
+
+        // Ambil info restoran dan total
+        String namaRestoran = transactionTableModel.getValueAt(rowIndex, 2).toString();
+        String totalHarga = transactionTableModel.getValueAt(rowIndex, 3).toString();
+        String status = transactionTableModel.getValueAt(rowIndex, 4).toString();
+
+        JLabel infoLabel = new JLabel(namaRestoran + " | " + totalHarga + " | " + status);
+        infoLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        infoLabel.setForeground(new Color(206, 220, 239)); // #CEDCEF
+        headerPanel.add(infoLabel, BorderLayout.EAST);
+
+        // Panel detail menu
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBackground(Color.WHITE);
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        int totalItems = 0;
+        int totalPrice = 0;
+
+        for (TransactionDetail detail : details) {
+            JPanel itemPanel = new JPanel(new BorderLayout());
+            itemPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+            ));
+            itemPanel.setBackground(Color.WHITE);
+
+            JLabel menuLabel = new JLabel(detail.getNamaMenu());
+            menuLabel.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+            menuLabel.setForeground(new Color(0, 51, 79)); // #00334F
+
+            JLabel detailLabel = new JLabel("Jumlah: " + detail.getJumlah() + 
+                                           " x Rp " + String.format("%,d", detail.getHargaSatuan()) + 
+                                           " = Rp " + String.format("%,d", detail.getSubtotal()));
+            detailLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+            detailLabel.setForeground(new Color(59, 31, 11)); // #3B1F0B
+
+            JPanel leftPanel = new JPanel(new BorderLayout());
+            leftPanel.setBackground(Color.WHITE);
+            leftPanel.add(menuLabel, BorderLayout.NORTH);
+            leftPanel.add(detailLabel, BorderLayout.SOUTH);
+
+            itemPanel.add(leftPanel, BorderLayout.CENTER);
+            menuPanel.add(itemPanel);
+            menuPanel.add(Box.createVerticalStrut(8));
+
+            totalItems += detail.getJumlah();
+            totalPrice += detail.getSubtotal();
+        }
+
+        // Panel total - UBAH WARNA BORDER
+        JPanel totalPanel = new JPanel(new BorderLayout());
+        totalPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(149, 189, 226)), // #95BDE2
+            BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+        totalPanel.setBackground(new Color(250, 240, 227)); // #FAF0E3
+
+        JLabel totalItemsLabel = new JLabel("Total Items: " + totalItems);
+        totalItemsLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        totalItemsLabel.setForeground(new Color(59, 31, 11)); // #3B1F0B
+
+        JLabel totalPriceLabel = new JLabel("Total: Rp " + String.format("%,d", totalPrice));
+        totalPriceLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        totalPriceLabel.setForeground(new Color(0, 51, 79)); // #00334F
+
+        totalPanel.add(totalItemsLabel, BorderLayout.WEST);
+        totalPanel.add(totalPriceLabel, BorderLayout.EAST);
+
+        // Scroll pane untuk menu
+        JScrollPane scrollPane = new JScrollPane(menuPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        // Tambahkan semua komponen ke dialog
+        detailDialog.add(headerPanel, BorderLayout.NORTH);
+        detailDialog.add(scrollPane, BorderLayout.CENTER);
+        detailDialog.add(totalPanel, BorderLayout.SOUTH);
+
+        detailDialog.setVisible(true);
+
+    } catch (Exception e) {
+        System.out.println("Error menampilkan detail transaksi: " + e.getMessage());
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, 
+            "Error menampilkan detail: " + e.getMessage(), 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
     }
+}
 
     private void tabChanged(javax.swing.event.ChangeEvent evt) {
         int selectedIndex = jTabbedPane1.getSelectedIndex();
@@ -376,116 +427,124 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     }
     
     private void applyDashboardTheme() {
-        // bg utama #FAF0E3
-        getContentPane().setBackground(new Color(250, 240, 227));
+    // bg utama [206,220,239]
+    getContentPane().setBackground(new Color(206, 220, 239));
 
-        // tabbed pane 
-        jTabbedPane1.setBackground(new Color(250, 240, 227));
-        jTabbedPane1.setForeground(new Color(59, 31, 11)); // #3B1F0B
-        jTabbedPane1.setBorder(BorderFactory.createLineBorder(new Color(229, 75, 31), 1)); // #E54B1F
+    // tabbed pane - warna background tab panel
+    jTabbedPane1.setBackground(new Color(206, 220, 239));
+    jTabbedPane1.setForeground(new Color(59, 31, 11)); // #3B1F0B
+    jTabbedPane1.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2)); // #95BDE2
 
-        // UI custom utk tab
-        jTabbedPane1.setUI(new javax.swing.plaf.basic.BasicTabbedPaneUI() {
-            @Override
-            protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex, 
-                                            int x, int y, int w, int h, boolean isSelected) {
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                if (isSelected) {
-                    // tab aktif (orange)
-                    g2d.setColor(new Color(241, 124, 42)); // #F17C2A
-                } else {
-                    // tab tidak aktif (default)
-                    g2d.setColor(new Color(250, 240, 227)); // #FAF0E3
-                }
-
-                // rounded
-                int margin = 8; // jarak antar tab 
-                int leftMargin = 15; // geser kanan
-                int tabHeight = h - margin; // tinggi tab
-                int tabWidth = w - 10; // lebar tab
-                g2d.fillRoundRect(x + leftMargin, y + margin, tabWidth, tabHeight, 15, 15);
-                g2d.dispose();
-            }
-
-            @Override
-            protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, 
+    // UI custom utk tab (rounded corners)
+    jTabbedPane1.setUI(new javax.swing.plaf.basic.BasicTabbedPaneUI() {
+        @Override
+        protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex, 
                                         int x, int y, int w, int h, boolean isSelected) {
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                if (isSelected) {
-                    g2d.setColor(new Color(229, 75, 31)); // #E54B1F
-                } else {
-                    g2d.setColor(new Color(200, 200, 200)); // Abu-abu muda untuk tab tidak aktif
-                }
-
-                int margin = 8; // jarak antar tab 
-                int leftMargin = 15; // geser ke kanan
-                int tabHeight = h - margin; // tinggi tab
-                int tabWidth = w - 10; // lebar tab
-                g2d.drawRoundRect(x + leftMargin, y + margin, tabWidth, tabHeight, 15, 15);
-                g2d.dispose();
+            if (isSelected) {
+                // tab aktif - warna #95BDE2 (sama dengan button login)
+                g2d.setColor(new Color(149, 189, 226));
+            } else {
+                // tab tidak aktif (default) - [206,220,239]
+                g2d.setColor(new Color(206, 220, 239));
             }
 
-            @Override
-            protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
-                
+            // rounded corners
+            int margin = 8; // jarak antar tab 
+            int leftMargin = 15; // geser kanan
+            int tabHeight = h - margin; // tinggi tab
+            int tabWidth = w - 10; // lebar tab
+            g2d.fillRoundRect(x + leftMargin, y + margin, tabWidth, tabHeight, 15, 15);
+            g2d.dispose();
+        }
+
+        @Override
+        protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, 
+                                    int x, int y, int w, int h, boolean isSelected) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            if (isSelected) {
+                // border tab aktif - warna #00334F (sama dengan panel login)
+                g2d.setColor(new Color(0, 51, 79));
+            } else {
+                // border tab tidak aktif - warna abu-abu muda
+                g2d.setColor(new Color(200, 200, 200));
             }
 
-            @Override
-            protected int getTabRunIndent(int tabPlacement, int run) {
-                return 15; // indentasi utk geser tab ke atas
-            }
+            int margin = 8; // jarak antar tab 
+            int leftMargin = 15; // geser ke kanan
+            int tabHeight = h - margin; // tinggi tab
+            int tabWidth = w - 10; // lebar tab
+            g2d.drawRoundRect(x + leftMargin, y + margin, tabWidth, tabHeight, 15, 15);
+            g2d.dispose();
+        }
 
-            @Override
-            protected Insets getTabAreaInsets(int tabPlacement) {
-                return new Insets(15, 10, 0, 0); // top, left, bottom, right
-            }
+        @Override
+        protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
+            // no content border
+        }
 
-            @Override
-            protected Insets getContentBorderInsets(int tabPlacement) {
-                return new Insets(5, 0, 0, 0); // top, left, bottom, right
-            }
+        @Override
+        protected int getTabRunIndent(int tabPlacement, int run) {
+            return 15; // indentasi utk geser tab ke atas
+        }
 
-            @Override
-            protected int calculateTabWidth(int tabPlacement, int tabIndex, FontMetrics metrics) {
-                return super.calculateTabWidth(tabPlacement, tabIndex, metrics) + 30; // tambah 30px lebar tab
-            }
+        @Override
+        protected Insets getTabAreaInsets(int tabPlacement) {
+            return new Insets(15, 10, 0, 0); // top, left, bottom, right
+        }
 
-            @Override
-            protected int calculateTabHeight(int tabPlacement, int tabIndex, int fontHeight) {
-                return super.calculateTabHeight(tabPlacement, tabIndex, fontHeight) + 15; // tambah 15px tinggi tab
-            }
-        });
+        @Override
+        protected Insets getContentBorderInsets(int tabPlacement) {
+            return new Insets(5, 0, 0, 0); // top, left, bottom, right
+        }
 
-        // panel tab 
-        jPanel1.setBackground(new Color(250, 240, 227));
-        jPanel3.setBackground(new Color(250, 240, 227));
-        jPanel4.setBackground(new Color(250, 240, 227));
+        @Override
+        protected int calculateTabWidth(int tabPlacement, int tabIndex, FontMetrics metrics) {
+            return super.calculateTabWidth(tabPlacement, tabIndex, metrics) + 30; // tambah 30px lebar tab
+        }
 
-        // scroll pane (no border)
-        restoScrollPane.setBackground(new Color(250, 240, 227));
-        restoScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        restoScrollPane.getViewport().setBackground(new Color(250, 240, 227));
+        @Override
+        protected int calculateTabHeight(int tabPlacement, int tabIndex, int fontHeight) {
+            return super.calculateTabHeight(tabPlacement, tabIndex, fontHeight) + 15; // tambah 15px tinggi tab
+        }
+    });
 
-        // halo nama output 
-        haloNamaOutput.setBackground(new Color(250, 240, 227));
-        haloNamaOutput.setForeground(new Color(59, 31, 11));
-        haloNamaOutput.setBorder(null);
-
-        // button 
-        profilButton.setBackground(new Color(241, 124, 42));
-        profilButton.setForeground(Color.WHITE);
-        profilButton.setFocusPainted(false);
-        profilButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
-
-        logoutButton.setBackground(new Color(229, 75, 31));
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-        logoutButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    // PASTIKAN BACKGROUND SETIAP TAB JUGA [206,220,239]
+    for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
+        jTabbedPane1.setBackgroundAt(i, new Color(206, 220, 239));
     }
+
+    // panel tab content - SEMUA PANEL SEKARANG WARNA [206,220,239]
+    jPanel1.setBackground(new Color(206, 220, 239)); // tab Toko
+    jPanel3.setBackground(new Color(206, 220, 239)); // tab Keranjang
+    jPanel4.setBackground(new Color(206, 220, 239)); // tab Transaksi
+
+    // scroll pane (no border)
+    restoScrollPane.setBackground(new Color(206, 220, 239));
+    restoScrollPane.setBorder(BorderFactory.createEmptyBorder());
+    restoScrollPane.getViewport().setBackground(new Color(206, 220, 239));
+
+    // halo nama output - ubah warna text menjadi #00334F (sama dengan panel login)
+    haloNamaOutput.setBackground(new Color(206, 220, 239));
+    haloNamaOutput.setForeground(new Color(0, 51, 79)); // #00334F
+    haloNamaOutput.setBorder(null);
+
+    // button profil - ubah warna menjadi #95BDE2 (sama dengan button login)
+    profilButton.setBackground(new Color(149, 189, 226));
+    profilButton.setForeground(new Color(59, 31, 11)); // teks gelap untuk kontras
+    profilButton.setFocusPainted(false);
+    profilButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+
+    // button logout - ubah warna menjadi #00334F (sama dengan panel login)
+    logoutButton.setBackground(new Color(0, 51, 79));
+    logoutButton.setForeground(new Color(206, 220, 239)); // teks #CEDCEF
+    logoutButton.setFocusPainted(false);
+    logoutButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+}
     
     private void customizeTabbedPane() {
         // custom UI utk tabbed pane
@@ -552,7 +611,7 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     public void setUserData(User user) {
         this.currentUser = user; // SIMPAN USER OBJECT
         this.userLoginId = user.getIdUser(); // SIMPAN ID USER
-        haloNamaOutput.setText("Halo, " + user.getNama() + "! Ayo makan!");
+        haloNamaOutput.setText("Welcome to JatoStyle"); // TULISAN DIUBAH
         loadKeranjang(); // Load keranjang setelah user ID diset
     }
 
@@ -596,7 +655,7 @@ public class DashboardUserFrame extends javax.swing.JFrame {
             .addComponent(restoScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Resto", jPanel1);
+        jTabbedPane1.addTab("Toko", jPanel1);
 
         jPanel3.addAncestorListener(new javax.swing.event.AncestorListener() {
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
@@ -634,12 +693,12 @@ public class DashboardUserFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Transaksi", jPanel4);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/dashboardlogo.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png"))); // NOI18N
 
         haloNamaOutput.setEditable(false);
-        haloNamaOutput.setBackground(new java.awt.Color(250, 240, 227));
+        haloNamaOutput.setBackground(new java.awt.Color(206, 220, 239));
         haloNamaOutput.setFont(new java.awt.Font("Bahnschrift", 1, 20)); // NOI18N
-        haloNamaOutput.setForeground(new java.awt.Color(250, 240, 227));
+        haloNamaOutput.setForeground(new java.awt.Color(206, 220, 239));
         haloNamaOutput.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         haloNamaOutput.setBorder(null);
         haloNamaOutput.setDisabledTextColor(new java.awt.Color(59, 31, 11));
@@ -708,16 +767,16 @@ public class DashboardUserFrame extends javax.swing.JFrame {
         restoContainerPanel = new javax.swing.JPanel();
         restoContainerPanel.setLayout(new javax.swing.BoxLayout(restoContainerPanel, javax.swing.BoxLayout.Y_AXIS));
         restoContainerPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        restoContainerPanel.setBackground(new Color(250, 240, 227));
+        restoContainerPanel.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
         restoScrollPane.setViewportView(restoContainerPanel);
-        restoScrollPane.getViewport().setBackground(new Color(250, 240, 227));
+        restoScrollPane.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
         restoScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         // custom scroll bar
         javax.swing.JScrollBar verticalScrollBar = restoScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setBackground(new Color(250, 240, 227));
+        verticalScrollBar.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
         verticalScrollBar.setForeground(new Color(229, 75, 31));
         verticalScrollBar.setUnitIncrement(16); // smooth scrolling
     }
@@ -768,17 +827,17 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     }
     
     private void setupKeranjangContainer() {
-        keranjangContainer = new JPanel();
-        keranjangContainer.setLayout(new BoxLayout(keranjangContainer, BoxLayout.Y_AXIS));
-        keranjangContainer.setBackground(new Color(250, 240, 227));
+    keranjangContainer = new JPanel();
+    keranjangContainer.setLayout(new BoxLayout(keranjangContainer, BoxLayout.Y_AXIS));
+    keranjangContainer.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
-        JScrollPane scroll = new JScrollPane(keranjangContainer);
-        scroll.setBorder(null);
-        scroll.getViewport().setBackground(new Color(250, 240, 227));
+    JScrollPane scroll = new JScrollPane(keranjangContainer);
+    scroll.setBorder(null);
+    scroll.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
-        jPanel3.setLayout(new BorderLayout());
-        jPanel3.add(scroll, BorderLayout.CENTER);
-       }
+    jPanel3.setLayout(new BorderLayout());
+    jPanel3.add(scroll, BorderLayout.CENTER);
+}
         
     private void loadKeranjang() {
         keranjangContainer.removeAll();
@@ -847,171 +906,171 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     }
     
     private void showKeranjangKosongMessage() {
-        JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new BorderLayout());
-        messagePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
-        messagePanel.setBackground(new Color(250, 240, 227));
+    JPanel messagePanel = new JPanel();
+    messagePanel.setLayout(new BorderLayout());
+    messagePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
+    messagePanel.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
-        JLabel messageLabel = new JLabel("Keranjang masih kosong");
-        messageLabel.setFont(new java.awt.Font("Bahnschrift", 1, 16));
-        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        messageLabel.setForeground(new Color(128, 128, 128));
+    JLabel messageLabel = new JLabel("Keranjang masih kosong");
+    messageLabel.setFont(new java.awt.Font("Bahnschrift", 1, 16));
+    messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    messageLabel.setForeground(new Color(128, 128, 128));
 
-        messagePanel.add(messageLabel, BorderLayout.CENTER);
-        keranjangContainer.add(messagePanel);
+    messagePanel.add(messageLabel, BorderLayout.CENTER);
+    keranjangContainer.add(messagePanel);
 
-        keranjangContainer.revalidate();
-        keranjangContainer.repaint();
-    }
+    keranjangContainer.revalidate();
+    keranjangContainer.repaint();
+}
 
     private JPanel createKeranjangItem(Keranjang k) {
-    // panel utama
-    JPanel panel = new JPanel(new BorderLayout()) {
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // panel utama
+        JPanel panel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // bg rounded corners
-            g2d.setColor(Color.WHITE);
-            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                // bg rounded corners
+                g2d.setColor(Color.WHITE);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
 
-            // border rounded corners
-            g2d.setColor(new Color(229, 75, 31)); // #E54B1F
-            g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                // border rounded corners - ubah warna menjadi #95BDE2
+                g2d.setColor(new Color(149, 189, 226)); // #95BDE2
+                g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
 
-            g2d.dispose();
-        }
-    };
+                g2d.dispose();
+            }
+        };
 
-    panel.setOpaque(false);
-    panel.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
-    panel.setPreferredSize(new Dimension(panel.getPreferredSize().width, 70)); // FIXED HEIGHT
-    panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70)); // FIXED MAX HEIGHT
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
+        panel.setPreferredSize(new Dimension(panel.getPreferredSize().width, 70)); // FIXED HEIGHT
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70)); // FIXED MAX HEIGHT
 
-    // panel kiri untuk menu
-    JPanel leftPanel = new JPanel();
-    leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-    leftPanel.setOpaque(false);
-    leftPanel.setPreferredSize(new Dimension(300, 50)); 
+        // panel kiri untuk menu
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setOpaque(false);
+        leftPanel.setPreferredSize(new Dimension(300, 50)); 
 
-    JLabel namaMenu = new JLabel(k.getNamaMenu());
-    namaMenu.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-    namaMenu.setForeground(new Color(59, 31, 11));
+        JLabel namaMenu = new JLabel(k.getNamaMenu());
+        namaMenu.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        namaMenu.setForeground(new Color(59, 31, 11)); // #3B1F0B
 
-    JLabel hargaLabel = new JLabel("Rp " + String.format("%,d", k.getHargaMenu()));
-    hargaLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-    hargaLabel.setForeground(new Color(59, 31, 11));
+        JLabel hargaLabel = new JLabel("Rp " + String.format("%,d", k.getHargaMenu()));
+        hargaLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        hargaLabel.setForeground(new Color(59, 31, 11)); // #3B1F0B
 
-    leftPanel.add(namaMenu);
-    leftPanel.add(Box.createVerticalStrut(3)); 
-    leftPanel.add(hargaLabel);
+        leftPanel.add(namaMenu);
+        leftPanel.add(Box.createVerticalStrut(3)); 
+        leftPanel.add(hargaLabel);
 
-    // panel kanan untuk kontrol jumlah
-    JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-    rightPanel.setOpaque(false);
-    rightPanel.setPreferredSize(new Dimension(200, 40));
+        // panel kanan untuk kontrol jumlah
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        rightPanel.setOpaque(false);
+        rightPanel.setPreferredSize(new Dimension(200, 40));
 
-    JLabel jumlahLabel = new JLabel(String.valueOf(k.getJumlah()));
-    jumlahLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-    jumlahLabel.setForeground(new Color(59, 31, 11));
-    jumlahLabel.setPreferredSize(new Dimension(30, 20));
+        JLabel jumlahLabel = new JLabel(String.valueOf(k.getJumlah()));
+        jumlahLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        jumlahLabel.setForeground(new Color(59, 31, 11)); // #3B1F0B
+        jumlahLabel.setPreferredSize(new Dimension(30, 20));
 
-    // button dengan ukuran konsisten
-    JButton minusButton = createRoundedButton("-", new Color(229, 75, 31));
-    minusButton.setPreferredSize(new Dimension(30, 25));
-    
-    JButton plusButton = createRoundedButton("+", new Color(229, 75, 31));
-    plusButton.setPreferredSize(new Dimension(30, 25));
-    
-    JButton hapusButton = createRoundedButton("X", new Color(200, 0, 0));
-    hapusButton.setPreferredSize(new Dimension(30, 25));
+        // button dengan ukuran konsisten
+        JButton minusButton = createRoundedButton("-", new Color(0, 51, 79)); // #00334F
+        minusButton.setPreferredSize(new Dimension(30, 25));
 
-    // action listeners
-    minusButton.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            if (k.getJumlah() > 1) {
-                keranjangService.updateJumlah(k.getIdKeranjang(), k.getJumlah() - 1);
+        JButton plusButton = createRoundedButton("+", new Color(0, 51, 79)); // #00334F
+        plusButton.setPreferredSize(new Dimension(30, 25));
+
+        JButton hapusButton = createRoundedButton("X", new Color(229, 75, 31)); // #E54B1F (tetap merah untuk delete)
+        hapusButton.setPreferredSize(new Dimension(30, 25));
+
+        // action listeners
+        minusButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (k.getJumlah() > 1) {
+                    keranjangService.updateJumlah(k.getIdKeranjang(), k.getJumlah() - 1);
+                    loadKeranjang();
+                }
+            }
+        });
+
+        plusButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                keranjangService.updateJumlah(k.getIdKeranjang(), k.getJumlah() + 1);
                 loadKeranjang();
             }
-        }
-    });
+        });
 
-    plusButton.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            keranjangService.updateJumlah(k.getIdKeranjang(), k.getJumlah() + 1);
-            loadKeranjang();
-        }
-    });
+        hapusButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                keranjangService.deleteItem(k.getIdKeranjang());
+                loadKeranjang();
+            }
+        });
 
-    hapusButton.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            keranjangService.deleteItem(k.getIdKeranjang());
-            loadKeranjang();
-        }
-    });
+        rightPanel.add(minusButton);
+        rightPanel.add(jumlahLabel);
+        rightPanel.add(plusButton);
+        rightPanel.add(hapusButton);
 
-    rightPanel.add(minusButton);
-    rightPanel.add(jumlahLabel);
-    rightPanel.add(plusButton);
-    rightPanel.add(hapusButton);
+        panel.add(leftPanel, BorderLayout.WEST);
+        panel.add(rightPanel, BorderLayout.EAST);
 
-    panel.add(leftPanel, BorderLayout.WEST);
-    panel.add(rightPanel, BorderLayout.EAST);
-
-    return panel;
-}
-    
-    private JPanel createRestoHeader(String namaResto) {
-    // panel header 
-    JPanel headerPanel = new JPanel(new BorderLayout()) {
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // bg rounded corners
-            g2d.setColor(new Color(241, 124, 42)); // #F17C2A
-            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
-
-            // border rounded corners
-            g2d.setColor(new Color(229, 75, 31)); // #E54B1F
-            g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
-
-            g2d.dispose();
-        }
-    };
-
-    headerPanel.setOpaque(false);
-    headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-    headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 45)); // FIXED HEIGHT
-    headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45)); // FIXED MAX HEIGHT
-
-    JLabel restoLabel = new JLabel(namaResto);
-    restoLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14)); // Smaller font
-    restoLabel.setForeground(Color.WHITE);
-
-    headerPanel.add(restoLabel, BorderLayout.WEST);
-
-    return headerPanel;
-}
-
-    private JPanel createTotalPanel(int total) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panel.setBackground(new Color(250, 240, 227));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
-
-        JLabel totalLabel = new JLabel("Total: Rp " + total);
-        totalLabel.setFont(new java.awt.Font("Bahnschrift", 1, 18));
-        totalLabel.setForeground(new Color(59, 31, 11));
-
-        panel.add(totalLabel);
         return panel;
     }
     
+    private JPanel createRestoHeader(String namaResto) {
+        // panel header 
+        JPanel headerPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // bg rounded corners - ubah warna menjadi #00334F
+                g2d.setColor(new Color(0, 51, 79)); // #00334F
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+
+                // border rounded corners - ubah warna menjadi #95BDE2
+                g2d.setColor(new Color(149, 189, 226)); // #95BDE2
+                g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+
+                g2d.dispose();
+            }
+        };
+
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 45)); // FIXED HEIGHT
+        headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45)); // FIXED MAX HEIGHT
+
+        JLabel restoLabel = new JLabel(namaResto);
+        restoLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14)); // Smaller font
+        restoLabel.setForeground(Color.WHITE);
+
+        headerPanel.add(restoLabel, BorderLayout.WEST);
+
+        return headerPanel;
+    }
+
+    private JPanel createTotalPanel(int total) {
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    panel.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+
+    JLabel totalLabel = new JLabel("Total: Rp " + total);
+    totalLabel.setFont(new java.awt.Font("Bahnschrift", 1, 18));
+    totalLabel.setForeground(new Color(59, 31, 11));
+
+    panel.add(totalLabel);
+    return panel;
+}
+    
     private JPanel createCheckoutButton() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panel.setBackground(new Color(250, 240, 227));
+        panel.setBackground(new Color(206, 220, 239));
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
         // tombol checkout dengan rounded corners
@@ -1021,12 +1080,12 @@ public class DashboardUserFrame extends javax.swing.JFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // bg rounded
-                g2d.setColor(new Color(229, 75, 31)); // #E54B1F
+                // bg rounded - ubah warna menjadi #00334F
+                g2d.setColor(new Color(0, 51, 79)); // #00334F
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
 
                 // text
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(new Color(206, 220, 239)); // teks #CEDCEF
                 g2d.setFont(getFont());
                 FontMetrics fm = g2d.getFontMetrics();
                 int textX = (getWidth() - fm.stringWidth(getText())) / 2;
@@ -1103,85 +1162,98 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     }
 
     private void loadTransactions() {
-        if (userLoginId == 0) {
-            System.out.println("User ID belum diset, skip load transactions");
-            return;
-        }
-
-        System.out.println("=== DEBUG: Memulai loadTransactions untuk user ID: " + userLoginId);
-
-        // cek jika panel transaksi sudah di-setup
-        if (jPanel4 == null) {
-            System.out.println("ERROR: jPanel4 is null");
-            return;
-        }
-
-        // setup transaction panel jika belum
-        if (transactionTableModel == null) {
-            System.out.println("Setting up transaction panel...");
-            setupTransactionPanel();
-        }
-
-        // clear existing data
-        transactionTableModel.setRowCount(0);
-        System.out.println("Cleared table model, row count: " + transactionTableModel.getRowCount());
-
-        try {
-            List<Transaction> transactions = transactionService.getTransactionsByUser(userLoginId);
-            System.out.println("Retrieved " + transactions.size() + " transactions from service");
-
-            if (transactions.isEmpty()) {
-                System.out.println("No transactions found, showing empty message");
-                showNoTransactionMessage();
-                return;
-            }
-
-            // add data to table
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            for (int i = 0; i < transactions.size(); i++) {
-                Transaction t = transactions.get(i);
-                System.out.println("Adding to table: " + t.getIdTransaksi() + " - " + t.getNamaRestoran());
-
-                transactionTableModel.addRow(new Object[]{
-                    "TRX" + String.format("%04d", t.getIdTransaksi()),
-                    dateFormat.format(t.getTanggalTransaksi()), 
-                    t.getNamaRestoran(),
-                    String.format("Rp %,d", t.getTotalPembayaran()),
-                    t.getStatusTransaksi(),
-                    "Lihat Detail"  // TAMBAHKAN TOMBOL DETAIL
-                });
-            }
-
-            System.out.println("Table model row count after adding: " + transactionTableModel.getRowCount());
-
-            // auto resize columns
-            if (transactionTable != null) {
-                transactionTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-                // set preferred column widths
-                transactionTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
-                transactionTable.getColumnModel().getColumn(1).setPreferredWidth(120); // Tanggal
-                transactionTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Restoran
-                transactionTable.getColumnModel().getColumn(3).setPreferredWidth(120); // Total Harga
-                transactionTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Status
-                transactionTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Detail
-
-                System.out.println("Table configured successfully");
-            } else {
-                System.out.println("ERROR: transactionTable is null");
-            }
-
-            // UI refresh
-            jPanel4.revalidate();
-            jPanel4.repaint();
-            System.out.println("Panel refreshed");
-
-        } catch (Exception e) {
-            System.out.println("ERROR di loadTransactions: " + e.getMessage());
-            e.printStackTrace();
-            showNoTransactionMessage();
-        }
+    if (userLoginId == 0) {
+        System.out.println("User ID belum diset, skip load transactions");
+        return;
     }
+
+    System.out.println("=== DEBUG: Memulai loadTransactions untuk user ID: " + userLoginId);
+
+    // cek jika panel transaksi sudah di-setup
+    if (jPanel4 == null) {
+        System.out.println("ERROR: jPanel4 is null");
+        return;
+    }
+
+    // setup transaction panel jika belum
+    if (transactionTableModel == null) {
+        System.out.println("Setting up transaction panel...");
+        setupTransactionPanel();
+    }
+
+    // clear existing data
+    transactionTableModel.setRowCount(0);
+    System.out.println("Cleared table model, row count: " + transactionTableModel.getRowCount());
+
+    try {
+        List<Transaction> transactions = transactionService.getTransactionsByUser(userLoginId);
+        System.out.println("Retrieved " + transactions.size() + " transactions from service");
+
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions found, showing empty message");
+            showNoTransactionMessage();
+            return;
+        }
+
+        // add data to table
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction t = transactions.get(i);
+            System.out.println("Adding to table: " + t.getIdTransaksi() + " - " + t.getNamaRestoran());
+
+            transactionTableModel.addRow(new Object[]{
+                "TRX" + String.format("%04d", t.getIdTransaksi()),
+                dateFormat.format(t.getTanggalTransaksi()), 
+                t.getNamaRestoran(),
+                String.format("Rp %,d", t.getTotalPembayaran()),
+                t.getStatusTransaksi(),
+                "Lihat Detail"  // TAMBAHKAN TOMBOL DETAIL
+            });
+        }
+
+        System.out.println("Table model row count after adding: " + transactionTableModel.getRowCount());
+
+        // auto resize columns
+        if (transactionTable != null) {
+            transactionTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+            // set preferred column widths
+            transactionTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
+            transactionTable.getColumnModel().getColumn(1).setPreferredWidth(120); // Tanggal
+            transactionTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Restoran
+            transactionTable.getColumnModel().getColumn(3).setPreferredWidth(120); // Total Harga
+            transactionTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Status
+            transactionTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Detail
+
+            // PASTIKAN HEADER TABEL WARNA [30,73,138]
+            if (transactionTable.getTableHeader() != null) {
+                JTableHeader header = transactionTable.getTableHeader();
+                // Set custom renderer untuk header
+                header.setDefaultRenderer(new HeaderRenderer());
+                // Set warna background dan foreground
+                header.setBackground(new Color(30, 73, 138));
+                header.setForeground(Color.WHITE);
+                // Update UI
+                header.revalidate();
+                header.repaint();
+            }
+
+            System.out.println("Table configured successfully");
+        } else {
+            System.out.println("ERROR: transactionTable is null");
+        }
+
+        // UI refresh
+        jPanel4.revalidate();
+        jPanel4.repaint();
+        System.out.println("Panel refreshed");
+
+    } catch (Exception e) {
+        System.out.println("ERROR di loadTransactions: " + e.getMessage());
+        e.printStackTrace();
+        showNoTransactionMessage();
+    }
+}
     
     private String formatStatus(String status) {
         if (status == null) return "PENDING";
@@ -1190,24 +1262,24 @@ public class DashboardUserFrame extends javax.swing.JFrame {
 
     private void showNoTransactionMessage() {
     System.out.println("Showing no transaction message");
-    
+
     jPanel4.removeAll();
     jPanel4.setLayout(new BorderLayout());
-    jPanel4.setBackground(new Color(250, 240, 227));
+    jPanel4.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
     JPanel messagePanel = new JPanel();
     messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
-    messagePanel.setBackground(new Color(250, 240, 227));
+    messagePanel.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
     messagePanel.setBorder(BorderFactory.createEmptyBorder(100, 20, 100, 20));
 
     JLabel messageLabel = new JLabel("Belum ada riwayat transaksi");
     messageLabel.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-    messageLabel.setForeground(new Color(128, 128, 128));
+    messageLabel.setForeground(new Color(0, 51, 79)); // #00334F
     messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     JLabel subMessageLabel = new JLabel("Transaksi yang Anda lakukan akan muncul di sini");
     subMessageLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
-    subMessageLabel.setForeground(new Color(160, 160, 160));
+    subMessageLabel.setForeground(new Color(149, 189, 226)); // #95BDE2
     subMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     subMessageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
@@ -1215,12 +1287,12 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     messagePanel.add(subMessageLabel);
 
     jPanel4.add(messagePanel, BorderLayout.CENTER);
-    
+
     jPanel4.revalidate();
     jPanel4.repaint();
     System.out.println("No transaction message displayed");
 }
-
+    
     private void loadRestoFromDatabase() {
         if (restoContainerPanel == null) {
             return;
@@ -1344,8 +1416,8 @@ public class DashboardUserFrame extends javax.swing.JFrame {
                 }
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
 
-                // border rounded corners
-                g2d.setColor(new Color(229, 75, 31)); // #E54B1F
+                // border rounded corners - ubah warna menjadi #95BDE2
+                g2d.setColor(new Color(149, 189, 226)); // #95BDE2
                 g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
 
                 g2d.dispose();
@@ -1380,9 +1452,9 @@ public class DashboardUserFrame extends javax.swing.JFrame {
                 if (!isBuka) {
                     g2d.setColor(new Color(128, 128, 128));
                 } else {
-                    g2d.setColor(new Color(59, 31, 11));
+                    g2d.setColor(new Color(0, 51, 79)); // #00334F
                 }
-                
+
                 int textX = 20; // geser kanan
                 int textY = (getHeight() - fm.getHeight()) / 2 + fm.getAscent() - 2; 
 
@@ -1428,7 +1500,7 @@ public class DashboardUserFrame extends javax.swing.JFrame {
                 if (!isBuka) {
                     g2d.setColor(new Color(128, 128, 128));
                 } else {
-                    g2d.setColor(new Color(59, 31, 11));
+                    g2d.setColor(new Color(0, 51, 79)); // #00334F
                 }
 
                 int textX = 20; // geser kanan
@@ -1462,20 +1534,24 @@ public class DashboardUserFrame extends javax.swing.JFrame {
 
                 // bg rounded berdasarkan status
                 if (isBuka) {
-                    g2d.setColor(new Color(241, 124, 42)); // Orange untuk buka
+                    g2d.setColor(new Color(149, 189, 226)); // #95BDE2 untuk buka
                 } else {
                     g2d.setColor(new Color(160, 160, 160)); // Abu-abu untuk tutup
                 }
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
 
-                // text
-                g2d.setColor(Color.WHITE);
+                // text - update warna text
+                if (isBuka) {
+                    g2d.setColor(new Color(59, 31, 11)); // teks gelap #3B1F0B untuk button buka
+                } else {
+                    g2d.setColor(Color.WHITE); // teks putih untuk button tutup
+                }
                 g2d.setFont(getFont());
                 FontMetrics fm = g2d.getFontMetrics();
 
                 String text;
                 if (isBuka) {
-                    text = "Pesan Disini!";
+                    text = "Shop here!";
                 } else {
                     text = "Tutup";
                 }
@@ -1608,40 +1684,40 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private JButton createRoundedButton(String text, Color backgroundColor) {
-    JButton button = new JButton(text) {
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // bg rounded
-            g2d.setColor(backgroundColor);
-            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12); // Smaller radius
+                // bg rounded - gunakan warna yang konsisten
+                g2d.setColor(backgroundColor);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12); // Smaller radius
 
-            // text
-            g2d.setColor(Color.WHITE);
-            g2d.setFont(getFont());
-            FontMetrics fm = g2d.getFontMetrics();
-            int textX = (getWidth() - fm.stringWidth(getText())) / 2;
-            int textY = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
-            g2d.drawString(getText(), textX, textY);
+                // text - ubah warna text menjadi putih
+                g2d.setColor(Color.WHITE); // Teks putih untuk semua button
+                g2d.setFont(getFont());
+                FontMetrics fm = g2d.getFontMetrics();
+                int textX = (getWidth() - fm.stringWidth(getText())) / 2;
+                int textY = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                g2d.drawString(getText(), textX, textY);
 
-            g2d.dispose();
-        }
+                g2d.dispose();
+            }
 
-        @Override
-        public void setBorder(javax.swing.border.Border border) {
-        }
-    };
+            @Override
+            public void setBorder(javax.swing.border.Border border) {
+            }
+        };
 
-    button.setOpaque(false);
-    button.setContentAreaFilled(false);
-    button.setFocusPainted(false);
-    button.setPreferredSize(new Dimension(30, 25)); // CONSISTENT SIZE
-    button.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(30, 25)); // CONSISTENT SIZE
+        button.setFont(new Font("Bahnschrift", Font.BOLD, 12));
 
-    return button;
-}
+        return button;
+    }
     
     private void jPanel3AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jPanel3AncestorAdded
         // TODO add your handling code here:

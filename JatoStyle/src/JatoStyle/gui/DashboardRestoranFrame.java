@@ -86,7 +86,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
 
         jTabbedPane = new JTabbedPane();
         mainPanel = new JPanel(new BorderLayout());
-        logoLabel = new JLabel(new ImageIcon(getClass().getResource("/JatoStyle/gui/dashboardlogo.png")));
+        logoLabel = new JLabel(new ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png")));
         headerTitle = new JLabel("Data Restoran " + currentRestoran.getNamaRestoran());
         logoutButton = new JButton("Logout");
     }
@@ -238,7 +238,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         // tab 1 = Menu
         JPanel tabMenu = new JPanel(new BorderLayout());
         tabMenu.setBackground(new Color(250, 240, 227));
-        jTabbedPane.addTab("Menu", tabMenu);
+        jTabbedPane.addTab("Item", tabMenu);
 
         // tab 2 = Transaksi
         JPanel tabTransaksi = new JPanel(new BorderLayout());
@@ -265,7 +265,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         // bottom panel dgn "Tambah Menu +"
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(new Color(250, 240, 227));
-        JButton addBtn = new JButton("Tambah Menu +");
+        JButton addBtn = new JButton("+ Tambah Item");
         addBtn.setBackground(new Color(241, 124, 42)); // #F17C2A
         addBtn.setForeground(Color.WHITE);
         addBtn.setFocusPainted(false);
@@ -615,7 +615,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         buttonPanel.setBorder(new EmptyBorder(10, 15, 15, 15));
         
         // tombol-tombol status
-        JButton btnMasak = createDialogButton("Sedang Dimasak", new Color(255, 193, 7));
+        JButton btnMasak = createDialogButton("Sedang Dikemas", new Color(255, 193, 7));
         JButton btnAntar = createDialogButton("Sedang Diantar", new Color(33, 150, 243));
         JButton btnSampai = createDialogButton("Sudah Sampai", new Color(76, 175, 80));
         
@@ -699,7 +699,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         try {
             // konfirmasi penghapusan
             int confirm = JOptionPane.showConfirmDialog(this, 
-                "Apakah Anda yakin ingin menghapus menu ini?\n" +
+                "Apakah Anda yakin ingin menghapus item ini?\n" +
                 "(Akan menghapus semua data terkait di keranjang dan detail pesanan)", 
                 "Konfirmasi Hapus", 
                 JOptionPane.YES_NO_OPTION);
@@ -723,14 +723,14 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             auth.getKonektor().query(sqlMenu);
             System.out.println("Deleted from menu for menu ID: " + idMenu);
 
-            JOptionPane.showMessageDialog(this, "Menu berhasil dihapus!");
+            JOptionPane.showMessageDialog(this, "Item berhasil dihapus!");
             loadMenuFromDatabase();
 
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
-                "Gagal menghapus menu: " + e.getMessage() + 
-                "\n\nPastikan tidak ada pesanan aktif yang menggunakan menu ini.",
+                "Gagal menghapus item: " + e.getMessage() + 
+                "\n\nPastikan tidak ada pesanan aktif yang menggunakan item ini.",
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -763,7 +763,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             if (!any) {
                 JPanel messagePanel = new JPanel(new BorderLayout());
                 messagePanel.setOpaque(false);
-                JLabel l = new JLabel("Tidak ada menu. Klik 'Tambah Menu +' untuk menambahkan.");
+                JLabel l = new JLabel("Tidak ada item. Klik '+ Tambah Item' untuk menambahkan.");
                 l.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
                 l.setForeground(new Color(120, 120, 120));
                 l.setHorizontalAlignment(SwingConstants.CENTER);
@@ -772,11 +772,11 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             }
 
         } catch (Exception e) {
-            System.out.println("Load menu error: " + e.getMessage());
+            System.out.println("Load item error: " + e.getMessage());
             e.printStackTrace();
             JPanel messagePanel = new JPanel(new BorderLayout());
             messagePanel.setOpaque(false);
-            JLabel l = new JLabel("Error: Tidak dapat memuat menu dari database");
+            JLabel l = new JLabel("Error: Tidak dapat memuat item dari database");
             l.setFont(new Font("Bahnschrift", Font.BOLD, 14));
             l.setForeground(Color.RED);
             l.setHorizontalAlignment(SwingConstants.CENTER);

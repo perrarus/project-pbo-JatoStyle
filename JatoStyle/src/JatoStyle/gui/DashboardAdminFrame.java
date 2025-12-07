@@ -54,7 +54,7 @@ public class DashboardAdminFrame extends JFrame {
         
         UIManager.put(
             "Table.focusCellHighlightBorder",
-            BorderFactory.createLineBorder(new Color(229, 75, 31), 2)
+            BorderFactory.createLineBorder(new Color(149, 189, 226), 2) // DIUBAH #95BDE2
         );
 
         setupUI();
@@ -69,7 +69,7 @@ public class DashboardAdminFrame extends JFrame {
         setSize(960, 620);
         setLocationRelativeTo(null);
 
-        logoLabel = new JLabel(new ImageIcon(getClass().getResource("/FoodOrder/gui/dashboardlogo.png")));
+        logoLabel = new JLabel(new ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png")));
 
         headerTitle = new JLabel("Dashboard Admin");
         logoutButton = new JButton("Logout");
@@ -84,7 +84,7 @@ public class DashboardAdminFrame extends JFrame {
         usersTable.setRowHeight(28);
 
         restoModel = new DefaultTableModel(
-            new String[]{"ID", "Nama Restoran", "Jam Buka", "Jam Tutup", "Email", "Password"}, 0
+            new String[]{"ID", "Nama Toko", "Jam Buka", "Jam Tutup", "Email", "Password"}, 0
         ) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
@@ -99,17 +99,17 @@ public class DashboardAdminFrame extends JFrame {
             t.setShowGrid(false);
 
             // warna background + font tabel
-            t.setBackground(new Color(250, 240, 227));
-            t.setForeground(new Color(59, 31, 11));
+            t.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
+            t.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
             t.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 
             t.getTableHeader().setOpaque(true);
             t.getTableHeader().setPreferredSize(new Dimension(0, 35));
             t.getTableHeader().setBorder(BorderFactory.createMatteBorder(
-                0, 0, 2, 0, new Color(229, 75, 31)
+                0, 0, 2, 0, new Color(149, 189, 226) // #95BDE2 - DIUBAH
             ));
 
-            // header renderer
+            // header renderer - WARNA [30,73,138]
             DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value,
@@ -118,9 +118,9 @@ public class DashboardAdminFrame extends JFrame {
 
                     // set semua style
                     setHorizontalAlignment(JLabel.CENTER);
-                    setFont(new Font("SansSerif", Font.BOLD, 15));
-                    setBackground(new Color(191, 106, 6));  // WARNA HEADER
-                    setForeground(new Color(255, 255, 255));  // FONT HEADER
+                    setFont(new Font("Bahnschrift", Font.BOLD, 13));
+                    setBackground(new Color(30, 73, 138));  // [30,73,138] - DIUBAH
+                    setForeground(Color.WHITE);  // FONT HEADER putih
                     setBorder(BorderFactory.createEmptyBorder());
 
                     return this;
@@ -141,8 +141,12 @@ public class DashboardAdminFrame extends JFrame {
 
                     // garis vertikal di kanan setiap cell
                     ((JLabel) c).setBorder(BorderFactory.createMatteBorder(
-                        0, 0, 0, 1, new Color(229, 75, 31)
+                        0, 0, 0, 1, new Color(149, 189, 226) // #95BDE2 - DIUBAH
                     ));
+
+                    // set warna background dan foreground sel
+                    setBackground(new Color(206, 220, 239)); // [206,220,239]
+                    setForeground(new Color(0, 51, 79)); // #00334F
 
                     return c;
                 }
@@ -154,14 +158,14 @@ public class DashboardAdminFrame extends JFrame {
                 t.getColumnModel().getColumn(i).setCellRenderer(center);
             }
 
-            t.setSelectionBackground(new Color(255, 196, 154));
-            t.setSelectionForeground(new Color(59, 31, 11));
+            t.setSelectionBackground(new Color(149, 189, 226, 100)); // #95BDE2 transparan - DIUBAH
+            t.setSelectionForeground(new Color(59, 31, 11)); // #3B1F0B
         }
     }
     
     private void setupUI() {
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setBackground(new Color(250, 240, 227));
+        wrapper.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
         wrapper.setBorder(new EmptyBorder(25, 30, 25, 30));
 
         // header
@@ -176,12 +180,13 @@ public class DashboardAdminFrame extends JFrame {
         JPanel center = new JPanel();
         center.setOpaque(false);
         headerTitle.setFont(new Font("Bahnschrift", Font.BOLD, 20));
-        headerTitle.setForeground(new Color(59, 31, 11));
+        headerTitle.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
         center.add(headerTitle);
 
-        logoutButton.setBackground(new Color(229, 75, 31));
-        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setBackground(new Color(0, 51, 79)); // #00334F - DIUBAH
+        logoutButton.setForeground(new Color(206, 220, 239)); // #CEDCEF - DIUBAH
         logoutButton.setFocusPainted(false);
+        logoutButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
         logoutButton.setBorder(new EmptyBorder(8, 15, 8, 15));
         logoutButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin logout?", "Konfirmasi Logout", JOptionPane.YES_NO_OPTION);
@@ -202,9 +207,9 @@ public class DashboardAdminFrame extends JFrame {
         // tabs
         jTabbedPane = new JTabbedPane();
         jTabbedPane.setFont(new Font("Bahnschrift", Font.BOLD, 12));
-        jTabbedPane.setForeground(new Color(59, 31, 11));
-        jTabbedPane.setBackground(new Color(250, 240, 227));
-        jTabbedPane.setBorder(BorderFactory.createLineBorder(new Color(229, 75, 31), 1));
+        jTabbedPane.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
+        jTabbedPane.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
+        jTabbedPane.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2)); // #95BDE2 - DIUBAH
         jTabbedPane.setTabPlacement(JTabbedPane.LEFT);
         jTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
@@ -218,9 +223,9 @@ public class DashboardAdminFrame extends JFrame {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 if (isSelected) {
-                    g2d.setColor(new Color(241, 124, 42)); // orange
+                    g2d.setColor(new Color(149, 189, 226)); // #95BDE2 - DIUBAH
                 } else {
-                    g2d.setColor(new Color(250, 240, 227)); // cream
+                    g2d.setColor(new Color(206, 220, 239)); // [206,220,239] - DIUBAH
                 }
 
                 int margin = 8;
@@ -239,7 +244,7 @@ public class DashboardAdminFrame extends JFrame {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 if (isSelected) {
-                    g2d.setColor(new Color(229, 75, 31)); // #E54B1F
+                    g2d.setColor(new Color(0, 51, 79)); // #00334F - DIUBAH
                 } else {
                     g2d.setColor(new Color(200, 200, 200)); // Abu-abu muda untuk tab tidak aktif
                 }
@@ -285,8 +290,13 @@ public class DashboardAdminFrame extends JFrame {
 
         });
 
+        // PASTIKAN BACKGROUND SETIAP TAB JUGA [206,220,239]
+        for (int i = 0; i < jTabbedPane.getTabCount(); i++) {
+            jTabbedPane.setBackgroundAt(i, new Color(206, 220, 239));
+        }
+
         jTabbedPane.addTab("Users", buildUsersTab());
-        jTabbedPane.addTab("Restoran", buildRestoranTab());
+        jTabbedPane.addTab("Toko", buildRestoranTab());
         wrapper.add(jTabbedPane, BorderLayout.CENTER);
 
         add(wrapper, BorderLayout.CENTER);
@@ -308,15 +318,17 @@ public class DashboardAdminFrame extends JFrame {
     
     private JPanel buildUsersTab() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(new Color(250, 240, 227));
+        p.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
 
         JScrollPane scroll = new JScrollPane(usersTable);
-        scroll.getViewport().setBackground(new Color(250, 240, 227));
-        scroll.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(229, 75, 31)));
+        scroll.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH
+        scroll.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(149, 189, 226))); // #95BDE2 - DIUBAH
         p.add(scroll, BorderLayout.CENTER);
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottom.setOpaque(false);
+        bottom.setBackground(new Color(206, 220, 239)); // DIUBAH
+        
         JButton refresh = new JButton("Refresh");
         refresh.addActionListener(e -> loadAllUsers());
         JButton add = new JButton("Tambah User");
@@ -325,10 +337,10 @@ public class DashboardAdminFrame extends JFrame {
         edit.addActionListener(e -> editSelectedUser());
         JButton del = new JButton("Hapus User");
         
-        styleButton(refresh, new Color(241,124,42));
-        styleButton(add, new Color(241,124,42));
-        styleButton(edit, new Color(241,124,42));
-        styleButton(del, new Color(229,75,31));  // button hapus = merah
+        styleButton(refresh, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        styleButton(add, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        styleButton(edit, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        styleButton(del, new Color(0, 51, 79));  // #00334F - DIUBAH
 
         del.addActionListener(e -> deleteSelectedUser());
         bottom.add(refresh); bottom.add(add); bottom.add(edit); bottom.add(del);
@@ -458,23 +470,30 @@ public class DashboardAdminFrame extends JFrame {
     // tab restoran
     private JPanel buildRestoranTab() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(new Color(250, 240, 227));
+        p.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
+        
         JScrollPane scroll = new JScrollPane(restoTable);
-        scroll.getViewport().setBackground(new Color(250, 240, 227));
-        scroll.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(229, 75, 31)));
+        scroll.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH
+        scroll.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(149, 189, 226))); // #95BDE2 - DIUBAH
         p.add(scroll, BorderLayout.CENTER);
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottom.setOpaque(false);
-        JButton refresh = new JButton("Refresh"); refresh.addActionListener(e -> loadAllRestoran());
-        JButton add = new JButton("Tambah Restoran"); add.addActionListener(e -> addRestoranDialog());
-        JButton edit = new JButton("Edit Restoran"); edit.addActionListener(e -> editSelectedRestoran());
-        JButton del = new JButton("Hapus Restoran"); del.addActionListener(e -> deleteSelectedRestoran());
+        bottom.setBackground(new Color(206, 220, 239)); // DIUBAH
         
-        styleButton(refresh, new Color(241,124,42));
-        styleButton(add, new Color(241,124,42));
-        styleButton(edit, new Color(241,124,42));
-        styleButton(del, new Color(229,75,31));  // warna button hapus merah
+        JButton refresh = new JButton("Refresh"); 
+        refresh.addActionListener(e -> loadAllRestoran());
+        JButton add = new JButton("Tambah Toko"); 
+        add.addActionListener(e -> addRestoranDialog());
+        JButton edit = new JButton("Edit Toko"); 
+        edit.addActionListener(e -> editSelectedRestoran());
+        JButton del = new JButton("Hapus Toko"); 
+        del.addActionListener(e -> deleteSelectedRestoran());
+        
+        styleButton(refresh, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        styleButton(add, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        styleButton(edit, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        styleButton(del, new Color(0, 51, 79));  // #00334F - DIUBAH
         
         bottom.add(refresh); bottom.add(add); bottom.add(edit); bottom.add(del);
         p.add(bottom, BorderLayout.SOUTH);
@@ -498,7 +517,7 @@ public class DashboardAdminFrame extends JFrame {
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "loadAllRestoran", ex);
-            JOptionPane.showMessageDialog(this, "Gagal memuat restoran: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal memuat toko: " + ex.getMessage());
         }
     }
 
@@ -509,8 +528,8 @@ public class DashboardAdminFrame extends JFrame {
         JTextField jamBuka = new JTextField("08:00:00");
         JTextField jamTutup = new JTextField("22:00:00");
 
-        showOrangeFormDialog("Tambah Restoran", new Object[][]{
-            {"Nama Restoran:", nama},
+        showOrangeFormDialog("Tambah Toko", new Object[][]{
+            {"Nama Toko:", nama},
             {"Email (login):", email},
             {"Password (login):", pass},
             {"Jam Buka:", jamBuka},
@@ -539,7 +558,7 @@ public class DashboardAdminFrame extends JFrame {
     
     private void editSelectedRestoran() {
         int r = restoTable.getSelectedRow();
-        if (r == -1) { JOptionPane.showMessageDialog(this,"Pilih restoran dulu!"); return; }
+        if (r == -1) { JOptionPane.showMessageDialog(this,"Pilih toko dulu!"); return; }
 
         int id = (int) restoModel.getValueAt(r, 0);
 
@@ -554,8 +573,8 @@ public class DashboardAdminFrame extends JFrame {
                 JTextField jamBuka = new JTextField(rs.getString("jam_buka"));
                 JTextField jamTutup = new JTextField(rs.getString("jam_tutup"));
 
-                showOrangeFormDialog("Edit Restoran", new Object[][]{
-                    {"Nama Restoran:", nama},
+                showOrangeFormDialog("Edit Toko", new Object[][]{
+                    {"Nama Toko:", nama},
                     {"Email:", email},
                     {"Jam Buka:", jamBuka},
                     {"Jam Tutup:", jamTutup}
@@ -582,9 +601,9 @@ public class DashboardAdminFrame extends JFrame {
 
     private void deleteSelectedRestoran() {
         int r = restoTable.getSelectedRow();
-        if (r == -1) { JOptionPane.showMessageDialog(this, "Pilih restoran dulu"); return; }
+        if (r == -1) { JOptionPane.showMessageDialog(this, "Pilih toko dulu"); return; }
         int id = (int) restoModel.getValueAt(r, 0);
-        int ok = JOptionPane.showConfirmDialog(this, "Hapus restoran ID " + id + " (akan menghapus menu & keranjang terkait)?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        int ok = JOptionPane.showConfirmDialog(this, "Hapus toko ID " + id + " (akan menghapus menu & keranjang terkait)?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
         if (ok != JOptionPane.YES_OPTION) return;
         try {
             // 1. hapus keranjang terkait menu dari restoran
@@ -601,26 +620,32 @@ public class DashboardAdminFrame extends JFrame {
             loadAllRestoran();
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "deleteSelectedRestoran", ex);
-            JOptionPane.showMessageDialog(this, "Gagal hapus restoran: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal hapus toko: " + ex.getMessage());
         }
     }
     
     private void styleButton(JButton btn, Color bg) {
         btn.setBackground(bg);
-        btn.setForeground(Color.WHITE);
         btn.setFont(new Font("Bahnschrift", Font.BOLD, 13));
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        
+        // Tentukan warna teks berdasarkan warna background
+        if (bg.equals(new Color(0, 51, 79))) { // #00334F
+            btn.setForeground(new Color(206, 220, 239)); // #CEDCEF untuk button gelap
+        } else {
+            btn.setForeground(new Color(59, 31, 11)); // #3B1F0B untuk button terang
+        }
     }
     
     private JPanel createStyledForm(Object[][] fields) {
         JPanel panel = new JPanel();
-        panel.setBackground(new Color(250, 240, 227));
+        panel.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
         panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         Font labelFont = new Font("Bahnschrift", Font.BOLD, 14);
-        Color labelColor = new Color(59, 31, 11);
+        Color labelColor = new Color(0, 51, 79); // #00334F - DIUBAH
 
         for (Object[] field : fields) {
             String text = (String) field[0];
@@ -632,9 +657,10 @@ public class DashboardAdminFrame extends JFrame {
             label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             input.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-            input.setBackground(new Color(255, 239, 225)); 
+            input.setBackground(Color.WHITE); // DIUBAH putih
+            input.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
             input.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(229, 75, 31), 2),
+                BorderFactory.createLineBorder(new Color(149, 189, 226), 2), // #95BDE2 - DIUBAH
                 BorderFactory.createEmptyBorder(6, 8, 6, 8)
             ));
             input.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -656,31 +682,35 @@ public class DashboardAdminFrame extends JFrame {
         setSize(400, 450);
         setLocationRelativeTo(owner);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(new Color(250, 240, 227)); // krem
+        getContentPane().setBackground(new Color(206, 220, 239)); // [206,220,239] - DIUBAH
 
         // wrapper form
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setBackground(new Color(250, 240, 227));
+        wrapper.setBackground(new Color(206, 220, 239)); // DIUBAH
         wrapper.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         wrapper.add(formPanel, BorderLayout.CENTER);
 
         // button panel
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.setBackground(new Color(250, 240, 227));
+        buttons.setBackground(new Color(206, 220, 239)); // DIUBAH
 
         JButton ok = new JButton("OK");
-        ok.setBackground(new Color(241, 124, 42));
-        ok.setForeground(Color.WHITE);
+        ok.setBackground(new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        ok.setForeground(new Color(59, 31, 11)); // #3B1F0B - DIUBAH
         ok.setFocusPainted(false);
+        ok.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        ok.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         ok.addActionListener(e -> {
             onOK.run();
             dispose();
         });
 
         JButton cancel = new JButton("Cancel");
-        cancel.setBackground(new Color(229, 75, 31));
-        cancel.setForeground(Color.WHITE);
+        cancel.setBackground(new Color(0, 51, 79)); // #00334F - DIUBAH
+        cancel.setForeground(new Color(206, 220, 239)); // #CEDCEF - DIUBAH
         cancel.setFocusPainted(false);
+        cancel.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        cancel.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         cancel.addActionListener(e -> dispose());
 
         buttons.add(ok);

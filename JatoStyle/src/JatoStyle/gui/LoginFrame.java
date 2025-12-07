@@ -26,49 +26,49 @@ public class LoginFrame extends javax.swing.JFrame {
     }
     
     private void setupRegisterTextClickListener() {
-    registerText.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            registerTextMouseClicked(evt);
-        }
-    });
-}
+        registerText.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                registerTextMouseClicked(evt);
+            }
+        });
+    }
   
     private void applyCustomStyles() {
         // background #FAF0E3
         getContentPane().setBackground(new Color(250, 240, 227));
-        
+
         // panel login
-        jPanel1.setBackground(new Color(250, 240, 227));
-        jPanel1.setBorder(BorderFactory.createLineBorder(new Color(59, 31, 11), 1));
-        
-        // title #3B1F0B
-        jLabel1.setForeground(new Color(59, 31, 11));
-        
-        // labels #3B1F0B
-        jLabel2.setForeground(new Color(59, 31, 11));
-        jLabel3.setForeground(new Color(59, 31, 11));
-        
-        // input fields dgn border #E54B1F
+        jPanel1.setBackground(new Color(0, 51, 79));
+        jPanel1.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 79), 1));
+
+        // title LOGIN - ubah menjadi warna (206, 220, 239)
+        jLabel1.setForeground(new Color(206, 220, 239));
+
+        // labels - ubah menjadi warna (206, 220, 239)
+        jLabel2.setForeground(new Color(206, 220, 239));
+        jLabel3.setForeground(new Color(206, 220, 239));
+
+        // input fields dengan border berwarna (149, 189, 226)
         emailInput.setBackground(Color.WHITE);
         emailInput.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(229, 75, 31)),
+            BorderFactory.createLineBorder(new Color(149, 189, 226), 2),
             BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
-        
+
         passwordInput.setBackground(Color.WHITE);
         passwordInput.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(229, 75, 31)),
+            BorderFactory.createLineBorder(new Color(149, 189, 226), 2),
             BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
-        
-        // login button #F17C2A
-        loginButton.setBackground(new Color(241, 124, 42));
-        loginButton.setForeground(Color.WHITE);
+
+        // login button dengan warna (149, 189, 226) dan teks warna gelap
+        loginButton.setBackground(new Color(149, 189, 226));
+        loginButton.setForeground(new Color(59, 31, 11)); // Warna gelap agar kontras
         loginButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         loginButton.setFocusPainted(false);
-        
-        // register text #3B1F0B
-        registerText.setForeground(new Color(59, 31, 11));
+
+        // register text - atur semua teks menjadi putih dengan underline untuk "Register here"
+        registerText.setText("<html><font color='white'>Don't have an account? <u>Register here</u></font></html>");
         registerText.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
@@ -90,11 +90,13 @@ public class LoginFrame extends javax.swing.JFrame {
         registerText = new javax.swing.JLabel();
         passwordInput = new javax.swing.JPasswordField();
         jLabel5 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 500));
         setResizable(false);
         setSize(new java.awt.Dimension(800, 500));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setMaximumSize(new java.awt.Dimension(350, 400));
@@ -185,34 +187,17 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(registerText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/foodorderlogo2.png"))); // NOI18N
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 37, -1, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(63, 63, 63)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(31, Short.MAX_VALUE))
-        );
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/JatoStyle_Front_Logo.png"))); // NOI18N
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(409, 63, -1, -1));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/Login_Register_BG.png"))); // NOI18N
+        jLabel4.setText("jLabel4");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-3, -4, 810, 480));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -333,6 +318,7 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton loginButton;

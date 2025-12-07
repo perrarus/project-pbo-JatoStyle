@@ -32,11 +32,12 @@ public class ProfileFrame extends javax.swing.JFrame {
     private boolean isEditMode = false;
     
     // warna
-    private final Color PRIMARY_BG = new Color(250, 240, 227); 
+    private final Color PRIMARY_BG = new Color(206, 220, 239); // [206,220,239] - DIUBAH
     private final Color CARD_BG = Color.WHITE; 
-    private final Color PRIMARY_ORANGE = new Color(241, 124, 42); 
-    private final Color BORDER_ORANGE = new Color(229, 75, 31); 
-
+    private final Color PRIMARY_BUTTON = new Color(149, 189, 226); // #95BDE2 - DIUBAH
+    private final Color DARK_BUTTON = new Color(0, 51, 79); // #00334F - DIUBAH
+    private final Color BORDER_COLOR = new Color(149, 189, 226); // #95BDE2 - DIUBAH
+    private final Color TEXT_COLOR = new Color(0, 51, 79); // #00334F - DIUBAH
     /**
      * Creates new form ProfileFrame
      */
@@ -49,6 +50,9 @@ public class ProfileFrame extends javax.swing.JFrame {
         this.authService = new AuthService();
 
         initComponents();
+        
+        jLabel2.setCaretColor(new Color(0, 0, 0, 0));
+        
         initializeCustomComponents();
         applyCustomStyles();
         loadUserData();
@@ -59,6 +63,9 @@ public class ProfileFrame extends javax.swing.JFrame {
     
     public ProfileFrame() {
         initComponents();
+        
+        jLabel2.setCaretColor(new Color(0, 0, 0, 0));
+        
         this.currentUser = new User("Test User", "test@example.com", "password123", "081234567890");
         this.authService = new AuthService();
         
@@ -90,106 +97,130 @@ public class ProfileFrame extends javax.swing.JFrame {
         txtEmail.addMouseListener(editModeListener);
     }
     
-   private void applyCustomStyles() {
-        getContentPane().setBackground(PRIMARY_BG);
-        jPanel3.setBackground(CARD_BG);
-        Border kotak = BorderFactory.createLineBorder(BORDER_ORANGE, 2);
-        Border padding2 = BorderFactory.createEmptyBorder(15, 15, 15, 15);
-        jPanel3.setBorder(BorderFactory.createCompoundBorder(kotak, padding2));
+    private void applyCustomStyles() {
+    // Background utama [206,220,239]
+    getContentPane().setBackground(PRIMARY_BG);
+    
+    // Panel utama dengan border
+    jPanel3.setBackground(CARD_BG);
+    Border kotak = BorderFactory.createLineBorder(BORDER_COLOR, 2);
+    Border padding2 = BorderFactory.createEmptyBorder(15, 15, 15, 15);
+    jPanel3.setBorder(BorderFactory.createCompoundBorder(kotak, padding2));
 
-        // header
-        Color darkText = new Color(59, 31, 11);
-        jLabel2.setForeground(darkText);
-        jLabel2.setFont(new Font("Bahnschrift", Font.BOLD, 24));
-        
-        // font label & field
-        Font fontLabel = new Font("Bahnschrift", Font.PLAIN, 16);
-        Font fontField = new Font("Bahnschrift", Font.PLAIN, 16);
+    // header "Profil Pengguna: Nama"
+    jLabel2.setForeground(TEXT_COLOR); // #00334F
+    jLabel2.setFont(new Font("Bahnschrift", Font.BOLD, 24));
+    jLabel2.setBackground(PRIMARY_BG); // Background sesuai theme
+    jLabel2.setCaretColor(new Color(0, 0, 0, 0)); // HILANGKAN CARET
+    
+    // font label & field
+    Font fontLabel = new Font("Bahnschrift", Font.PLAIN, 16);
+    Font fontField = new Font("Bahnschrift", Font.PLAIN, 16);
 
-        jLabel3.setFont(fontLabel);
-        jLabel4.setFont(fontLabel);
-        jLabel5.setFont(fontLabel);
- 
-        java.awt.Dimension labelDim = new java.awt.Dimension(120, 30);
-        jLabel3.setPreferredSize(labelDim);
-        jLabel4.setPreferredSize(labelDim);
-        jLabel5.setPreferredSize(labelDim);
-        
-        jLabel3.setHorizontalAlignment(SwingConstants.LEFT);
-        jLabel4.setHorizontalAlignment(SwingConstants.LEFT);
-        jLabel5.setHorizontalAlignment(SwingConstants.LEFT);
+    jLabel3.setFont(fontLabel);
+    jLabel4.setFont(fontLabel);
+    jLabel5.setFont(fontLabel);
+    jLabel3.setForeground(TEXT_COLOR);
+    jLabel4.setForeground(TEXT_COLOR);
+    jLabel5.setForeground(TEXT_COLOR);
 
-        txtNama.setFont(fontField);
-        txtNoHP.setFont(fontField);
-        txtEmail.setFont(fontField);
+    java.awt.Dimension labelDim = new java.awt.Dimension(120, 30);
+    jLabel3.setPreferredSize(labelDim);
+    jLabel4.setPreferredSize(labelDim);
+    jLabel5.setPreferredSize(labelDim);
+    
+    jLabel3.setHorizontalAlignment(SwingConstants.LEFT);
+    jLabel4.setHorizontalAlignment(SwingConstants.LEFT);
+    jLabel5.setHorizontalAlignment(SwingConstants.LEFT);
 
-        // styling border text field
-        Border lineBorder = BorderFactory.createLineBorder(BORDER_ORANGE, 1);
-        Border padding = BorderFactory.createEmptyBorder(5, 10, 5, 10);
-        Border compoundBorder = BorderFactory.createCompoundBorder(lineBorder, padding);
+    txtNama.setFont(fontField);
+    txtNoHP.setFont(fontField);
+    txtEmail.setFont(fontField);
+    txtNama.setForeground(TEXT_COLOR);
+    txtNoHP.setForeground(TEXT_COLOR);
+    txtEmail.setForeground(TEXT_COLOR);
 
-        txtNama.setBorder(compoundBorder);
-        txtNoHP.setBorder(compoundBorder);
-        txtEmail.setBorder(compoundBorder);
+    // styling border text field - warna #95BDE2
+    Border lineBorder = BorderFactory.createLineBorder(BORDER_COLOR, 1);
+    Border padding = BorderFactory.createEmptyBorder(5, 10, 5, 10);
+    Border compoundBorder = BorderFactory.createCompoundBorder(lineBorder, padding);
 
-        // styling button
-        btnUpdate.setText("Update");
-        styleButton(btnUpdate, PRIMARY_ORANGE);
+    txtNama.setBorder(compoundBorder);
+    txtNoHP.setBorder(compoundBorder);
+    txtEmail.setBorder(compoundBorder);
 
-        btnCancle.setText("Cancle");
-        styleButton(btnCancle, PRIMARY_ORANGE);
+    // styling button
+    btnUpdate.setText("Update");
+    styleButton(btnUpdate, PRIMARY_BUTTON); // #95BDE2
 
-        btnKembali.setText("Kembali");
-        styleButton(btnKembali, PRIMARY_ORANGE);
+    btnCancle.setText("Cancle");
+    styleButton(btnCancle, PRIMARY_BUTTON); // #95BDE2
 
-        // logout buttom
-        logoutButton.setText("Logout");
-        styleButton(logoutButton, PRIMARY_ORANGE);
-        logoutButton.setForeground(Color.WHITE);
+    btnKembali.setText("Kembali");
+    styleButton(btnKembali, DARK_BUTTON); // #00334F
 
-        // tombol update dan cancel disembunyikan
-        setEditMode(false);
-    }
+    // logout button - warna #00334F
+    logoutButton.setText("Logout");
+    styleButton(logoutButton, DARK_BUTTON); // #00334F
+    logoutButton.setForeground(new Color(206, 220, 239)); // teks #CEDCEF
+
+    // tombol update dan cancel disembunyikan
+    setEditMode(false);
+}
    
     private void styleButton(JButton button, Color bgColor) {
-        button.setBackground(bgColor);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-      
-        button.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(bgColor.darker(), 1), 
-            BorderFactory.createEmptyBorder(8, 15, 8, 15)
-        ));
-    }
-
+    button.setBackground(bgColor);
     
-    private void setEditMode(boolean edit) {
-        this.isEditMode = edit;
-
-        txtNama.setEditable(edit);
-        txtNoHP.setEditable(edit);
-        txtEmail.setEditable(edit);
-
-        // warna background fields
-        Color editableBg = Color.WHITE;
-        Color readOnlyBg = CARD_BG; // Gunakan warna latar belakang JPanel saat read-only
-        txtNama.setBackground(edit ? editableBg : readOnlyBg);
-        txtNoHP.setBackground(edit ? editableBg : readOnlyBg);
-        txtEmail.setBackground(edit ? editableBg : readOnlyBg);
-
-        // visibilitas Tombol
-        btnUpdate.setVisible(edit);
-        btnCancle.setVisible(edit);
-        btnKembali.setVisible(!edit); 
-        
-        if (edit) {
-            txtNama.requestFocusInWindow();
-        } else {
-            txtNama.setEditable(false);
-            txtNoHP.setEditable(false);
-            txtEmail.setEditable(false);
-        }
+    // Tentukan warna teks berdasarkan warna background
+    if (bgColor.equals(DARK_BUTTON)) {
+        button.setForeground(new Color(206, 220, 239)); // #CEDCEF untuk button gelap
+    } else {
+        button.setForeground(new Color(59, 31, 11)); // #3B1F0B untuk button terang
     }
+    
+    button.setFocusPainted(false);
+    button.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+    
+    button.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(bgColor.darker(), 1), 
+        BorderFactory.createEmptyBorder(8, 15, 8, 15)
+    ));
+}
+
+    private void setEditMode(boolean edit) {
+    this.isEditMode = edit;
+
+    txtNama.setEditable(edit);
+    txtNoHP.setEditable(edit);
+    txtEmail.setEditable(edit);
+
+    // warna background fields
+    Color editableBg = Color.WHITE;
+    Color readOnlyBg = CARD_BG;
+    txtNama.setBackground(edit ? editableBg : readOnlyBg);
+    txtNoHP.setBackground(edit ? editableBg : readOnlyBg);
+    txtEmail.setBackground(edit ? editableBg : readOnlyBg);
+
+    // visibilitas Tombol
+    btnUpdate.setVisible(edit);
+    btnCancle.setVisible(edit);
+    btnKembali.setVisible(!edit); 
+    
+    // Hilangkan caret pada mode read-only
+    if (!edit) {
+        txtNama.setCaretColor(new Color(0, 0, 0, 0));
+        txtNoHP.setCaretColor(new Color(0, 0, 0, 0));
+        txtEmail.setCaretColor(new Color(0, 0, 0, 0));
+        txtNama.setEditable(false);
+        txtNoHP.setEditable(false);
+        txtEmail.setEditable(false);
+    } else {
+        txtNama.setCaretColor(Color.BLACK); // Tampilkan caret saat edit
+        txtNoHP.setCaretColor(Color.BLACK);
+        txtEmail.setCaretColor(Color.BLACK);
+        txtNama.requestFocusInWindow();
+    }
+}
     
     private class RoundBorder extends AbstractBorder {
         private final Color color;
@@ -253,7 +284,7 @@ public class ProfileFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/dashboardlogo.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png"))); // NOI18N
 
         logoutButton.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
         logoutButton.setText("Logout");
@@ -264,9 +295,9 @@ public class ProfileFrame extends javax.swing.JFrame {
         });
 
         jLabel2.setEditable(false);
-        jLabel2.setBackground(new java.awt.Color(250, 240, 227));
+        jLabel2.setBackground(new java.awt.Color(149, 189, 226));
         jLabel2.setFont(new java.awt.Font("Bahnschrift", 1, 20)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(250, 240, 227));
+        jLabel2.setForeground(new java.awt.Color(149, 189, 226));
         jLabel2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jLabel2.setBorder(null);
         jLabel2.setDisabledTextColor(new java.awt.Color(59, 31, 11));
@@ -276,7 +307,8 @@ public class ProfileFrame extends javax.swing.JFrame {
             }
         });
 
-        jPanel3.setBackground(new java.awt.Color(250, 240, 227));
+        jPanel3.setBackground(new java.awt.Color(149, 189, 226));
+        jPanel3.setForeground(new java.awt.Color(149, 189, 226));
 
         jLabel3.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
         jLabel3.setText("Nama           :");
@@ -319,7 +351,7 @@ public class ProfileFrame extends javax.swing.JFrame {
             }
         });
 
-        btnCancle.setText("Cancle");
+        btnCancle.setText("Cancel");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -406,18 +438,25 @@ public class ProfileFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void loadUserData() {
-        if (currentUser != null) {
-            txtNama.setText(currentUser.getNama());
-            txtNoHP.setText(currentUser.getNoHp());
-            txtEmail.setText(currentUser.getEmail());
-            jLabel2.setText("Profil Pengguna: " + currentUser.getNama());
-        } else {
-            txtNama.setText("Nama Tidak Tersedia");
-            txtNoHP.setText("No HP Tidak Tersedia");
-            txtEmail.setText("Email Tidak Tersedia");
-            jLabel2.setText("Profil Pengguna");
+    if (currentUser != null) {
+        txtNama.setText(currentUser.getNama());
+        txtNoHP.setText(currentUser.getNoHp());
+        txtEmail.setText(currentUser.getEmail());
+        jLabel2.setText("Profil Pengguna: " + currentUser.getNama());
+        
+        // Pastikan caret hilang setelah load data
+        if (!isEditMode) {
+            txtNama.setCaretColor(new Color(0, 0, 0, 0));
+            txtNoHP.setCaretColor(new Color(0, 0, 0, 0));
+            txtEmail.setCaretColor(new Color(0, 0, 0, 0));
         }
+    } else {
+        txtNama.setText("Nama Tidak Tersedia");
+        txtNoHP.setText("No HP Tidak Tersedia");
+        txtEmail.setText("Email Tidak Tersedia");
+        jLabel2.setText("Profil Pengguna");
     }
+}
     
     private void btnCancleActionPerformed(java.awt.event.ActionEvent evt) {
         loadUserData();

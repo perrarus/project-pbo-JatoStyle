@@ -47,7 +47,6 @@ public class RestoranFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        profilButton = new javax.swing.JButton();
         logoutButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         haloNamaOutput = new javax.swing.JTextField();
@@ -57,13 +56,6 @@ public class RestoranFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        profilButton.setText("👤");
-        profilButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                profilButtonActionPerformed(evt);
-            }
-        });
-
         logoutButton.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
         logoutButton.setText("Logout");
         logoutButton.addActionListener(new java.awt.event.ActionListener() {
@@ -72,12 +64,12 @@ public class RestoranFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/dashboardlogo.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png"))); // NOI18N
 
         haloNamaOutput.setEditable(false);
-        haloNamaOutput.setBackground(new java.awt.Color(250, 240, 227));
+        haloNamaOutput.setBackground(new java.awt.Color(206, 220, 239));
         haloNamaOutput.setFont(new java.awt.Font("Bahnschrift", 1, 20)); // NOI18N
-        haloNamaOutput.setForeground(new java.awt.Color(250, 240, 227));
+        haloNamaOutput.setForeground(new java.awt.Color(206, 220, 239));
         haloNamaOutput.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         haloNamaOutput.setBorder(null);
         haloNamaOutput.setDisabledTextColor(new java.awt.Color(59, 31, 11));
@@ -122,11 +114,9 @@ public class RestoranFrame extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
                         .addComponent(haloNamaOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 536, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(56, 56, 56)
                         .addComponent(logoutButton)
-                        .addGap(22, 22, 22)
-                        .addComponent(profilButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29))
+                        .addGap(63, 63, 63))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(lihatReviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -139,11 +129,10 @@ public class RestoranFrame extends javax.swing.JFrame {
                         .addGap(29, 29, 29)
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
+                        .addGap(54, 54, 54)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(haloNamaOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(logoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(profilButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(logoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lihatReviewButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -155,12 +144,6 @@ public class RestoranFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void profilButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profilButtonActionPerformed
-        ProfileFrame pf = new ProfileFrame(currentUser, this); // kirim data user + frame dashboard
-        pf.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_profilButtonActionPerformed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         int confirm = javax.swing.JOptionPane.showConfirmDialog(
@@ -215,193 +198,188 @@ public class RestoranFrame extends javax.swing.JFrame {
     }
     
     private void applyTemplateStyles() {
-        getContentPane().setBackground(new Color(250, 240, 227)); // #FAF0E3
-        setTitle(currentRestoran.getNamaRestoran() + " - FoodOrder");
+    // Background utama [206,220,239]
+    getContentPane().setBackground(new Color(206, 220, 239));
+    setTitle(currentRestoran.getNamaRestoran() + " - JatoStyle");
 
-        // styling untuk komponen header
-        haloNamaOutput.setBackground(new Color(250, 240, 227));
-        haloNamaOutput.setForeground(new Color(59, 31, 11)); 
-        haloNamaOutput.setBorder(null);
-        haloNamaOutput.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+    // styling untuk komponen header
+    haloNamaOutput.setBackground(new Color(206, 220, 239));
+    haloNamaOutput.setForeground(new Color(0, 51, 79)); // #00334F
+    haloNamaOutput.setBorder(null);
+    haloNamaOutput.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 
-        // styling tombol profil
-        profilButton.setBackground(new Color(241, 124, 42)); // #F17C2A
-        profilButton.setForeground(Color.WHITE);
-        profilButton.setFocusPainted(false);
-        profilButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        profilButton.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+    // styling tombol logout - warna #00334F
+    logoutButton.setBackground(new Color(0, 51, 79)); // #00334F
+    logoutButton.setForeground(new Color(206, 220, 239)); // #CEDCEF
+    logoutButton.setFocusPainted(false);
+    logoutButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    logoutButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+    
+    // styling tombol back - warna #95BDE2
+    backButton.setBackground(new Color(149, 189, 226)); // #95BDE2
+    backButton.setForeground(new Color(59, 31, 11)); // #3B1F0B
+    backButton.setFocusPainted(false);
+    backButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    backButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
 
-        // styling tombol logout
-        logoutButton.setBackground(new Color(229, 75, 31)); // #E54B1F
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-        logoutButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
-        logoutButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
-        
-        // styling tombol back
-        backButton.setBackground(new Color(241, 124, 42)); // warna orange seperti tombol lain
-        backButton.setForeground(Color.WHITE);
-        backButton.setFocusPainted(false);
-        backButton.setBorder(
-            BorderFactory.createEmptyBorder(8, 15, 8, 15)
-        );
-        backButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
-
-    }
+    // styling tombol lihat review - warna #00334F
+    lihatReviewButton.setBackground(new Color(0, 51, 79)); // #00334F
+    lihatReviewButton.setForeground(new Color(206, 220, 239)); // #CEDCEF
+    lihatReviewButton.setFocusPainted(false);
+    lihatReviewButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    lihatReviewButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+}
     
     private void initDynamicUI() {
-        // menu container
-        menuContainer = new JPanel();
-        menuContainer.setBackground(new Color(250, 240, 227));
-        menuContainer.setLayout(new BoxLayout(menuContainer, BoxLayout.Y_AXIS));
-        menuContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
+    // menu container
+    menuContainer = new JPanel();
+    menuContainer.setBackground(new Color(206, 220, 239)); // DIUBAH
+    menuContainer.setLayout(new BoxLayout(menuContainer, BoxLayout.Y_AXIS));
+    menuContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // scrollpane
-        jScrollPane1.setViewportView(menuContainer);
-        jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(229, 75, 31), 1));
-        jScrollPane1.getViewport().setBackground(new Color(250, 240, 227));
-        jScrollPane1.setBackground(new Color(250, 240, 227));
+    // scrollpane
+    jScrollPane1.setViewportView(menuContainer);
+    jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2)); // DIUBAH #95BDE2
+    jScrollPane1.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH
+    jScrollPane1.setBackground(new Color(206, 220, 239)); // DIUBAH
 
-        // scroll bar
-        JScrollBar verticalBar = jScrollPane1.getVerticalScrollBar();
-        verticalBar.setUnitIncrement(16);
-        verticalBar.setBackground(new Color(250, 240, 227));
-        verticalBar.setForeground(new Color(241, 124, 42));
-    }
-
-
+    // scroll bar
+    JScrollBar verticalBar = jScrollPane1.getVerticalScrollBar();
+    verticalBar.setUnitIncrement(16);
+    verticalBar.setBackground(new Color(206, 220, 239)); // DIUBAH
+    verticalBar.setForeground(new Color(149, 189, 226)); // DIUBAH #95BDE2
+}
     
     private void loadMenuFromDatabase() {
-        if (menuContainer == null) return;
-        menuContainer.removeAll();
+    if (menuContainer == null) return;
+    menuContainer.removeAll();
 
-        try {
-            String sql = "SELECT * FROM menu WHERE id_restoran = " + currentRestoran.getIdRestoran() + " ORDER BY nama_menu";
-            System.out.println("Executing SQL: " + sql); // DEBUG
+    try {
+        String sql = "SELECT * FROM menu WHERE id_restoran = " + currentRestoran.getIdRestoran() + " ORDER BY nama_menu";
+        System.out.println("Executing SQL: " + sql);
 
-            ResultSet rs = auth.getKonektor().getData(sql);
+        ResultSet rs = auth.getKonektor().getData(sql);
 
-            boolean any = false;
-            int count = 0;
-            while (rs != null && rs.next()) {
-                any = true;
-                count++;
-                int idMenu = rs.getInt("id_menu");
-                String nama = rs.getString("nama_menu");
-                int harga = rs.getInt("harga");
-                int stok = rs.getInt("stok");
-                boolean statusHabis = rs.getBoolean("status_habis");
+        boolean any = false;
+        int count = 0;
+        while (rs != null && rs.next()) {
+            any = true;
+            count++;
+            int idMenu = rs.getInt("id_menu");
+            String nama = rs.getString("nama_menu");
+            int harga = rs.getInt("harga");
+            int stok = rs.getInt("stok");
+            boolean statusHabis = rs.getBoolean("status_habis");
 
-                System.out.println("Menu found: " + nama + " - Rp " + harga + " - Stok: " + stok); // DEBUG
+            System.out.println("Menu found: " + nama + " - Rp " + harga + " - Stok: " + stok);
 
-                JPanel card = createMenuCard(idMenu, nama, harga, stok, statusHabis);
-                menuContainer.add(card);
-                menuContainer.add(Box.createVerticalStrut(10));
-            }
-
-            System.out.println("Total menus loaded: " + count); // DEBUG
-
-            if (!any) {
-                JPanel messagePanel = new JPanel(new BorderLayout());
-                messagePanel.setOpaque(false);
-                JLabel l = new JLabel("Tidak ada menu tersedia.");
-                l.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-                l.setForeground(new Color(120, 120, 120));
-                l.setHorizontalAlignment(SwingConstants.CENTER);
-                messagePanel.add(l, BorderLayout.CENTER);
-                menuContainer.add(messagePanel);
-            }
-
-        } catch (Exception e) {
-            System.out.println("Load menu error: " + e.getMessage());
-            e.printStackTrace();
-            JPanel messagePanel = new JPanel(new BorderLayout());
-            messagePanel.setOpaque(false);
-            JLabel l = new JLabel("Error: Tidak dapat memuat menu dari database");
-            l.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-            l.setForeground(Color.RED);
-            l.setHorizontalAlignment(SwingConstants.CENTER);
-            menuContainer.add(l, BorderLayout.CENTER);
+            JPanel card = createMenuCard(idMenu, nama, harga, stok, statusHabis);
+            menuContainer.add(card);
+            menuContainer.add(Box.createVerticalStrut(10));
         }
 
-        menuContainer.revalidate();
-        menuContainer.repaint();
+        System.out.println("Total menus loaded: " + count);
+
+        if (!any) {
+            JPanel messagePanel = new JPanel(new BorderLayout());
+            messagePanel.setBackground(new Color(206, 220, 239)); // DIUBAH
+            JLabel l = new JLabel("Tidak ada menu tersedia.");
+            l.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+            l.setForeground(new Color(128, 128, 128)); // Abu-abu
+            l.setHorizontalAlignment(SwingConstants.CENTER);
+            messagePanel.add(l, BorderLayout.CENTER);
+            menuContainer.add(messagePanel);
+        }
+
+    } catch (Exception e) {
+        System.out.println("Load menu error: " + e.getMessage());
+        e.printStackTrace();
+        JPanel messagePanel = new JPanel(new BorderLayout());
+        messagePanel.setBackground(new Color(206, 220, 239)); // DIUBAH
+        JLabel l = new JLabel("Error: Tidak dapat memuat menu dari database");
+        l.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        l.setForeground(Color.RED);
+        l.setHorizontalAlignment(SwingConstants.CENTER);
+        messagePanel.add(l, BorderLayout.CENTER);
+        menuContainer.add(l, BorderLayout.CENTER);
     }
+
+    menuContainer.revalidate();
+    menuContainer.repaint();
+}
     
     private JPanel createMenuCard(int idMenu, String namaMenu, int harga, int stok, boolean statusHabis) {
-        JPanel card = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(Color.WHITE);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2.setColor(new Color(229, 75, 31)); // #E54B1F
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
-            }
-        };
-        card.setOpaque(false);
-        card.setBorder(new EmptyBorder(15, 20, 15, 20));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100)); // AUTO FOLLOW WIDTH
-
-        JPanel left = new JPanel();
-        left.setOpaque(false);
-        left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
-        left.setBorder(new EmptyBorder(5, 10, 5, 10));
-
-        JLabel lblNama = new JLabel(namaMenu);
-        lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-        lblNama.setForeground(new Color(59, 31, 11));
-
-        JLabel lblHarga = new JLabel("Rp " + String.format("%,d", harga));
-        lblHarga.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        lblHarga.setForeground(new Color(59, 31, 11));
-
-        left.add(lblNama);
-        left.add(Box.createVerticalStrut(5));
-        left.add(lblHarga);
-
-        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        right.setOpaque(false);
-        right.setBorder(new EmptyBorder(0, 0, 0, 10));
-
-        JButton addToCartBtn = new JButton("Tambah Keranjang");
-        addToCartBtn.setFont(new Font("Bahnschrift", Font.BOLD, 12));
-        addToCartBtn.setFocusPainted(false);
-        addToCartBtn.setPreferredSize(new Dimension(150, 35));
-        addToCartBtn.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(229, 75, 31), 1),
-                BorderFactory.createEmptyBorder(8, 15, 8, 15)
-            )
-        );
-
-        // cek stok
-        if (stok > 0) {
-            // MASIH ADA STOK → ENABLE
-            addToCartBtn.setBackground(new Color(241, 124, 42)); // ORANGE
-            addToCartBtn.setForeground(Color.WHITE);
-            addToCartBtn.setEnabled(true);
-
-            addToCartBtn.addActionListener(e -> {
-                addToCart(idMenu, namaMenu, harga);
-            });
-
-        } else {
-            // habis → disable
-            addToCartBtn.setBackground(Color.GRAY);
-            addToCartBtn.setForeground(Color.WHITE);
-            addToCartBtn.setEnabled(false);
+    JPanel card = new JPanel(new BorderLayout()) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(Color.WHITE);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+            g2.setColor(new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
         }
+    };
+    card.setOpaque(false);
+    card.setBorder(new EmptyBorder(15, 20, 15, 20));
+    card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
-        right.add(addToCartBtn);
+    JPanel left = new JPanel();
+    left.setOpaque(false);
+    left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+    left.setBorder(new EmptyBorder(5, 10, 5, 10));
 
-        card.add(left, BorderLayout.WEST);
-        card.add(right, BorderLayout.EAST);
+    JLabel lblNama = new JLabel(namaMenu);
+    lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+    lblNama.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
 
-        return card;
+    JLabel lblHarga = new JLabel("Rp " + String.format("%,d", harga));
+    lblHarga.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+    lblHarga.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
+
+    left.add(lblNama);
+    left.add(Box.createVerticalStrut(5));
+    left.add(lblHarga);
+
+    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    right.setOpaque(false);
+    right.setBorder(new EmptyBorder(0, 0, 0, 10));
+
+    JButton addToCartBtn = new JButton("Tambah Keranjang");
+    addToCartBtn.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+    addToCartBtn.setFocusPainted(false);
+    addToCartBtn.setPreferredSize(new Dimension(150, 35));
+    
+    // cek stok
+    if (stok > 0) {
+        // MASIH ADA STOK → ENABLE
+        addToCartBtn.setBackground(new Color(149, 189, 226)); // #95BDE2 - DIUBAH
+        addToCartBtn.setForeground(new Color(59, 31, 11)); // #3B1F0B - DIUBAH
+        addToCartBtn.setEnabled(true);
+        addToCartBtn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0, 51, 79), 1), // #00334F - DIUBAH
+            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+
+        addToCartBtn.addActionListener(e -> {
+            addToCart(idMenu, namaMenu, harga);
+        });
+
+    } else {
+        // habis → disable
+        addToCartBtn.setBackground(Color.GRAY);
+        addToCartBtn.setForeground(Color.WHITE);
+        addToCartBtn.setEnabled(false);
+        addToCartBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
     }
 
+    right.add(addToCartBtn);
+
+    card.add(left, BorderLayout.WEST);
+    card.add(right, BorderLayout.EAST);
+
+    return card;
+}
     
     private void addToCart(int idMenu, String namaMenu, int harga) {
         try {
@@ -469,6 +447,5 @@ public class RestoranFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton lihatReviewButton;
     private javax.swing.JButton logoutButton;
-    private javax.swing.JButton profilButton;
     // End of variables declaration//GEN-END:variables
 }
