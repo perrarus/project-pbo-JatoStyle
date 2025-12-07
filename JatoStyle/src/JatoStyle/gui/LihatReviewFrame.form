@@ -65,7 +65,7 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="addReviewButton" pref="29" max="32767" attributes="0"/>
+              <Component id="addReviewButton" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="reviewOutput" min="-2" pref="322" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -90,7 +90,7 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/JatoStyle/gui/dashboardlogo.png"/>
+          <Image iconType="3" name="/JatoStyle/gui/logo_mini.png"/>
         </Property>
       </Properties>
     </Component>

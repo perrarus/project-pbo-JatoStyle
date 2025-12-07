@@ -64,7 +64,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/dashboardlogo.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png"))); // NOI18N
 
         haloNamaOutput.setEditable(false);
         haloNamaOutput.setBackground(new java.awt.Color(250, 240, 227));
@@ -142,7 +142,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
                         .addGap(28, 28, 28)
                         .addComponent(jLabel1)))
                 .addGap(18, 18, 18)
-                .addComponent(addReviewButton, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addComponent(addReviewButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(reviewOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
