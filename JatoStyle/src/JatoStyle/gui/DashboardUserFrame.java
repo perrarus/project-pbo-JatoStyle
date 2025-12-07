@@ -58,7 +58,7 @@ import javax.swing.JDialog;
 public class DashboardUserFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DashboardUserFrame.class.getName());
-    private javax.swing.JPanel restoContainerPanel;
+    private javax.swing.JPanel tokoContainerPanel;
     private AuthService authService;
     private KeranjangService keranjangService = new KeranjangService();
     private JPanel keranjangContainer;
@@ -76,8 +76,8 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     public DashboardUserFrame() {
         initComponents();
         authService = new AuthService();
-        setupRestoContainer(); 
-        loadRestoFromDatabase(); 
+        setupTokoContainer(); 
+        loadTokoFromDatabase(); 
         haloNamaOutput.setCaretColor(new java.awt.Color(0, 0, 0, 0)); 
         applyDashboardTheme();
         setupKeranjangContainer();
@@ -101,7 +101,7 @@ public class DashboardUserFrame extends javax.swing.JFrame {
     System.out.println("=== SETUP TRANSACTION PANEL ===");
 
     // setup Model Tabel
-    String[] columnNames = {"ID", "Tanggal", "Restoran", "Total Harga", "Status", "Detail"};
+    String[] columnNames = {"ID", "Tanggal", "Toko", "Total Harga", "Status", "Detail"};
     transactionTableModel = new DefaultTableModel(columnNames, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -137,7 +137,7 @@ public class DashboardUserFrame extends javax.swing.JFrame {
         }
     }
 
-    // left alignment untuk kolom resto
+    // left alignment untuk kolom toko
     DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
     leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
     leftRenderer.setBackground(new Color(206, 220, 239));
@@ -326,21 +326,21 @@ private void showTransactionDetail(int rowIndex) {
         headerLabel.setForeground(new Color(206, 220, 239)); // #CEDCEF
         headerPanel.add(headerLabel, BorderLayout.WEST);
 
-        // Ambil info restoran dan total
-        String namaRestoran = transactionTableModel.getValueAt(rowIndex, 2).toString();
+        // Ambil info toko dan total
+        String namaToko = transactionTableModel.getValueAt(rowIndex, 2).toString();
         String totalHarga = transactionTableModel.getValueAt(rowIndex, 3).toString();
         String status = transactionTableModel.getValueAt(rowIndex, 4).toString();
 
-        JLabel infoLabel = new JLabel(namaRestoran + " | " + totalHarga + " | " + status);
+        JLabel infoLabel = new JLabel(namaToko + " | " + totalHarga + " | " + status);
         infoLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         infoLabel.setForeground(new Color(206, 220, 239)); // #CEDCEF
         headerPanel.add(infoLabel, BorderLayout.EAST);
 
-        // Panel detail menu
-        JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(Color.WHITE);
-        menuPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        // Panel detail item
+        JPanel barangPanel = new JPanel();
+        barangPanel.setLayout(new BoxLayout(barangPanel, BoxLayout.Y_AXIS));
+        barangPanel.setBackground(Color.WHITE);
+        barangPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         int totalItems = 0;
         int totalPrice = 0;
@@ -353,9 +353,9 @@ private void showTransactionDetail(int rowIndex) {
             ));
             itemPanel.setBackground(Color.WHITE);
 
-            JLabel menuLabel = new JLabel(detail.getNamaMenu());
-            menuLabel.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-            menuLabel.setForeground(new Color(0, 51, 79)); // #00334F
+            JLabel itemLabel = new JLabel(detail.getNamaItem());
+            itemLabel.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+            itemLabel.setForeground(new Color(0, 51, 79)); // #00334F
 
             JLabel detailLabel = new JLabel("Jumlah: " + detail.getJumlah() + 
                                            " x Rp " + String.format("%,d", detail.getHargaSatuan()) + 
@@ -365,12 +365,12 @@ private void showTransactionDetail(int rowIndex) {
 
             JPanel leftPanel = new JPanel(new BorderLayout());
             leftPanel.setBackground(Color.WHITE);
-            leftPanel.add(menuLabel, BorderLayout.NORTH);
+            leftPanel.add(itemLabel, BorderLayout.NORTH);
             leftPanel.add(detailLabel, BorderLayout.SOUTH);
 
             itemPanel.add(leftPanel, BorderLayout.CENTER);
-            menuPanel.add(itemPanel);
-            menuPanel.add(Box.createVerticalStrut(8));
+            barangPanel.add(itemPanel);
+            barangPanel.add(Box.createVerticalStrut(8));
 
             totalItems += detail.getJumlah();
             totalPrice += detail.getSubtotal();
@@ -395,8 +395,8 @@ private void showTransactionDetail(int rowIndex) {
         totalPanel.add(totalItemsLabel, BorderLayout.WEST);
         totalPanel.add(totalPriceLabel, BorderLayout.EAST);
 
-        // Scroll pane untuk menu
-        JScrollPane scrollPane = new JScrollPane(menuPanel);
+        // Scroll pane untuk item
+        JScrollPane scrollPane = new JScrollPane(barangPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
@@ -524,9 +524,9 @@ private void showTransactionDetail(int rowIndex) {
     jPanel4.setBackground(new Color(206, 220, 239)); // tab Transaksi
 
     // scroll pane (no border)
-    restoScrollPane.setBackground(new Color(206, 220, 239));
-    restoScrollPane.setBorder(BorderFactory.createEmptyBorder());
-    restoScrollPane.getViewport().setBackground(new Color(206, 220, 239));
+    tokoScrollPane.setBackground(new Color(206, 220, 239));
+    tokoScrollPane.setBorder(BorderFactory.createEmptyBorder());
+    tokoScrollPane.getViewport().setBackground(new Color(206, 220, 239));
 
     // halo nama output - ubah warna text menjadi #00334F (sama dengan panel login)
     haloNamaOutput.setBackground(new Color(206, 220, 239));
@@ -626,7 +626,7 @@ private void showTransactionDetail(int rowIndex) {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        restoScrollPane = new javax.swing.JScrollPane();
+        tokoScrollPane = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -641,18 +641,18 @@ private void showTransactionDetail(int rowIndex) {
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane1.setFont(new java.awt.Font("Bahnschrift", 1, 12)); // NOI18N
 
-        restoScrollPane.setBorder(null);
-        restoScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        tokoScrollPane.setBorder(null);
+        tokoScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(restoScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
+            .addComponent(tokoScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(restoScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+            .addComponent(tokoScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Toko", jPanel1);
@@ -763,36 +763,36 @@ private void showTransactionDetail(int rowIndex) {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void setupRestoContainer() {
-        restoContainerPanel = new javax.swing.JPanel();
-        restoContainerPanel.setLayout(new javax.swing.BoxLayout(restoContainerPanel, javax.swing.BoxLayout.Y_AXIS));
-        restoContainerPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        restoContainerPanel.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
+    private void setupTokoContainer() {
+        tokoContainerPanel = new javax.swing.JPanel();
+        tokoContainerPanel.setLayout(new javax.swing.BoxLayout(tokoContainerPanel, javax.swing.BoxLayout.Y_AXIS));
+        tokoContainerPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        tokoContainerPanel.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
-        restoScrollPane.setViewportView(restoContainerPanel);
-        restoScrollPane.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
+        tokoScrollPane.setViewportView(tokoContainerPanel);
+        tokoScrollPane.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
 
-        restoScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        tokoScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         // custom scroll bar
-        javax.swing.JScrollBar verticalScrollBar = restoScrollPane.getVerticalScrollBar();
+        javax.swing.JScrollBar verticalScrollBar = tokoScrollPane.getVerticalScrollBar();
         verticalScrollBar.setBackground(new Color(206, 220, 239)); // DIUBAH menjadi [206,220,239]
         verticalScrollBar.setForeground(new Color(229, 75, 31));
         verticalScrollBar.setUnitIncrement(16); // smooth scrolling
     }
         
-    private boolean isRestoBuka(Toko resto, java.sql.Time currentTime) {
+    private boolean isTokoBuka(Toko toko, java.sql.Time currentTime) {
         try {
-            if (resto.getJamBuka() == null || resto.getJamTutup() == null) {
+            if (toko.getJamBuka() == null || toko.getJamTutup() == null) {
                 return false;
             }
 
             // konversi java.sql.Time ke java.time.LocalTime
             java.time.LocalTime current = currentTime.toLocalTime();
-            java.time.LocalTime jamBuka = resto.getJamBuka().toLocalTime();
-            java.time.LocalTime jamTutup = resto.getJamTutup().toLocalTime();
+            java.time.LocalTime jamBuka = toko.getJamBuka().toLocalTime();
+            java.time.LocalTime jamTutup = toko.getJamTutup().toLocalTime();
 
-            System.out.println("Cek: " + resto.getNamaRestoran() + 
+            System.out.println("Cek: " + toko.getNamaToko() + 
                              " | Buka: " + jamBuka + 
                              " | Tutup: " + jamTutup + 
                              " | Sekarang: " + current);
@@ -820,7 +820,7 @@ private void showTransactionDetail(int rowIndex) {
             }
 
         } catch (Exception e) {
-            System.out.println("Error cek status restoran " + resto.getNamaRestoran() + ": " + e.getMessage());
+            System.out.println("Error cek status toko " + toko.getNamaToko() + ": " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -856,32 +856,32 @@ private void showTransactionDetail(int rowIndex) {
             return;
         }
 
-        // group items by restaurant
-        Map<String, List<Keranjang>> groupedByResto = new HashMap<>();
+        // group items by toko
+        Map<String, List<Keranjang>> groupedByToko = new HashMap<>();
         int total = 0;
 
         // grouping items
         for (int i = 0; i < list.size(); i++) {
             Keranjang k = list.get(i);
-            String namaResto = k.getNamaRestoran();
-            if (!groupedByResto.containsKey(namaResto)) {
-                groupedByResto.put(namaResto, new ArrayList<>());
+            String namaToko = k.getNamaToko();
+            if (!groupedByToko.containsKey(namaToko)) {
+                groupedByToko.put(namaToko, new ArrayList<>());
             }
-            groupedByResto.get(namaResto).add(k);
+            groupedByToko.get(namaToko).add(k);
 
-            total += k.getJumlah() * k.getHargaMenu();
+            total += k.getJumlah() * k.getHargaItem();
         }
 
-        // UI untuk masing-masing resto
-        Set<String> restoKeys = groupedByResto.keySet();
-        String[] restoArray = restoKeys.toArray(new String[0]);
+        // UI untuk masing-masing toko
+        Set<String> tokoKeys = groupedByToko.keySet();
+        String[] tokoArray = tokoKeys.toArray(new String[0]);
 
-        for (int i = 0; i < restoArray.length; i++) {
-            String namaResto = restoArray[i];
-            List<Keranjang> items = groupedByResto.get(namaResto);
+        for (int i = 0; i < tokoArray.length; i++) {
+            String namaToko = tokoArray[i];
+            List<Keranjang> items = groupedByToko.get(namaToko);
 
-            // resto header
-            keranjangContainer.add(createRestoHeader(namaResto));
+            // toko header
+            keranjangContainer.add(createTokoHeader(namaToko));
             keranjangContainer.add(Box.createVerticalStrut(10));
             
             for (int j = 0; j < items.size(); j++) {
@@ -890,7 +890,7 @@ private void showTransactionDetail(int rowIndex) {
                 keranjangContainer.add(Box.createVerticalStrut(8)); 
             }
 
-            // tambah separator antar resto
+            // tambah separator antar toko
             keranjangContainer.add(Box.createVerticalStrut(15));
         }
 
@@ -948,21 +948,21 @@ private void showTransactionDetail(int rowIndex) {
         panel.setPreferredSize(new Dimension(panel.getPreferredSize().width, 70)); // FIXED HEIGHT
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70)); // FIXED MAX HEIGHT
 
-        // panel kiri untuk menu
+        // panel kiri untuk item
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setOpaque(false);
         leftPanel.setPreferredSize(new Dimension(300, 50)); 
 
-        JLabel namaMenu = new JLabel(k.getNamaMenu());
-        namaMenu.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-        namaMenu.setForeground(new Color(59, 31, 11)); // #3B1F0B
+        JLabel namaItem = new JLabel(k.getNamaItem());
+        namaItem.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        namaItem.setForeground(new Color(59, 31, 11)); // #3B1F0B
 
-        JLabel hargaLabel = new JLabel("Rp " + String.format("%,d", k.getHargaMenu()));
+        JLabel hargaLabel = new JLabel("Rp " + String.format("%,d", k.getHargaItem()));
         hargaLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         hargaLabel.setForeground(new Color(59, 31, 11)); // #3B1F0B
 
-        leftPanel.add(namaMenu);
+        leftPanel.add(namaItem);
         leftPanel.add(Box.createVerticalStrut(3)); 
         leftPanel.add(hargaLabel);
 
@@ -1021,7 +1021,7 @@ private void showTransactionDetail(int rowIndex) {
         return panel;
     }
     
-    private JPanel createRestoHeader(String namaResto) {
+    private JPanel createTokoHeader(String namaToko) {
         // panel header 
         JPanel headerPanel = new JPanel(new BorderLayout()) {
             @Override
@@ -1046,11 +1046,11 @@ private void showTransactionDetail(int rowIndex) {
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 45)); // FIXED HEIGHT
         headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45)); // FIXED MAX HEIGHT
 
-        JLabel restoLabel = new JLabel(namaResto);
-        restoLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14)); // Smaller font
-        restoLabel.setForeground(Color.WHITE);
+        JLabel tokoLabel = new JLabel(namaToko);
+        tokoLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14)); // Smaller font
+        tokoLabel.setForeground(Color.WHITE);
 
-        headerPanel.add(restoLabel, BorderLayout.WEST);
+        headerPanel.add(tokoLabel, BorderLayout.WEST);
 
         return headerPanel;
     }
@@ -1128,10 +1128,10 @@ private void showTransactionDetail(int rowIndex) {
         int totalSum = 0;
         for (int i = 0; i < currentCart.size(); i++) {
             Keranjang k = currentCart.get(i);
-            totalSum += k.getJumlah() * k.getHargaMenu();
+            totalSum += k.getJumlah() * k.getHargaItem();
         }
         
-        transactionService.checkRestoranData();
+        transactionService.checkTokoData();
 
         int dialogResult = JOptionPane.showConfirmDialog(this, 
             "Total pesanan: Rp " + String.format("%,d", totalSum) + "\nLanjutkan pembayaran?", 
@@ -1199,12 +1199,12 @@ private void showTransactionDetail(int rowIndex) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         for (int i = 0; i < transactions.size(); i++) {
             Transaction t = transactions.get(i);
-            System.out.println("Adding to table: " + t.getIdTransaksi() + " - " + t.getNamaRestoran());
+            System.out.println("Adding to table: " + t.getIdTransaksi() + " - " + t.getNamaToko());
 
             transactionTableModel.addRow(new Object[]{
                 "TRX" + String.format("%04d", t.getIdTransaksi()),
                 dateFormat.format(t.getTanggalTransaksi()), 
-                t.getNamaRestoran(),
+                t.getNamaToko(),
                 String.format("Rp %,d", t.getTotalPembayaran()),
                 t.getStatusTransaksi(),
                 "Lihat Detail"  // TAMBAHKAN TOMBOL DETAIL
@@ -1220,7 +1220,7 @@ private void showTransactionDetail(int rowIndex) {
             // set preferred column widths
             transactionTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
             transactionTable.getColumnModel().getColumn(1).setPreferredWidth(120); // Tanggal
-            transactionTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Restoran
+            transactionTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Toko
             transactionTable.getColumnModel().getColumn(3).setPreferredWidth(120); // Total Harga
             transactionTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Status
             transactionTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Detail
@@ -1293,25 +1293,25 @@ private void showTransactionDetail(int rowIndex) {
     System.out.println("No transaction message displayed");
 }
     
-    private void loadRestoFromDatabase() {
-        if (restoContainerPanel == null) {
+    private void loadTokoFromDatabase() {
+        if (tokoContainerPanel == null) {
             return;
         }
 
-        restoContainerPanel.removeAll();
+        tokoContainerPanel.removeAll();
 
         try {
-            System.out.println("Loading restoran dari database...");
+            System.out.println("Loading toko dari database...");
 
-            List<Toko> restoranList = authService.getAllRestoran();
+            List<Toko> tokoList = authService.getAllToko();
 
-            if (restoranList.isEmpty()) {
-                System.out.println("Tidak ada data restoran ditemukan");
+            if (tokoList.isEmpty()) {
+                System.out.println("Tidak ada data toko ditemukan");
                 showNoDataMessage();
                 return;
             }
 
-            System.out.println("Ditemukan " + restoranList.size() + " restoran");
+            System.out.println("Ditemukan " + tokoList.size() + " toko");
 
             // waktu sekarang
             java.util.Date now = new java.util.Date();
@@ -1319,48 +1319,48 @@ private void showTransactionDetail(int rowIndex) {
 
             System.out.println("Waktu sekarang: " + currentTime);
 
-            for (int i = 0; i < restoranList.size(); i++) {
-                Toko resto = restoranList.get(i);
+            for (int i = 0; i < tokoList.size(); i++) {
+                Toko toko = tokoList.get(i);
                 String jamBuka = "08:00";
                 String jamTutup = "22:00";
 
-                if (resto.getJamBuka() != null) {
-                    jamBuka = resto.getJamBuka().toString().substring(0, 5);
+                if (toko.getJamBuka() != null) {
+                    jamBuka = toko.getJamBuka().toString().substring(0, 5);
                 }
-                if (resto.getJamTutup() != null) {
-                    jamTutup = resto.getJamTutup().toString().substring(0, 5);
+                if (toko.getJamTutup() != null) {
+                    jamTutup = toko.getJamTutup().toString().substring(0, 5);
                 }
 
                 String jamOperasional = jamBuka + " - " + jamTutup;
 
-                // cek apakah resto sedang buka atau tutup
-                boolean isBuka = isRestoBuka(resto, currentTime);
+                // cek apakah toko sedang buka atau tutup
+                boolean isBuka = isTokoBuka(toko, currentTime);
 
-                // tampilkan status setiap restoran
-                System.out.println("Resto: " + resto.getNamaRestoran() + 
+                // tampilkan status setiap toko
+                System.out.println("Toko: " + toko.getNamaToko() + 
                                  " | Jam: " + jamOperasional + 
                                  " | Status: " + (isBuka ? "BUKA" : "TUTUP") +
-                                 " | DB Buka: " + resto.getJamBuka() +
-                                 " | DB Tutup: " + resto.getJamTutup());
+                                 " | DB Buka: " + toko.getJamBuka() +
+                                 " | DB Tutup: " + toko.getJamTutup());
 
-                javax.swing.JPanel restoPanel = createRestoPanel(
-                    resto.getIdRestoran(), 
-                    resto.getNamaRestoran(), 
+                javax.swing.JPanel tokoPanel = createTokoPanel(
+                    toko.getIdToko(), 
+                    toko.getNamaToko(), 
                     jamOperasional,
                     isBuka
                 );
-                restoContainerPanel.add(restoPanel);
+                tokoContainerPanel.add(tokoPanel);
 
-                restoContainerPanel.add(javax.swing.Box.createRigidArea(new java.awt.Dimension(0, 10)));
+                tokoContainerPanel.add(javax.swing.Box.createRigidArea(new java.awt.Dimension(0, 10)));
             }
 
-            restoContainerPanel.revalidate();
-            restoContainerPanel.repaint();
+            tokoContainerPanel.revalidate();
+            tokoContainerPanel.repaint();
 
-            System.out.println("Berhasil menampilkan " + restoranList.size() + " restoran");
+            System.out.println("Berhasil menampilkan " + tokoList.size() + " toko");
 
         } catch (Exception ex) {
-            System.out.println("Error loading resto from database: " + ex.getMessage());
+            System.out.println("Error loading toko from database: " + ex.getMessage());
             ex.printStackTrace();
             showErrorMessage();
         }
@@ -1371,16 +1371,16 @@ private void showTransactionDetail(int rowIndex) {
         messagePanel.setLayout(new java.awt.BorderLayout());
         messagePanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 20, 50, 20));
         
-        javax.swing.JLabel messageLabel = new javax.swing.JLabel("Tidak ada restoran tersedia saat ini");
+        javax.swing.JLabel messageLabel = new javax.swing.JLabel("Tidak ada toko tersedia saat ini");
         messageLabel.setFont(new java.awt.Font("Bahnschrift", 1, 16));
         messageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         messageLabel.setForeground(new java.awt.Color(128, 128, 128));
         
         messagePanel.add(messageLabel, java.awt.BorderLayout.CENTER);
-        restoContainerPanel.add(messagePanel);
+        tokoContainerPanel.add(messagePanel);
         
-        restoContainerPanel.revalidate();
-        restoContainerPanel.repaint();
+        tokoContainerPanel.revalidate();
+        tokoContainerPanel.repaint();
     }
     
     private void showErrorMessage() {
@@ -1394,13 +1394,13 @@ private void showTransactionDetail(int rowIndex) {
         messageLabel.setForeground(new java.awt.Color(255, 0, 0));
         
         messagePanel.add(messageLabel, java.awt.BorderLayout.CENTER);
-        restoContainerPanel.add(messagePanel);
+        tokoContainerPanel.add(messagePanel);
         
-        restoContainerPanel.revalidate();
-        restoContainerPanel.repaint();
+        tokoContainerPanel.revalidate();
+        tokoContainerPanel.repaint();
     }
     
-    private javax.swing.JPanel createRestoPanel(int idResto, String namaResto, String jamOperasional, boolean isBuka) {
+    private javax.swing.JPanel createTokoPanel(int idToko, String namaToko, String jamOperasional, boolean isBuka) {
         // panel utama rounded corners
         javax.swing.JPanel mainPanel = new javax.swing.JPanel() {
             @Override
@@ -1429,8 +1429,8 @@ private void showTransactionDetail(int rowIndex) {
         mainPanel.setPreferredSize(new java.awt.Dimension(650, 90)); 
         mainPanel.setMaximumSize(new java.awt.Dimension(650, 90));   
 
-        // nama resto field 
-        javax.swing.JTextField namaField = new javax.swing.JTextField(namaResto) {
+        // nama toko field 
+        javax.swing.JTextField namaField = new javax.swing.JTextField(namaToko) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
@@ -1583,7 +1583,7 @@ private void showTransactionDetail(int rowIndex) {
         if (isBuka) {
             actionButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    bukaRestoranFrame(idResto, namaResto);
+                    bukaTokoFrame(idToko, namaToko);
                 }
             });
         } else {
@@ -1610,29 +1610,29 @@ private void showTransactionDetail(int rowIndex) {
         return mainPanel;
     }
     
-    private void bukaRestoranFrame(int idResto, String namaResto) {
+    private void bukaTokoFrame(int idToko, String namaToko) {
         try {
-            // ambil data restoran lengkap dari database
-            List<Toko> restoranList = authService.getAllRestoran();
-            Toko selectedRestoran = null;
+            // ambil data toko lengkap dari database
+            List<Toko> tokoList = authService.getAllToko();
+            Toko selectedToko = null;
 
-            // cari restoran berdasarkan ID
-            for (int i = 0; i < restoranList.size(); i++) {
-                Toko r = restoranList.get(i);
-                if (r.getIdRestoran() == idResto) {
-                    selectedRestoran = r;
+            // cari toko berdasarkan ID
+            for (int i = 0; i < tokoList.size(); i++) {
+                Toko r = tokoList.get(i);
+                if (r.getIdToko() == idToko) {
+                    selectedToko = r;
                     break;
                 }
             }
 
-            if (selectedRestoran != null && currentUser != null) {
-                // buka RestoranFrame dengan data user dan restoran
-                RestoranFrame restoranFrame = new RestoranFrame(currentUser, selectedRestoran);
-                restoranFrame.setVisible(true);
+            if (selectedToko != null && currentUser != null) {
+                // buka TokoFrame dengan data user dan toko
+                TokoFrame tokoFrame = new TokoFrame(currentUser, selectedToko);
+                tokoFrame.setVisible(true);
                 this.setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(this, 
-                    "Data restoran atau user tidak valid", 
+                    "Data toko atau user tidak valid", 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -1641,13 +1641,13 @@ private void showTransactionDetail(int rowIndex) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, 
                 "Error: " + e.getMessage(), 
-                "Error Membuka Restoran", 
+                "Error Membuka Toko", 
                 JOptionPane.ERROR_MESSAGE);
         }
     }
     
-    public void refreshRestoData() {
-        loadRestoFromDatabase();
+    public void refreshTokoData() {
+        loadTokoFromDatabase();
     }
     
     private void haloNamaOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_haloNamaOutputActionPerformed
@@ -1734,6 +1734,6 @@ private void showTransactionDetail(int rowIndex) {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton logoutButton;
     private javax.swing.JButton profilButton;
-    private javax.swing.JScrollPane restoScrollPane;
+    private javax.swing.JScrollPane tokoScrollPane;
     // End of variables declaration//GEN-END:variables
 }

@@ -228,10 +228,10 @@ public class LoginFrame extends javax.swing.JFrame {
 
         try {
             // coba login sbg resto
-            Toko resto = authService.loginRestoran(email, password);
+            Toko resto = authService.loginToko(email, password);
             if (resto != null) {
-                JOptionPane.showMessageDialog(this, "Login Berhasil! (Restoran)");
-                new DashboardRestoranFrame(resto).setVisible(true);
+                JOptionPane.showMessageDialog(this, "Login Berhasil! (Toko)");
+                new DashboardTokoFrame(resto).setVisible(true);
                 this.dispose();
                 return;
             }

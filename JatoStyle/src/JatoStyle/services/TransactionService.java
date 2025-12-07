@@ -28,10 +28,10 @@ public class TransactionService {
         try {
             System.out.println("=== DEBUG: Mengambil detail transaksi untuk ID Pesanan: " + idPesanan);
 
-            String sql = "SELECT d.id_detail, d.id_pesanan, d.id_menu, m.nama_menu, " +
+            String sql = "SELECT d.id_detail, d.id_pesanan, d.id_item, i.nama_item, " +
                         "d.jumlah, d.harga_satuan, (d.jumlah * d.harga_satuan) as subtotal " +
                         "FROM detail_pesanan d " +
-                        "JOIN menu m ON d.id_menu = m.id_menu " +
+                        "JOIN item i ON d.id_item = i.id_item " +
                         "WHERE d.id_pesanan = ? " +
                         "ORDER BY d.id_detail";
 
@@ -45,15 +45,15 @@ public class TransactionService {
                 TransactionDetail detail = new TransactionDetail(
                     rs.getInt("id_detail"),
                     rs.getInt("id_pesanan"),
-                    rs.getInt("id_menu"),
-                    rs.getString("nama_menu"),
+                    rs.getInt("id_item"),
+                    rs.getString("nama_item"),
                     rs.getInt("jumlah"),
                     rs.getInt("harga_satuan"),
                     rs.getInt("subtotal")
                 );
                 details.add(detail);
 
-                System.out.println("Detail ditemukan: " + detail.getNamaMenu() + 
+                System.out.println("Detail ditemukan: " + detail.getNamaItem() + 
                                  " x" + detail.getJumlah() + 
                                  " @Rp " + detail.getHargaSatuan());
             }
@@ -75,27 +75,27 @@ public class TransactionService {
         return details;
     }
     
-    // Method untuk mengambil detail transaksi berdasarkan ID pesanan dan ID Restoran
-    public List<TransactionDetail> getTransactionDetailsForRestoran(int idPesanan, int idRestoran) {
+    // Method untuk mengambil detail transaksi berdasarkan ID pesanan dan ID Toko
+    public List<TransactionDetail> getTransactionDetailsForToko(int idPesanan, int idToko) {
         List<TransactionDetail> details = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
         try {
-            System.out.println("=== DEBUG: Mengambil detail transaksi untuk ID Pesanan: " + idPesanan + ", ID Restoran: " + idRestoran);
+            System.out.println("=== DEBUG: Mengambil detail transaksi untuk ID Pesanan: " + idPesanan + ", ID Toko: " + idToko);
 
-            String sql = "SELECT d.id_detail, d.id_pesanan, d.id_menu, m.nama_menu, " +
+            String sql = "SELECT d.id_detail, d.id_pesanan, d.id_item, i.nama_item, " +
                         "d.jumlah, d.harga_satuan, (d.jumlah * d.harga_satuan) as subtotal " +
                         "FROM detail_pesanan d " +
-                        "JOIN menu m ON d.id_menu = m.id_menu " +
-                        "WHERE d.id_pesanan = ? AND m.id_restoran = ? " +
+                        "JOIN item i ON d.id_item = i.id_item " +
+                        "WHERE d.id_pesanan = ? AND i.id_toko = ? " +
                         "ORDER BY d.id_detail";
 
             conn = konektor.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, idPesanan);
-            pstmt.setInt(2, idRestoran);
+            pstmt.setInt(2, idToko);
 
             rs = pstmt.executeQuery();
 
@@ -103,15 +103,15 @@ public class TransactionService {
                 TransactionDetail detail = new TransactionDetail(
                     rs.getInt("id_detail"),
                     rs.getInt("id_pesanan"),
-                    rs.getInt("id_menu"),
-                    rs.getString("nama_menu"),
+                    rs.getInt("id_item"),
+                    rs.getString("nama_item"),
                     rs.getInt("jumlah"),
                     rs.getInt("harga_satuan"),
                     rs.getInt("subtotal")
                 );
                 details.add(detail);
 
-                System.out.println("Detail ditemukan: " + detail.getNamaMenu() + 
+                System.out.println("Detail ditemukan: " + detail.getNamaItem() + 
                                  " x" + detail.getJumlah() + 
                                  " @Rp " + detail.getHargaSatuan());
             }
@@ -119,7 +119,7 @@ public class TransactionService {
             System.out.println("Total detail ditemukan: " + details.size());
 
         } catch (Exception e) {
-            System.out.println("ERROR di getTransactionDetailsForRestoran: " + e.getMessage());
+            System.out.println("ERROR di getTransactionDetailsForToko: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
@@ -143,14 +143,14 @@ public class TransactionService {
         try {
             System.out.println("=== DEBUG: Memulai getTransactionsByUser untuk user ID: " + userId);
             
-            String sql = "SELECT p.id_pesanan, p.id_user, p.id_restoran, p.tanggal_pesan, p.status_pesanan, " +
-                        "r.nama_restoran, " +
+            String sql = "SELECT p.id_pesanan, p.id_user, p.id_toko, p.tanggal_pesan, p.status_pesanan, " +
+                        "t.nama_toko, " +
                         "COALESCE(SUM(d.jumlah * d.harga_satuan), 0) as total_harga " +
                         "FROM pesanan p " +
-                        "JOIN restoran r ON p.id_restoran = r.id_restoran " +
+                        "JOIN toko t ON p.id_toko = t.id_toko " +
                         "LEFT JOIN detail_pesanan d ON p.id_pesanan = d.id_pesanan " +
                         "WHERE p.id_user = ? " +
-                        "GROUP BY p.id_pesanan, p.id_user, p.id_restoran, p.tanggal_pesan, p.status_pesanan, r.nama_restoran " +
+                        "GROUP BY p.id_pesanan, p.id_user, p.id_toko, p.tanggal_pesan, p.status_pesanan, t.nama_toko " +
                         "ORDER BY p.tanggal_pesan DESC";
             
             conn = konektor.getConnection();
@@ -165,16 +165,16 @@ public class TransactionService {
                 Transaction transaction = new Transaction(
                     rs.getInt("id_pesanan"),
                     rs.getInt("id_user"), 
-                    rs.getInt("id_restoran"),
+                    rs.getInt("id_toko"),
                     rs.getTimestamp("tanggal_pesan"),
                     rs.getInt("total_harga"),
                     rs.getString("status_pesanan"),
-                    rs.getString("nama_restoran")
+                    rs.getString("nama_toko")
                 );
                 transactions.add(transaction);
                 
                 System.out.println("Data ditemukan: ID=" + transaction.getIdTransaksi() + 
-                                 ", Resto=" + transaction.getNamaRestoran() + 
+                                 ", Toko=" + transaction.getNamaToko() + 
                                  ", Total=Rp " + transaction.getTotalPembayaran() +
                                  ", Status=" + transaction.getStatusTransaksi());
             }
@@ -209,10 +209,10 @@ public class TransactionService {
         // tampilkan detail semua item
         for (int i = 0; i < items.size(); i++) {
             Keranjang k = items.get(i);
-            System.out.println("Item " + (i+1) + ": " + k.getNamaMenu() + 
-                             " | Resto: " + k.getNamaRestoran() + 
-                             " | ID Resto: " + k.getIdRestoran() +
-                             " | ID Menu: " + k.getIdMenu());
+            System.out.println("Item " + (i+1) + ": " + k.getNamaItem() + 
+                             " | Toko: " + k.getNamaToko() + 
+                             " | ID Toko: " + k.getIdToko() +
+                             " | ID Item: " + k.getIdItem());
         }
         
         Connection conn = null;
@@ -222,54 +222,54 @@ public class TransactionService {
             conn = konektor.getConnection();
             conn.setAutoCommit(false);
             
-            // kelompokkan item keranjang berdasarkan Restoran
-            Map<Integer, List<Keranjang>> groupedByResto = items.stream()
-                .collect(Collectors.groupingBy(Keranjang::getIdRestoran));
+            // kelompokkan item keranjang berdasarkan Toko
+            Map<Integer, List<Keranjang>> groupedByToko = items.stream()
+                .collect(Collectors.groupingBy(Keranjang::getIdToko));
             
-            System.out.println("Jumlah restoran berbeda: " + groupedByResto.size());
+            System.out.println("Jumlah toko berbeda: " + groupedByToko.size());
             
-            // cek apakah ada ID Restoran yang 0 atau tidak valid
-            for (Map.Entry<Integer, List<Keranjang>> entry : groupedByResto.entrySet()) {
-                int idRestoran = entry.getKey();
-                if (idRestoran <= 0) {
-                    System.out.println("❌ ERROR: ID Restoran tidak valid: " + idRestoran);
-                    System.out.println("Items dengan ID Restoran tidak valid:");
+            // cek apakah ada ID Toko yang 0 atau tidak valid
+            for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
+                int idToko = entry.getKey();
+                if (idToko <= 0) {
+                    System.out.println("❌ ERROR: ID Toko tidak valid: " + idToko);
+                    System.out.println("Items dengan ID Toko tidak valid:");
                     for (Keranjang k : entry.getValue()) {
-                        System.out.println("  - " + k.getNamaMenu() + " | Resto: " + k.getNamaRestoran());
+                        System.out.println("  - " + k.getNamaItem() + " | Toko: " + k.getNamaToko());
                     }
-                    throw new SQLException("ID Restoran tidak valid: " + idRestoran);
+                    throw new SQLException("ID Toko tidak valid: " + idToko);
                 }
             }
             
-            // buat transaksi untuk setiap restoran
-            for (Map.Entry<Integer, List<Keranjang>> entry : groupedByResto.entrySet()) {
-                int idRestoran = entry.getKey();
-                List<Keranjang> restoItems = entry.getValue();
-                String namaRestoran = restoItems.get(0).getNamaRestoran();
+            // buat transaksi untuk setiap toko
+            for (Map.Entry<Integer, List<Keranjang>> entry : groupedByToko.entrySet()) {
+                int idToko = entry.getKey();
+                List<Keranjang> tokoItems = entry.getValue();
+                String namaToko = tokoItems.get(0).getNamaToko();
                 
-                System.out.println("Memproses restoran: " + namaRestoran + " (ID: " + idRestoran + ")");
+                System.out.println("Memproses toko: " + namaToko + " (ID: " + idToko + ")");
                 
-                // cek apakah restoran ada di database
-                if (!isRestoranExists(conn, idRestoran)) {
-                    System.out.println("❌ ERROR: Restoran dengan ID " + idRestoran + " tidak ditemukan di database");
-                    throw new SQLException("Restoran dengan ID " + idRestoran + " tidak ditemukan");
+                // cek apakah toko ada di database
+                if (!isTokoExists(conn, idToko)) {
+                    System.out.println("❌ ERROR: Toko dengan ID " + idToko + " tidak ditemukan di database");
+                    throw new SQLException("Toko dengan ID " + idToko + " tidak ditemukan");
                 }
                 
-                // hitung total harga untuk restoran ini
+                // hitung total harga untuk toko ini
                 int totalHarga = 0;
-                for (Keranjang k : restoItems) {
-                    totalHarga += k.getJumlah() * k.getHargaMenu();
-                    System.out.println("  - Item: " + k.getNamaMenu() + " x" + k.getJumlah() + " = Rp " + (k.getJumlah() * k.getHargaMenu()));
+                for (Keranjang k : tokoItems) {
+                    totalHarga += k.getJumlah() * k.getHargaItem();
+                    System.out.println("  - Item: " + k.getNamaItem() + " x" + k.getJumlah() + " = Rp " + (k.getJumlah() * k.getHargaItem()));
                 }
                 
-                System.out.println("Total untuk " + namaRestoran + ": Rp " + totalHarga);
+                System.out.println("Total untuk " + namaToko + ": Rp " + totalHarga);
                 
                 // insert ke tabel pesanan
-                String insertPesananSQL = "INSERT INTO pesanan (id_user, id_restoran, tanggal_pesan, status_pesanan) " +
+                String insertPesananSQL = "INSERT INTO pesanan (id_user, id_toko, tanggal_pesan, status_pesanan) " +
                                          "VALUES (?, ?, NOW(), 'PENDING')";
                 PreparedStatement pstmtPesanan = conn.prepareStatement(insertPesananSQL, Statement.RETURN_GENERATED_KEYS);
                 pstmtPesanan.setInt(1, userId);
-                pstmtPesanan.setInt(2, idRestoran);
+                pstmtPesanan.setInt(2, idToko);
                 int affectedRows = pstmtPesanan.executeUpdate();
                 
                 System.out.println("Insert pesanan - affected rows: " + affectedRows);
@@ -290,27 +290,27 @@ public class TransactionService {
                 }
                 
                 // insert ke  tabel detail_pesanan untuk setiap item
-                String insertDetailSQL = "INSERT INTO detail_pesanan (id_pesanan, id_menu, jumlah, harga_satuan) " +
+                String insertDetailSQL = "INSERT INTO detail_pesanan (id_pesanan, id_item, jumlah, harga_satuan) " +
                                        "VALUES (?, ?, ?, ?)";
                 PreparedStatement pstmtDetail = conn.prepareStatement(insertDetailSQL);
                 
                 int detailCount = 0;
-                for (Keranjang k : restoItems) {
-                    // cek apakah menu ada di database
-                    if (!isMenuExists(conn, k.getIdMenu())) {
-                        System.out.println("❌ ERROR: Menu dengan ID " + k.getIdMenu() + " tidak ditemukan");
-                        throw new SQLException("Menu dengan ID " + k.getIdMenu() + " tidak ditemukan");
+                for (Keranjang k : tokoItems) {
+                    // cek apakah item ada di database
+                    if (!isItemExists(conn, k.getIdItem())) {
+                        System.out.println("❌ ERROR: Item dengan ID " + k.getIdItem() + " tidak ditemukan");
+                        throw new SQLException("Item dengan ID " + k.getIdItem() + " tidak ditemukan");
                     }
                     
                     pstmtDetail.setInt(1, idPesanan);
-                    pstmtDetail.setInt(2, k.getIdMenu());
+                    pstmtDetail.setInt(2, k.getIdItem());
                     pstmtDetail.setInt(3, k.getJumlah());
-                    pstmtDetail.setDouble(4, k.getHargaMenu());
+                    pstmtDetail.setDouble(4, k.getHargaItem());
                     pstmtDetail.addBatch();
                     detailCount++;
                     
-                    System.out.println("  - Detail: Pesanan#" + idPesanan + ", Menu#" + k.getIdMenu() + 
-                                     " x" + k.getJumlah() + " @Rp " + k.getHargaMenu());
+                    System.out.println("  - Detail: Pesanan#" + idPesanan + ", Item#" + k.getIdItem() + 
+                                     " x" + k.getJumlah() + " @Rp " + k.getHargaItem());
                 }
                 
                 int[] batchResults = pstmtDetail.executeBatch();
@@ -318,7 +318,7 @@ public class TransactionService {
                 pstmtDetail.close();
                 
                 System.out.println("✓ Transaksi berhasil dibuat: Pesanan #" + idPesanan + 
-                                 " untuk " + namaRestoran + " - Total: Rp " + totalHarga);
+                                 " untuk " + namaToko + " - Total: Rp " + totalHarga);
             }
             
             // hapus item keranjang yang sudah di-checkout
@@ -362,18 +362,18 @@ public class TransactionService {
         return success;
     }
     
-    // method untuk cek apakah restoran exists di database
-    private boolean isRestoranExists(Connection conn, int idRestoran) {
+    // method untuk cek apakah toko exists di database
+    private boolean isTokoExists(Connection conn, int idToko) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT 1 FROM restoran WHERE id_restoran = ?";
+            String sql = "SELECT 1 FROM toko WHERE id_toko = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, idRestoran);
+            pstmt.setInt(1, idToko);
             rs = pstmt.executeQuery();
             return rs.next();
         } catch (Exception e) {
-            System.out.println("Error checking restoran: " + e.getMessage());
+            System.out.println("Error checking toko: " + e.getMessage());
             return false;
         } finally {
             try {
@@ -385,18 +385,18 @@ public class TransactionService {
         }
     }
     
-    // method untuk cek apakah menu exists di database
-    private boolean isMenuExists(Connection conn, int idMenu) {
+    // method untuk cek apakah item exists di database
+    private boolean isItemExists(Connection conn, int idItem) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT 1 FROM menu WHERE id_menu = ?";
+            String sql = "SELECT 1 FROM item WHERE id_item = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, idMenu);
+            pstmt.setInt(1, idItem);
             rs = pstmt.executeQuery();
             return rs.next();
         } catch (Exception e) {
-            System.out.println("Error checking menu: " + e.getMessage());
+            System.out.println("Error checking item: " + e.getMessage());
             return false;
         } finally {
             try {
@@ -441,8 +441,8 @@ public class TransactionService {
         }
     }
     
-    // method untuk cek data restoran di database
-    public void checkRestoranData() {
+    // method untuk cek data toko di database
+    public void checkTokoData() {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -450,20 +450,20 @@ public class TransactionService {
         try {
             conn = konektor.getConnection();
             
-            System.out.println("CHECKING RESTORAN DATA");
+            System.out.println("CHECKING TOKO DATA");
             
-            String sql = "SELECT id_restoran, nama_restoran FROM restoran ORDER BY id_restoran";
+            String sql = "SELECT id_toko, nama_toko FROM toko ORDER BY id_toko";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             
-            System.out.println("Data restoran di database:");
+            System.out.println("Data toko di database:");
             while (rs.next()) {
-                System.out.println("  - ID: " + rs.getInt("id_restoran") + 
-                                 " | Nama: " + rs.getString("nama_restoran"));
+                System.out.println("  - ID: " + rs.getInt("id_toko") + 
+                                 " | Nama: " + rs.getString("nama_toko"));
             }
             
         } catch (Exception e) {
-            System.out.println("ERROR checking restoran data: " + e.getMessage());
+            System.out.println("ERROR checking toko data: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {

@@ -16,7 +16,7 @@ import java.awt.event.*;
 public class AddReviewDialog extends JDialog {
     
     private User currentUser;
-    private Toko currentRestoran;
+    private Toko currentToko;
     private ReviewService reviewService;
     private Review existingReview;
     private boolean reviewSaved = false;
@@ -30,11 +30,11 @@ public class AddReviewDialog extends JDialog {
     /**
      * Creates new form AddReviewDialog
      */
-    public AddReviewDialog(JFrame parent, User user, Toko restoran, 
+    public AddReviewDialog(JFrame parent, User user, Toko toko, 
                       ReviewService reviewService, Review existingReview) {
         super(parent, "Add/Edit Review", true);
         this.currentUser = user;
-        this.currentRestoran = restoran;
+        this.currentToko = toko;
         this.reviewService = reviewService;
         this.existingReview = existingReview;
 
@@ -71,11 +71,11 @@ public class AddReviewDialog extends JDialog {
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setOpaque(false);
         
-        // 5. Restoran info
-        JLabel restoLabel = new JLabel("Restoran: " + currentRestoran.getNamaRestoran());
-        restoLabel.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-        restoLabel.setForeground(new Color(59, 31, 11));
-        restoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // 5. Toko info
+        JLabel tokoLabel = new JLabel("Toko: " + currentToko.getNamaToko());
+        tokoLabel.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+        tokoLabel.setForeground(new Color(59, 31, 11));
+        tokoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         // 6. Rating panel
         JPanel ratingPanel = new JPanel();
@@ -219,7 +219,7 @@ public class AddReviewDialog extends JDialog {
         }
         
         // 13. Assemble everything
-        contentPanel.add(restoLabel);
+        contentPanel.add(tokoLabel);
         contentPanel.add(Box.createVerticalStrut(15));
         contentPanel.add(ratingPanel);
         contentPanel.add(Box.createVerticalStrut(15));
@@ -278,14 +278,14 @@ public class AddReviewDialog extends JDialog {
             }
             
             // Cek purchase history
-            boolean hasPurchased = reviewService.hasUserPurchasedFromRestoran(
+            boolean hasPurchased = reviewService.hasUserPurchasedFromToko(
                 currentUser.getIdUser(),
-                currentRestoran.getIdRestoran()
+                currentToko.getIdToko()
             );
             
             if (!hasPurchased) {
                 JOptionPane.showMessageDialog(this,
-                    "Anda harus pernah menyelesaikan pembelian dari restoran ini untuk bisa memberikan review.\n" +
+                    "Anda harus pernah menyelesaikan pembelian dari toko ini untuk bisa memberikan review.\n" +
                     "Hanya pengguna dengan pesanan status 'SUDAH SAMPAI' yang dapat mereview.",
                     "Tidak Dapat Mereview",
                     JOptionPane.WARNING_MESSAGE);
@@ -295,7 +295,7 @@ public class AddReviewDialog extends JDialog {
             // Save review
             Review review = new Review();
             review.setIdUser(currentUser.getIdUser());
-            review.setIdRestoran(currentRestoran.getIdRestoran());
+            review.setIdToko(currentToko.getIdToko());
             review.setRating(rating);
             review.setKomentar(comment);
             

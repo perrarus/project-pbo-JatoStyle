@@ -166,45 +166,45 @@ public class AuthService {
         return null;
     }
     
-    // login restoran
-    public Toko loginRestoran(String email, String password) {
+    // login toko
+    public Toko loginToko(String email, String password) {
         try {
             // validasi email sebelum login
             if (!isValidEmail(email)) {
-                System.out.println("Restoran Login Error: Format email tidak valid");
+                System.out.println("Toko Login Error: Format email tidak valid");
                 return null;
             }
             
             String sql = String.format(
-                "SELECT * FROM restoran WHERE email = '%s'",
+                "SELECT * FROM toko WHERE email = '%s'",
                 email.replace("'", "''")
             );
             ResultSet rs = konektor.getData(sql);
             
             if (rs.next()) {
                 String storedHash = rs.getString("password");
-                System.out.println("Restoran stored hash: " + storedHash.substring(0, 20) + "...");
+                System.out.println("Toko stored hash: " + storedHash.substring(0, 20) + "...");
                 
                 // verifikasi password
                 if (PasswordHasher.verifyPassword(password, storedHash)) {
-                    Toko restoran = new Toko();
-                    restoran.setIdRestoran(rs.getInt("id_restoran"));
-                    restoran.setIdAdmin(rs.getInt("id_admin"));
-                    restoran.setNamaRestoran(rs.getString("nama_restoran"));
-                    restoran.setEmail(rs.getString("email"));
-                    restoran.setPassword(storedHash);
-                    restoran.setJamBuka(rs.getTime("jam_buka"));
-                    restoran.setJamTutup(rs.getTime("jam_tutup"));
-                    System.out.println("Restoran Login SUCCESS!");
-                    return restoran;
+                    Toko toko = new Toko();
+                    toko.setIdToko(rs.getInt("id_toko"));
+                    toko.setIdAdmin(rs.getInt("id_admin"));
+                    toko.setNamaToko(rs.getString("nama_toko"));
+                    toko.setEmail(rs.getString("email"));
+                    toko.setPassword(storedHash);
+                    toko.setJamBuka(rs.getTime("jam_buka"));
+                    toko.setJamTutup(rs.getTime("jam_tutup"));
+                    System.out.println("Toko Login SUCCESS!");
+                    return toko;
                 } else {
-                    System.out.println("Restoran Login FAILED: Password salah");
+                    System.out.println("Toko Login FAILED: Password salah");
                 }
             } else {
-                System.out.println("Restoran Login FAILED: Email tidak ditemukan");
+                System.out.println("Toko Login FAILED: Email tidak ditemukan");
             }
         } catch (Exception e) {
-            System.out.println("Restoran Login Error: " + e.getMessage());
+            System.out.println("Toko Login Error: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -231,30 +231,30 @@ public class AuthService {
         }
     }
     
-    // get semua restoran
-    public List<Toko> getAllRestoran() {
-        List<Toko> restoranList = new ArrayList<>();
+    // get semua toko
+    public List<Toko> getAllToko() {
+        List<Toko> tokoList = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM restoran ORDER BY nama_restoran";
+            String sql = "SELECT * FROM toko ORDER BY nama_toko";
             ResultSet rs = konektor.getData(sql);
             
             while (rs.next()) {
-                Toko restoran = new Toko();
-                restoran.setIdRestoran(rs.getInt("id_restoran"));
-                restoran.setNamaRestoran(rs.getString("nama_restoran"));
-                restoran.setEmail(rs.getString("email"));
-                restoran.setJamBuka(rs.getTime("jam_buka"));
-                restoran.setJamTutup(rs.getTime("jam_tutup"));
-                restoranList.add(restoran);
+                Toko toko = new Toko();
+                toko.setIdToko(rs.getInt("id_toko"));
+                toko.setNamaToko(rs.getString("nama_toko"));
+                toko.setEmail(rs.getString("email"));
+                toko.setJamBuka(rs.getTime("jam_buka"));
+                toko.setJamTutup(rs.getTime("jam_tutup"));
+                tokoList.add(toko);
             }
             
-            System.out.println("Loaded " + restoranList.size() + " restaurants from database");
+            System.out.println("Loaded " + tokoList.size() + " toko from database");
             
         } catch (Exception e) {
-            System.out.println("Error getting restaurants: " + e.getMessage());
+            System.out.println("Error getting toko: " + e.getMessage());
             e.printStackTrace();
         }
-        return restoranList;
+        return tokoList;
     }
     
     //Update Profile

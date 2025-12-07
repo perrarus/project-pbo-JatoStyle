@@ -17,11 +17,11 @@ public class KeranjangService {
     public List<Keranjang> getKeranjangUser(int idUser) {
         List<Keranjang> list = new ArrayList<>();
 
-        // PERBAIKI QUERY: Tambahkan m.id_restoran
-        String query = "SELECT k.*, m.nama_menu, m.harga, m.id_restoran, r.nama_restoran "
+        // PERBAIKI QUERY: Tambahkan i.id_toko
+        String query = "SELECT k.*, i.nama_item, i.harga, i.id_toko, t.nama_toko "
                 + "FROM keranjang k "
-                + "JOIN menu m ON k.id_menu = m.id_menu "
-                + "JOIN restoran r ON m.id_restoran = r.id_restoran "
+                + "JOIN item i ON k.id_item = i.id_item "
+                + "JOIN toko t ON i.id_toko = t.id_toko "
                 + "WHERE k.id_user=" + idUser + " AND k.status_checkout=0";
 
         try {
@@ -31,20 +31,20 @@ public class KeranjangService {
                 Keranjang k = new Keranjang();
                 k.setIdKeranjang(rs.getInt("id_keranjang"));
                 k.setIdUser(rs.getInt("id_user"));
-                k.setIdMenu(rs.getInt("id_menu"));
+                k.setIdItem(rs.getInt("id_item"));
                 k.setJumlah(rs.getInt("jumlah"));
 
-                k.setNamaMenu(rs.getString("nama_menu"));
-                k.setHargaMenu(rs.getInt("harga"));
-                k.setNamaRestoran(rs.getString("nama_restoran"));
-                k.setIdRestoran(rs.getInt("id_restoran")); // TAMBAHKAN INI
+                k.setNamaItem(rs.getString("nama_item"));
+                k.setHargaItem(rs.getInt("harga"));
+                k.setNamaToko(rs.getString("nama_toko"));
+                k.setIdToko(rs.getInt("id_toko")); // TAMBAHKAN INI
 
                 list.add(k);
                 
                 // DEBUG: Tampilkan data yang diambil
-                System.out.println("DEBUG Keranjang: " + k.getNamaMenu() + 
-                                 " | Resto: " + k.getNamaRestoran() + 
-                                 " | ID Resto: " + k.getIdRestoran());
+                System.out.println("DEBUG Keranjang: " + k.getNamaItem() + 
+                                 " | Toko: " + k.getNamaToko() + 
+                                 " | ID Toko: " + k.getIdToko());
             }
         } catch (Exception e) {
             System.out.println("Error get keranjang: " + e.getMessage());

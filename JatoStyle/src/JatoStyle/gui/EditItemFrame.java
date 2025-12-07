@@ -21,13 +21,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class EditMenuFrame extends JDialog {
+public class EditItemFrame extends JDialog {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditMenuFrame.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditItemFrame.class.getName());
 
-    private DashboardRestoranFrame parent;
+    private DashboardTokoFrame parent;
     private Toko restoran;
-    private int idMenu;
+    private int idItem;
     private String currentImagePath;
 
     private AuthService auth = new AuthService();
@@ -41,11 +41,11 @@ public class EditMenuFrame extends JDialog {
     private JButton deleteBtn;
     private JButton cancelBtn;
 
-    public EditMenuFrame(DashboardRestoranFrame parent, Toko restoran, int idMenu, String nama, int harga, int stok) {
-        super(parent, "Edit Menu", true);
+    public EditItemFrame(DashboardTokoFrame parent, Toko restoran, int idItem, String nama, int harga, int stok) {
+        super(parent, "Edit Item", true);
         this.parent = parent;
         this.restoran = restoran;
-        this.idMenu = idMenu;
+        this.idItem = idItem;
         initUI(nama, harga, stok);
         loadCurrentImage();
     }
@@ -66,8 +66,8 @@ public class EditMenuFrame extends JDialog {
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Label dan field untuk Nama Menu
-        JLabel lblNama = new JLabel("Nama Menu");
+        // Label dan field untuk Nama Item
+        JLabel lblNama = new JLabel("Nama Item");
         lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 12));
         lblNama.setForeground(new Color(0, 51, 79)); // #00334F
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.2;
@@ -171,7 +171,7 @@ public class EditMenuFrame extends JDialog {
     private void loadCurrentImage() {
         try {
             // Coba load gambar dari database (BLOB)
-            String sql = "SELECT gambar FROM menu WHERE id_menu = " + idMenu;
+            String sql = "SELECT gambar FROM item WHERE id_item = " + idItem;
             ResultSet rs = auth.getKonektor().getData(sql);
             
             if (rs != null && rs.next()) {
@@ -192,7 +192,7 @@ public class EditMenuFrame extends JDialog {
 
     private void browseImage() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Pilih Gambar Menu");
+        fileChooser.setDialogTitle("Pilih Gambar Item");
         fileChooser.setAcceptAllFileFilterUsed(false);
         
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -237,8 +237,8 @@ public class EditMenuFrame extends JDialog {
             if (currentImagePath == null) {
                 String safeNama = nama.replace("'", "''");
                 String sql = String.format(
-                    "UPDATE menu SET nama_menu = '%s', harga = %d, stok = %d, status_habis = %d WHERE id_menu = %d",
-                    safeNama, harga, stok, (stok == 0 ? 1 : 0), idMenu
+                    "UPDATE item SET nama_item = '%s', harga = %d, stok = %d, status_habis = %d WHERE id_item = %d",
+                    safeNama, harga, stok, (stok == 0 ? 1 : 0), idItem
                 );
                 auth.getKonektor().query(sql);
             } 
@@ -249,14 +249,14 @@ public class EditMenuFrame extends JDialog {
                     // Gunakan static getConnection() dari Konektor
                     Connection conn = JatoStyle.Konektor.getConnection();
                     PreparedStatement pstmt = conn.prepareStatement(
-                        "UPDATE menu SET nama_menu = ?, harga = ?, stok = ?, status_habis = ?, gambar = ? WHERE id_menu = ?"
+                        "UPDATE item SET nama_item = ?, harga = ?, stok = ?, status_habis = ?, gambar = ? WHERE id_item = ?"
                     );
                     pstmt.setString(1, nama);
                     pstmt.setInt(2, harga);
                     pstmt.setInt(3, stok);
                     pstmt.setInt(4, (stok == 0 ? 1 : 0));
                     pstmt.setBinaryStream(5, fis, (int) imageFile.length());
-                    pstmt.setInt(6, idMenu);
+                    pstmt.setInt(6, idItem);
                     pstmt.executeUpdate();
                     pstmt.close();
                     conn.close();
@@ -266,33 +266,33 @@ public class EditMenuFrame extends JDialog {
                 }
             }
             
-            JOptionPane.showMessageDialog(this, "Menu berhasil diupdate!");
+            JOptionPane.showMessageDialog(this, "Item berhasil diupdate!");
             dispose();
-            if (parent != null) parent.refreshAfterAddMenu();
+            if (parent != null) parent.refreshAfterAddItem();
             
         } catch (Exception e) {
-            logger.severe("Gagal update menu: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, "Gagal update menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            logger.severe("Gagal update item: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal update item: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
 
     private void saveImageToFolder(File imageFile) {
         try {
-            // Buat folder images/menu jika belum ada
-            File imagesDir = new File("images/menu");
+            // Buat folder images/item jika belum ada
+            File imagesDir = new File("images/item");
             if (!imagesDir.exists()) {
                 imagesDir.mkdirs();
             }
             
-            // Salin file ke folder images/menu
-            String newFileName = "menu_" + idMenu + "_" + System.currentTimeMillis() + 
+            // Salin file ke folder images/item
+            String newFileName = "item_" + idItem + "_" + System.currentTimeMillis() + 
                                  getFileExtension(imageFile.getName());
-            Path destination = Paths.get("images/menu", newFileName);
+            Path destination = Paths.get("images/item", newFileName);
             Files.copy(imageFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
             
             // Update path di database (opsional)
-            String updatePathSql = "UPDATE menu SET gambar_path = '" + destination.toString() + "' WHERE id_menu = " + idMenu;
+            String updatePathSql = "UPDATE item SET gambar_path = '" + destination.toString() + "' WHERE id_item = " + idItem;
             auth.getKonektor().query(updatePathSql);
             
         } catch (Exception e) {
@@ -307,27 +307,27 @@ public class EditMenuFrame extends JDialog {
 
     private void onDelete() {
         int confirm = JOptionPane.showConfirmDialog(this, 
-            "Yakin ingin menghapus menu ini?\nIni akan menghapus semua data terkait.", 
+            "Yakin ingin menghapus item ini?\nIni akan menghapus semua data terkait.", 
             "Konfirmasi", JOptionPane.YES_NO_OPTION);
         
         if (confirm != JOptionPane.YES_OPTION) return;
 
         try {
             // Hapus dari keranjang dan detail pesanan terlebih dahulu
-            auth.getKonektor().query("DELETE FROM keranjang WHERE id_menu = " + idMenu);
-            auth.getKonektor().query("DELETE FROM detail_pesanan WHERE id_menu = " + idMenu);
+            auth.getKonektor().query("DELETE FROM keranjang WHERE id_item = " + idItem);
+            auth.getKonektor().query("DELETE FROM detail_pesanan WHERE id_item = " + idItem);
             
-            // Hapus menu
-            String sql = String.format("DELETE FROM menu WHERE id_menu = %d", idMenu);
+            // Hapus item
+            String sql = String.format("DELETE FROM item WHERE id_item = %d", idItem);
             auth.getKonektor().query(sql);
             
-            JOptionPane.showMessageDialog(this, "Menu berhasil dihapus!");
+            JOptionPane.showMessageDialog(this, "Item berhasil dihapus!");
             dispose();
-            if (parent != null) parent.refreshAfterAddMenu();
+            if (parent != null) parent.refreshAfterAddItem();
             
         } catch (Exception e) {
-            logger.severe("Gagal hapus menu: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, "Gagal hapus menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            logger.severe("Gagal hapus item: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal hapus item: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }

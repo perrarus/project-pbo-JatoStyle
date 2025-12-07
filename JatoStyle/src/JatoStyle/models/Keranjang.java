@@ -3,12 +3,12 @@ package JatoStyle.models;
 public class Keranjang {
     private int idKeranjang;
     private int idUser;
-    private int idMenu;
+    private int idItem;
     private int jumlah;
-    private String namaMenu;
-    private int hargaMenu;
-    private String namaRestoran;
-    private int idRestoran; 
+    private String namaItem;
+    private int hargaItem;
+    private String namaToko;
+    private int idToko; 
 
     // constructor
     public Keranjang() {}
@@ -20,21 +20,21 @@ public class Keranjang {
     public int getIdUser() { return idUser; }
     public void setIdUser(int idUser) { this.idUser = idUser; }
 
-    public int getIdMenu() { return idMenu; }
-    public void setIdMenu(int idMenu) { this.idMenu = idMenu; }
+    public int getIdItem() { return idItem; }
+    public void setIdItem(int idItem) { this.idItem = idItem; }
 
     public int getJumlah() { return jumlah; }
     public void setJumlah(int jumlah) { this.jumlah = jumlah; }
 
-    public String getNamaMenu() { return namaMenu; }
-    public void setNamaMenu(String namaMenu) { this.namaMenu = namaMenu; }
+    public String getNamaItem() { return namaItem; }
+    public void setNamaItem(String namaItem) { this.namaItem = namaItem; }
 
-    public int getHargaMenu() { return hargaMenu; }
-    public void setHargaMenu(int hargaMenu) { this.hargaMenu = hargaMenu; }
+    public int getHargaItem() { return hargaItem; }
+    public void setHargaItem(int hargaItem) { this.hargaItem = hargaItem; }
 
-    public String getNamaRestoran() { return namaRestoran; }
-    public void setNamaRestoran(String namaRestoran) { this.namaRestoran = namaRestoran; }
+    public String getNamaToko() { return namaToko; }
+    public void setNamaToko(String namaToko) { this.namaToko = namaToko; }
 
-    public int getIdRestoran() { return idRestoran; }
-    public void setIdRestoran(int idRestoran) { this.idRestoran = idRestoran; }
+    public int getIdToko() { return idToko; }
+    public void setIdToko(int idToko) { this.idToko = idToko; }
 }

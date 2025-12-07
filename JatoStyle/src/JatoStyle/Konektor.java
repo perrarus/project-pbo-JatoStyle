@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class Konektor {
     private String driver   = "com.mysql.cj.jdbc.Driver";
-    private String db       = "jdbc:mysql://localhost:3306/JatosStyle";
+    private String db       = "jdbc:mysql://localhost:3306/jatostyle";
     private String user     = "root";      
     private String password = "";      
     private Connection conn = null;
@@ -98,7 +98,7 @@ public class Konektor {
     public static Connection getConnection() throws SQLException {
         // Mendefinisikan ulang variabel yang diperlukan secara lokal
         String driver = "com.mysql.cj.jdbc.Driver";
-        String db = "jdbc:mysql://localhost:3306/JatosStyle";
+        String db = "jdbc:mysql://localhost:3306/jatostyle";
         String user = "root";
         String password = "";
 

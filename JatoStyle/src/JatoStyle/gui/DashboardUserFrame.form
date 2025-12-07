@@ -93,17 +93,17 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="restoScrollPane" alignment="1" pref="725" max="32767" attributes="0"/>
+                  <Component id="tokoScrollPane" alignment="1" pref="725" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="restoScrollPane" alignment="1" pref="391" max="32767" attributes="0"/>
+                  <Component id="tokoScrollPane" alignment="1" pref="391" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="restoScrollPane">
+            <Container class="javax.swing.JScrollPane" name="tokoScrollPane">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>

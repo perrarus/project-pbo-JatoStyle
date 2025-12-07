@@ -15,26 +15,24 @@ import javax.swing.border.Border;
 import JatoStyle.services.ReviewService;
 import JatoStyle.models.Review;
 
-public class RestoranFrame extends javax.swing.JFrame {
+public class TokoFrame extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RestoranFrame.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TokoFrame.class.getName());
     private User currentUser;
-    private Toko currentRestoran;
-    private JPanel menuContainer;
+    private Toko currentToko;
+    private JPanel itemContainer;
     private JScrollPane scrollPane;
     private AuthService auth = new AuthService();
     private ReviewService reviewService = new ReviewService(); // Tambahkan ini
     
-    /**
-     * Creates new form RestoranFrame
-     */
-    public RestoranFrame(User user, Toko restoran) {
+    
+    public TokoFrame(User user, Toko toko) {
         this.currentUser = user;
-        this.currentRestoran = restoran;
+        this.currentToko = toko;
         initComponents();
         setLocationRelativeTo(null);
         setupUI();
-        loadMenuFromDatabase();
+        loadItemFromDatabase();
         haloNamaOutput.setCaretColor(new java.awt.Color(0, 0, 0, 0)); 
     }
 
@@ -173,7 +171,7 @@ public class RestoranFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_haloNamaOutputActionPerformed
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        // tutup frame restoran
+        // tutup frame Toko
         this.dispose();
         // kembali ke dashboard user
         DashboardUserFrame dash = new DashboardUserFrame(currentUser);
@@ -181,7 +179,7 @@ public class RestoranFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void lihatReviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lihatReviewButtonActionPerformed
-        LihatReviewFrame reviewFrame = new LihatReviewFrame(currentUser, currentRestoran, reviewService);
+        LihatReviewFrame reviewFrame = new LihatReviewFrame(currentUser, currentToko, reviewService);
         reviewFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_lihatReviewButtonActionPerformed
@@ -191,7 +189,7 @@ public class RestoranFrame extends javax.swing.JFrame {
         // panggil applyTemplateStyles() sebelum initDynamicUI()
         applyTemplateStyles();
         initDynamicUI();
-        haloNamaOutput.setText("Halo, " + currentUser.getNama() + "! Selamat datang di " + currentRestoran.getNamaRestoran());
+        haloNamaOutput.setText("Halo, " + currentUser.getNama() + "! Selamat datang di " + currentToko.getNamaToko());
 
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -200,7 +198,7 @@ public class RestoranFrame extends javax.swing.JFrame {
     private void applyTemplateStyles() {
     // Background utama [206,220,239]
     getContentPane().setBackground(new Color(206, 220, 239));
-    setTitle(currentRestoran.getNamaRestoran() + " - JatoStyle");
+    setTitle(currentToko.getNamaToko() + " - JatoStyle");
 
     // styling untuk komponen header
     haloNamaOutput.setBackground(new Color(206, 220, 239));
@@ -234,14 +232,14 @@ public class RestoranFrame extends javax.swing.JFrame {
 }
     
    private void initDynamicUI() {
-    // menu container
-    menuContainer = new JPanel();
-    menuContainer.setBackground(new Color(206, 220, 239));
-    menuContainer.setLayout(new BoxLayout(menuContainer, BoxLayout.Y_AXIS));
-    menuContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
+    // item container
+    itemContainer = new JPanel();
+    itemContainer.setBackground(new Color(206, 220, 239));
+    itemContainer.setLayout(new BoxLayout(itemContainer, BoxLayout.Y_AXIS));
+    itemContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
 
     // scrollpane - perbesar untuk gambar
-    jScrollPane1.setViewportView(menuContainer);
+    jScrollPane1.setViewportView(itemContainer);
     jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2));
     jScrollPane1.getViewport().setBackground(new Color(206, 220, 239));
     jScrollPane1.setBackground(new Color(206, 220, 239));
@@ -260,9 +258,9 @@ public class RestoranFrame extends javax.swing.JFrame {
     horizontalBar.setEnabled(false);
 }
     
-    private void loadMenuFromDatabase() {
-    if (menuContainer == null) return;
-    menuContainer.removeAll();
+    private void loadItemFromDatabase() {
+    if (itemContainer == null) return;
+    itemContainer.removeAll();
 
     try {
         // Update query untuk mengambil kolom gambar
@@ -271,8 +269,8 @@ public class RestoranFrame extends javax.swing.JFrame {
                     "   WHEN gambar IS NOT NULL THEN 'ADA' " +
                     "   ELSE 'TIDAK ADA' " +
                     "END AS status_gambar " +
-                    "FROM menu WHERE id_restoran = " + currentRestoran.getIdRestoran() + 
-                    " ORDER BY nama_menu";
+                    "FROM item WHERE id_toko = " + currentToko.getIdToko() + 
+                    " ORDER BY nama_item";
         
         System.out.println("Executing SQL: " + sql);
 
@@ -283,8 +281,8 @@ public class RestoranFrame extends javax.swing.JFrame {
         while (rs != null && rs.next()) {
             any = true;
             count++;
-            int idMenu = rs.getInt("id_menu");
-            String nama = rs.getString("nama_menu");
+            int idItem = rs.getInt("id_item");
+            String nama = rs.getString("nama_item");
             int harga = rs.getInt("harga");
             int stok = rs.getInt("stok");
             boolean statusHabis = rs.getBoolean("status_habis");
@@ -300,50 +298,50 @@ public class RestoranFrame extends javax.swing.JFrame {
                     Image image = icon.getImage();
                     Image scaledImage = image.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
                     imageIcon = new ImageIcon(scaledImage);
-                    System.out.println("Gambar ditemukan untuk menu: " + nama);
+                    System.out.println("Gambar ditemukan untuk item: " + nama);
                 }
             } catch (Exception e) {
-                System.out.println("Tidak ada gambar untuk menu: " + nama);
+                System.out.println("Tidak ada gambar untuk item: " + nama);
             }
 
-            System.out.println("Menu found: " + nama + " - Rp " + harga + " - Stok: " + stok);
+            System.out.println("Item found: " + nama + " - Rp " + harga + " - Stok: " + stok);
 
-            JPanel card = createMenuCard(idMenu, nama, harga, stok, statusHabis, imageIcon);
-            menuContainer.add(card);
-            menuContainer.add(Box.createVerticalStrut(10));
+            JPanel card = createItemCard(idItem, nama, harga, stok, statusHabis, imageIcon);
+            itemContainer.add(card);
+            itemContainer.add(Box.createVerticalStrut(10));
         }
 
-        System.out.println("Total menus loaded: " + count);
+        System.out.println("Total item loaded: " + count);
 
         if (!any) {
             JPanel messagePanel = new JPanel(new BorderLayout());
             messagePanel.setBackground(new Color(206, 220, 239)); // DIUBAH
-            JLabel l = new JLabel("Tidak ada menu tersedia.");
+            JLabel l = new JLabel("Tidak ada item tersedia.");
             l.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
             l.setForeground(new Color(128, 128, 128)); // Abu-abu
             l.setHorizontalAlignment(SwingConstants.CENTER);
             messagePanel.add(l, BorderLayout.CENTER);
-            menuContainer.add(messagePanel);
+            itemContainer.add(messagePanel);
         }
 
     } catch (Exception e) {
-        System.out.println("Load menu error: " + e.getMessage());
+        System.out.println("Load item error: " + e.getMessage());
         e.printStackTrace();
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.setBackground(new Color(206, 220, 239)); // DIUBAH
-        JLabel l = new JLabel("Error: Tidak dapat memuat menu dari database");
+        JLabel l = new JLabel("Error: Tidak dapat memuat item dari database");
         l.setFont(new Font("Bahnschrift", Font.BOLD, 14));
         l.setForeground(Color.RED);
         l.setHorizontalAlignment(SwingConstants.CENTER);
         messagePanel.add(l, BorderLayout.CENTER);
-        menuContainer.add(l, BorderLayout.CENTER);
+        itemContainer.add(l, BorderLayout.CENTER);
     }
 
-    menuContainer.revalidate();
-    menuContainer.repaint();
+    itemContainer.revalidate();
+    itemContainer.repaint();
 }
     
-    private JPanel createMenuCard(int idMenu, String namaMenu, int harga, int stok, boolean statusHabis, ImageIcon imageIcon) {
+    private JPanel createItemCard(int idItem, String namaItem, int harga, int stok, boolean statusHabis, ImageIcon imageIcon) {
     JPanel card = new JPanel(new BorderLayout(10, 0)) {
         @Override
         protected void paintComponent(Graphics g) {
@@ -413,7 +411,7 @@ public class RestoranFrame extends javax.swing.JFrame {
         leftImagePanel.add(placeholderContainer, BorderLayout.CENTER);
     }
 
-    // Panel tengah untuk info menu - Menggunakan GridBagLayout untuk alignment yang tepat
+    // Panel tengah untuk info item - Menggunakan GridBagLayout untuk alignment yang tepat
     JPanel centerPanel = new JPanel(new GridBagLayout());
     centerPanel.setOpaque(false);
     centerPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -424,9 +422,9 @@ public class RestoranFrame extends javax.swing.JFrame {
     gbc.weightx = 1.0;
     gbc.gridwidth = GridBagConstraints.REMAINDER;
 
-    // Nama Menu - menggunakan HTML untuk wrap text jika panjang
-    String displayName = namaMenu.length() > 30 ? 
-        "<html>" + namaMenu.substring(0, 30) + "...</html>" : namaMenu;
+    // Nama item - menggunakan HTML untuk wrap text jika panjang
+    String displayName = namaItem.length() > 30 ? 
+        "<html>" + namaItem.substring(0, 30) + "...</html>" : namaItem;
     
     JLabel lblNama = new JLabel(displayName);
     lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 16));
@@ -476,7 +474,7 @@ public class RestoranFrame extends javax.swing.JFrame {
         addToCartBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15)); // Border kosong (dikembalikan ke semula)
 
         addToCartBtn.addActionListener(e -> {
-            addToCart(idMenu, namaMenu, harga);
+            addToCart(idItem, namaItem, harga);
         });
 
     } else {
@@ -558,11 +556,11 @@ private JPanel createStokPanel(int stok) {
     return panel;
 }
     
-    private void addToCart(int idMenu, String namaMenu, int harga) {
+    private void addToCart(int idItem, String namaItem, int harga) {
         try {
             // cek jika item sudah di keranjang
             String checkSql = "SELECT * FROM keranjang WHERE id_user = " + currentUser.getIdUser() + 
-                            " AND id_menu = " + idMenu + " AND status_checkout = 0";
+                            " AND id_item = " + idItem + " AND status_checkout = 0";
             ResultSet checkRs = auth.getKonektor().getData(checkSql);
             
             if (checkRs != null && checkRs.next()) {
@@ -573,13 +571,13 @@ private JPanel createStokPanel(int stok) {
                 auth.getKonektor().query(updateSql);
             } else {
                 // insert item baru
-                String insertSql = "INSERT INTO keranjang (id_user, id_menu, jumlah, catatan, status_checkout) " +
-                                 "VALUES (" + currentUser.getIdUser() + ", " + idMenu + ", 1, '', 0)";
+                String insertSql = "INSERT INTO keranjang (id_user, id_item, jumlah, catatan, status_checkout) " +
+                                 "VALUES (" + currentUser.getIdUser() + ", " + idItem + ", 1, '', 0)";
                 auth.getKonektor().query(insertSql);
             }
 
             JOptionPane.showMessageDialog(this, 
-                namaMenu + " berhasil ditambahkan ke keranjang!", 
+                namaItem + " berhasil ditambahkan ke keranjang!", 
                 "Sukses", 
                 JOptionPane.INFORMATION_MESSAGE);
                 
@@ -611,7 +609,7 @@ private JPanel createStokPanel(int stok) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             javax.swing.JOptionPane.showMessageDialog(null, 
-                "RestoranFrame harus dibuka melalui DashboardUserFrame setelah login user.", 
+                "TokoFrame harus dibuka melalui DashboardUserFrame setelah login user.", 
                 "Informasi", 
                 javax.swing.JOptionPane.INFORMATION_MESSAGE);
         });

@@ -25,8 +25,8 @@ public class TambahItemFrame extends JDialog {
     
     private static final Logger logger = Logger.getLogger(TambahItemFrame.class.getName());
 
-    private DashboardRestoranFrame parent;
-    private Toko restoran;
+    private DashboardTokoFrame parent;
+    private Toko toko;
     private AuthService auth = new AuthService();
     private String imagePath;
 
@@ -38,10 +38,10 @@ public class TambahItemFrame extends JDialog {
     private JButton saveBtn;
     private JButton cancelBtn;
 
-    public TambahItemFrame(DashboardRestoranFrame parent, Toko restoran) {
+    public TambahItemFrame(DashboardTokoFrame parent, Toko toko) {
         super(parent, "Tambah Item", true);
         this.parent = parent;
-        this.restoran = restoran;
+        this.toko = toko;
         initUI();
     }
 
@@ -214,9 +214,9 @@ public class TambahItemFrame extends JDialog {
             // Insert data Item ke database
             String safeNama = nama.replace("'", "''");
             String insertSql = String.format(
-                "INSERT INTO item (id_restoran, nama_item, harga, stok, status_habis) " +
+                "INSERT INTO item (id_toko, nama_item, harga, stok, status_habis) " +
                 "VALUES (%d, '%s', %d, %d, %d)",
-                restoran.getIdRestoran(),
+                toko.getIdToko(),
                 safeNama,
                 harga,
                 stok,

@@ -8,20 +8,20 @@ package JatoStyle.models;
 public class TransactionDetail {
     private int idDetail;
     private int idPesanan;
-    private int idMenu;
-    private String namaMenu;
+    private int idItem;
+    private String namaItem;
     private int jumlah;
     private int hargaSatuan;
     private int subtotal;
 
     public TransactionDetail() {}
 
-    public TransactionDetail(int idDetail, int idPesanan, int idMenu, String namaMenu, 
+    public TransactionDetail(int idDetail, int idPesanan, int idItem, String namaItem, 
                             int jumlah, int hargaSatuan, int subtotal) {
         this.idDetail = idDetail;
         this.idPesanan = idPesanan;
-        this.idMenu = idMenu;
-        this.namaMenu = namaMenu;
+        this.idItem = idItem;
+        this.namaItem = namaItem;
         this.jumlah = jumlah;
         this.hargaSatuan = hargaSatuan;
         this.subtotal = subtotal;
@@ -34,11 +34,11 @@ public class TransactionDetail {
     public int getIdPesanan() { return idPesanan; }
     public void setIdPesanan(int idPesanan) { this.idPesanan = idPesanan; }
 
-    public int getIdMenu() { return idMenu; }
-    public void setIdMenu(int idMenu) { this.idMenu = idMenu; }
+    public int getIdItem() { return idItem; }
+    public void setIdItem(int idItem) { this.idItem = idItem; }
 
-    public String getNamaMenu() { return namaMenu; }
-    public void setNamaMenu(String namaMenu) { this.namaMenu = namaMenu; }
+    public String getNamaItem() { return namaItem; }
+    public void setNamaItem(String namaItem) { this.namaItem = namaItem; }
 
     public int getJumlah() { return jumlah; }
     public void setJumlah(int jumlah) { this.jumlah = jumlah; }

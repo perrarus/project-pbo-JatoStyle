@@ -19,7 +19,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LihatReviewFrame.class.getName());
     private User currentUser;
-    private Toko currentRestoran;
+    private Toko currentToko;
     private ReviewService reviewService;
     private JPanel reviewContainer;
     private Review userReview;
@@ -27,9 +27,9 @@ public class LihatReviewFrame extends javax.swing.JFrame {
     /**
      * Creates new form LihatReviewFrame
      */
-    public LihatReviewFrame(User user, Toko restoran, ReviewService reviewService) {
+    public LihatReviewFrame(User user, Toko toko, ReviewService reviewService) {
         this.currentUser = user;
-        this.currentRestoran = restoran;
+        this.currentToko = toko;
         this.reviewService = reviewService;
         initComponents();
         setLocationRelativeTo(null);
@@ -185,7 +185,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
         jLabel1.setBounds(29, 28, jLabel1.getPreferredSize().width, jLabel1.getPreferredSize().height);
 
         // Title text (haloNamaOutput) - LEBIH KE TENGAH & HILANGKAN CARET
-        haloNamaOutput.setText("Review untuk " + currentRestoran.getNamaRestoran());
+        haloNamaOutput.setText("Review untuk " + currentToko.getNamaToko());
         haloNamaOutput.setHorizontalAlignment(SwingConstants.CENTER);
         haloNamaOutput.setFocusable(false); // HILANGKAN CARET tanpa setCaret(null)
         haloNamaOutput.setHighlighter(null); // Hilangkan highlighter
@@ -222,7 +222,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
 
     private void applyTemplateStyles() {
         getContentPane().setBackground(new Color(250, 240, 227));
-        setTitle("Review - " + currentRestoran.getNamaRestoran());
+        setTitle("Review - " + currentToko.getNamaToko());
 
         haloNamaOutput.setBackground(new Color(250, 240, 227));
         haloNamaOutput.setForeground(new Color(59, 31, 11));
@@ -298,9 +298,9 @@ public class LihatReviewFrame extends javax.swing.JFrame {
         reviewContainer.removeAll();
 
         try {
-            userReview = reviewService.getUserReviewForRestoran(
+            userReview = reviewService.getUserReviewForToko(
                 currentUser.getIdUser(), 
-                currentRestoran.getIdRestoran()
+                currentToko.getIdToko()
             );
 
             if (userReview != null) {
@@ -313,23 +313,23 @@ public class LihatReviewFrame extends javax.swing.JFrame {
             addReviewButton.setBounds(29, 120, 120, 26);
             addReviewButton.setFont(new Font("Bahnschrift", Font.PLAIN, 10));
 
-            boolean hasPurchased = reviewService.hasUserPurchasedFromRestoran(
+            boolean hasPurchased = reviewService.hasUserPurchasedFromToko(
                 currentUser.getIdUser(),
-                currentRestoran.getIdRestoran()
+                currentToko.getIdToko()
             );
 
             if (!hasPurchased) {
                 addReviewButton.setEnabled(false);
-                addReviewButton.setToolTipText("You need to have completed a purchase to review this restaurant");
+                addReviewButton.setToolTipText("You need to have completed a purchase to review this toko");
                 addReviewButton.setBackground(Color.GRAY);
             } else {
                 addReviewButton.setEnabled(true);
                 addReviewButton.setBackground(new Color(241, 124, 42));
             }
 
-            List<Review> reviews = reviewService.getAllReviewsForRestoran(currentRestoran.getIdRestoran());
-            double avgRating = reviewService.getAverageRating(currentRestoran.getIdRestoran());
-            int totalReviews = reviewService.getTotalReviews(currentRestoran.getIdRestoran());
+            List<Review> reviews = reviewService.getAllReviewsForToko(currentToko.getIdToko());
+            double avgRating = reviewService.getAverageRating(currentToko.getIdToko());
+            int totalReviews = reviewService.getTotalReviews(currentToko.getIdToko());
 
             JPanel summaryPanel = createCompactSummaryPanel(avgRating, totalReviews);
             reviewContainer.add(summaryPanel);
@@ -339,7 +339,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
                 JPanel messagePanel = new JPanel(new BorderLayout());
                 messagePanel.setOpaque(false);
                 messagePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-                JLabel label = new JLabel("Belum ada review untuk restoran ini.");
+                JLabel label = new JLabel("Belum ada review untuk Toko ini.");
                 label.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
                 label.setForeground(new Color(120, 120, 120));
                 label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -379,7 +379,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
         panel.setBorder(new EmptyBorder(5, 5, 5, 5)); // Padding minimal
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35)); // Batasi tinggi
 
-        JLabel titleLabel = new JLabel("Review untuk " + currentRestoran.getNamaRestoran());
+        JLabel titleLabel = new JLabel("Review untuk " + currentToko.getNamaToko());
         titleLabel.setFont(new Font("Bahnschrift", Font.BOLD, 14)); // Font lebih kecil
         titleLabel.setForeground(new Color(59, 31, 11));
 
@@ -563,9 +563,9 @@ public class LihatReviewFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_haloNamaOutputActionPerformed
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        // Kembali ke RestoranFrame
-        RestoranFrame restoFrame = new RestoranFrame(currentUser, currentRestoran);
-        restoFrame.setVisible(true);
+        // Kembali ke TokoFrame
+        TokoFrame tokoFrame = new TokoFrame(currentUser, currentToko);
+        tokoFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed
 
@@ -576,15 +576,15 @@ public class LihatReviewFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_profilButtonActionPerformed
 
     private void addReviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addReviewButtonActionPerformed
-        // Cek apakah user sudah pernah beli di resto ini
-        boolean hasPurchased = reviewService.hasUserPurchasedFromRestoran(
+        // Cek apakah user sudah pernah beli di Toko ini
+        boolean hasPurchased = reviewService.hasUserPurchasedFromToko(
             currentUser.getIdUser(),
-            currentRestoran.getIdRestoran()
+            currentToko.getIdToko()
         );
 
         if (!hasPurchased) {
             JOptionPane.showMessageDialog(this,
-                "You need to complete a purchase from this restaurant before you can leave a review.\n" +
+                "You need to complete a purchase from this toko before you can leave a review.\n" +
                 "Only users with completed orders (status: SUDAH SAMPAI) can review.",
                 "Cannot Review",
                 JOptionPane.WARNING_MESSAGE);
@@ -595,7 +595,7 @@ public class LihatReviewFrame extends javax.swing.JFrame {
         AddReviewDialog dialog = new AddReviewDialog(
             this,
             currentUser,
-            currentRestoran,
+            currentToko,
             reviewService,
             userReview
         );

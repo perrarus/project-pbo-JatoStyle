@@ -10,12 +10,12 @@ import java.util.Date;
 public class Review {
     private int idReview;
     private int idUser;
-    private int idRestoran;
+    private int idToko;
     private int rating;
     private String komentar;
     private Date tanggalReview;
     private Date lastEdited;
-    private String namaUser; // Untuk display
+    private String namaUser; //display
 
     public Review() {}
 
@@ -26,8 +26,8 @@ public class Review {
     public int getIdUser() { return idUser; }
     public void setIdUser(int idUser) { this.idUser = idUser; }
     
-    public int getIdRestoran() { return idRestoran; }
-    public void setIdRestoran(int idRestoran) { this.idRestoran = idRestoran; }
+    public int getIdToko() { return idToko; }
+    public void setIdToko(int idToko) { this.idToko = idToko; }
     
     public int getRating() { return rating; }
     public void setRating(int rating) { this.rating = rating; }

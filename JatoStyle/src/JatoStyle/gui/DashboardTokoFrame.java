@@ -24,12 +24,12 @@ import java.sql.Blob;
 import java.io.File;
 import javax.swing.ImageIcon;
 
-public class DashboardRestoranFrame extends javax.swing.JFrame {
+public class DashboardTokoFrame extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DashboardRestoranFrame.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DashboardTokoFrame.class.getName());
 
-    private Toko currentRestoran;
-    private JPanel menuContainer;
+    private Toko currentToko;
+    private JPanel itemContainer;
     private JPanel transaksiContainer;
     private JPanel wrapper;
     private JScrollPane scrollPane;
@@ -46,19 +46,19 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
     
     private TransactionService transactionService = new TransactionService();
 
-    public DashboardRestoranFrame(Toko restoran) {
-        this.currentRestoran = restoran;
+    public DashboardTokoFrame(Toko toko) {
+        this.currentToko = toko;
         initComponents();
         setLocationRelativeTo(null);
         setupUI();
-        loadMenuFromDatabase();
+        loadItemFromDatabase();
         loadTransaksiFromDatabase();
     }
     
-    public DashboardRestoranFrame() {
-        super("Dashboard Restoran");
+    public DashboardTokoFrame() {
+        super("Dashboard Toko");
         JOptionPane.showMessageDialog(this,
-            "Frame ini membutuhkan data restoran untuk dibuka!",
+            "Frame ini membutuhkan data toko untuk dibuka!",
             "Error", JOptionPane.ERROR_MESSAGE);
         dispose();
     }
@@ -67,7 +67,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         applyTemplateStyles();
         initDynamicUI();
         applyTabbedPaneStyle();
-        headerTitle.setText("Data Restoran " + currentRestoran.getNamaRestoran());
+        headerTitle.setText("Data Toko " + currentToko.getNamaToko());
     }
 
     @SuppressWarnings("unchecked")
@@ -80,14 +80,14 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         jTabbedPane = new JTabbedPane();
         mainPanel = new JPanel(new BorderLayout());
         logoLabel = new JLabel(new ImageIcon(getClass().getResource("/JatoStyle/gui/logo_mini.png")));
-        headerTitle = new JLabel("Data Restoran " + currentRestoran.getNamaRestoran());
+        headerTitle = new JLabel("Data Toko " + currentToko.getNamaToko());
         logoutButton = new JButton("Logout");
     }
 
     
     private void applyTemplateStyles() {
         getContentPane().setBackground(new Color(206, 220, 239)); // [206,220,239]
-        setTitle("Dashboard Restoran - " + (currentRestoran != null ? currentRestoran.getNamaRestoran() : ""));
+        setTitle("Dashboard Toko - " + (currentToko != null ? currentToko.getNamaToko() : ""));
         setLayout(new BorderLayout());
     }
     
@@ -229,10 +229,10 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         jTabbedPane.setForeground(new Color(0, 51, 79)); // #00334F
         jTabbedPane.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2)); // #95BDE2
 
-        // tab 1 = Menu
-        JPanel tabMenu = new JPanel(new BorderLayout());
-        tabMenu.setBackground(new Color(206, 220, 239)); // [206,220,239]
-        jTabbedPane.addTab("Item", tabMenu);
+        // tab 1 = Item
+        JPanel tabItem = new JPanel(new BorderLayout());
+        tabItem.setBackground(new Color(206, 220, 239)); // [206,220,239]
+        jTabbedPane.addTab("Item", tabItem);
 
         // tab 2 = Transaksi
         JPanel tabTransaksi = new JPanel(new BorderLayout());
@@ -242,21 +242,21 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         wrapper.add(jTabbedPane, BorderLayout.CENTER);
         add(wrapper, BorderLayout.CENTER);
 
-        // UI list menu
-        menuContainer = new JPanel();
-        menuContainer.setBackground(new Color(206, 220, 239)); // [206,220,239]
-        menuContainer.setLayout(new BoxLayout(menuContainer, BoxLayout.Y_AXIS));
-        menuContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
+        // UI list item
+        itemContainer = new JPanel();
+        itemContainer.setBackground(new Color(206, 220, 239)); // [206,220,239]
+        itemContainer.setLayout(new BoxLayout(itemContainer, BoxLayout.Y_AXIS));
+        itemContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        scrollPane = new JScrollPane(menuContainer);
+        scrollPane = new JScrollPane(itemContainer);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(new Color(206, 220, 239)); // [206,220,239]
         JScrollBar vBar = scrollPane.getVerticalScrollBar();
         vBar.setUnitIncrement(16);
 
-        tabMenu.add(scrollPane, BorderLayout.CENTER);
+        tabItem.add(scrollPane, BorderLayout.CENTER);
 
-        // bottom panel dgn "Tambah Menu +"
+        // bottom panel dgn "Tambah Item +"
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(new Color(206, 220, 239)); // [206,220,239]
         JButton addBtn = new JButton("+ Tambah Item");
@@ -265,9 +265,9 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         addBtn.setFocusPainted(false);
         addBtn.setFont(new Font("Bahnschrift", Font.BOLD, 13));
         addBtn.setBorder(new EmptyBorder(10, 20, 10, 20));
-        addBtn.addActionListener(e -> openTambahMenuFrame());
+        addBtn.addActionListener(e -> openTambahItemFrame());
         bottomPanel.add(addBtn);
-        tabMenu.add(bottomPanel, BorderLayout.SOUTH);
+        tabItem.add(bottomPanel, BorderLayout.SOUTH);
 
         // UI panel transaction
         setupTransactionPanel(tabTransaksi);
@@ -449,8 +449,8 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         try {
             System.out.println("Menampilkan detail pesanan ID: " + idPesanan);
 
-            List<TransactionDetail> details = transactionService.getTransactionDetailsForRestoran(
-                idPesanan, currentRestoran.getIdRestoran()
+            List<TransactionDetail> details = transactionService.getTransactionDetailsForToko(
+                idPesanan, currentToko.getIdToko()
             );
 
             if (details.isEmpty()) {
@@ -482,7 +482,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             headerLabel.setForeground(Color.WHITE);
             headerPanel.add(headerLabel, BorderLayout.WEST);
 
-            JLabel infoLabel = new JLabel("Resto: " + currentRestoran.getNamaRestoran());
+            JLabel infoLabel = new JLabel("Toko: " + currentToko.getNamaToko());
             infoLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
             infoLabel.setForeground(Color.WHITE);
             headerPanel.add(infoLabel, BorderLayout.EAST);
@@ -513,10 +513,10 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             infoPanel.add(Box.createVerticalStrut(5));
             infoPanel.add(statusLabel);
 
-            JPanel menuPanel = new JPanel();
-            menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-            menuPanel.setBackground(Color.WHITE);
-            menuPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+            JPanel barangPanel = new JPanel();
+            barangPanel.setLayout(new BoxLayout(barangPanel, BoxLayout.Y_AXIS));
+            barangPanel.setBackground(Color.WHITE);
+            barangPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
             int totalItems = 0;
             int totalPrice = 0;
@@ -529,9 +529,9 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
                 ));
                 itemPanel.setBackground(Color.WHITE);
 
-                JLabel menuLabel = new JLabel(detail.getNamaMenu());
-                menuLabel.setFont(new Font("Bahnschrift", Font.BOLD, 13));
-                menuLabel.setForeground(new Color(0, 51, 79));
+                JLabel itemLabel = new JLabel(detail.getNamaItem());
+                itemLabel.setFont(new Font("Bahnschrift", Font.BOLD, 13));
+                itemLabel.setForeground(new Color(0, 51, 79));
 
                 JLabel detailLabel = new JLabel("Jumlah: " + detail.getJumlah() + 
                                                " x Rp " + String.format("%,d", detail.getHargaSatuan()) + 
@@ -541,13 +541,13 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
 
                 JPanel leftPanel = new JPanel(new BorderLayout());
                 leftPanel.setBackground(Color.WHITE);
-                leftPanel.add(menuLabel, BorderLayout.NORTH);
+                leftPanel.add(itemLabel, BorderLayout.NORTH);
                 leftPanel.add(Box.createVerticalStrut(3));
                 leftPanel.add(detailLabel, BorderLayout.SOUTH);
 
                 itemPanel.add(leftPanel, BorderLayout.CENTER);
-                menuPanel.add(itemPanel);
-                menuPanel.add(Box.createVerticalStrut(8));
+                barangPanel.add(itemPanel);
+                barangPanel.add(Box.createVerticalStrut(8));
 
                 totalItems += detail.getJumlah();
                 totalPrice += detail.getSubtotal();
@@ -571,7 +571,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             totalPanel.add(totalItemsLabel, BorderLayout.WEST);
             totalPanel.add(totalPriceLabel, BorderLayout.EAST);
 
-            JScrollPane scrollPane = new JScrollPane(menuPanel);
+            JScrollPane scrollPane = new JScrollPane(barangPanel);
             scrollPane.setBorder(BorderFactory.createEmptyBorder());
             scrollPane.getViewport().setBackground(Color.WHITE);
 
@@ -686,17 +686,17 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         dialog.dispose();
     }
     
-    private void openTambahMenuFrame() {
-        TambahItemFrame dialog = new TambahItemFrame(this, currentRestoran);
+    private void openTambahItemFrame() {
+        TambahItemFrame dialog = new TambahItemFrame(this, currentToko);
         dialog.setVisible(true);
     }
     
-    private void openEditMenuFrame(int idMenu, String namaMenu, int harga, int stok) {
-        EditMenuFrame edit = new EditMenuFrame(this, currentRestoran, idMenu, namaMenu, harga, stok);
+    private void openEditItemFrame(int idItem, String namaItem, int harga, int stok) {
+        EditItemFrame edit = new EditItemFrame(this, currentToko, idItem, namaItem, harga, stok);
         edit.setVisible(true);
     }
     
-    private void deleteMenu(int idMenu) {
+    private void deleteItem(int idItem) {
         try {
             int confirm = JOptionPane.showConfirmDialog(this, 
                 "Apakah Anda yakin ingin menghapus item ini?\n" +
@@ -708,12 +708,12 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
                 return;
             }
 
-            auth.getKonektor().query("DELETE FROM detail_pesanan WHERE id_menu = " + idMenu);
-            auth.getKonektor().query("DELETE FROM keranjang WHERE id_menu = " + idMenu);
-            auth.getKonektor().query("DELETE FROM menu WHERE id_menu = " + idMenu);
+            auth.getKonektor().query("DELETE FROM detail_pesanan WHERE id_item = " + idItem);
+            auth.getKonektor().query("DELETE FROM keranjang WHERE id_item = " + idItem);
+            auth.getKonektor().query("DELETE FROM item WHERE id_item = " + idItem);
 
             JOptionPane.showMessageDialog(this, "Item berhasil dihapus!");
-            loadMenuFromDatabase();
+            loadItemFromDatabase();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -724,23 +724,23 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         }
     }
 
-    public void refreshAfterAddMenu() {
-        loadMenuFromDatabase();
+    public void refreshAfterAddItem() {
+        loadItemFromDatabase();
     }
     
-    private void loadMenuFromDatabase() {
-        if (menuContainer == null) return;
-        menuContainer.removeAll();
+    private void loadItemFromDatabase() {
+        if (itemContainer == null) return;
+        itemContainer.removeAll();
 
         try {
-            String sql = "SELECT * FROM menu WHERE id_restoran = " + currentRestoran.getIdRestoran() + " ORDER BY nama_menu";
+            String sql = "SELECT * FROM item WHERE id_toko = " + currentToko.getIdToko() + " ORDER BY nama_item";
             ResultSet rs = auth.getKonektor().getData(sql);
 
             boolean any = false;
             while (rs != null && rs.next()) {
                 any = true;
-                int idMenu = rs.getInt("id_menu");
-                String nama = rs.getString("nama_menu");
+                int idItem = rs.getInt("id_item");
+                String nama = rs.getString("nama_item");
                 int harga = rs.getInt("harga");
                 int stok = rs.getInt("stok");
                 
@@ -767,9 +767,9 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
                     }
                 }
 
-                JPanel card = createMenuCard(idMenu, nama, harga, stok, imageIcon);
-                menuContainer.add(card);
-                menuContainer.add(Box.createVerticalStrut(10));
+                JPanel card = createItemCard(idItem, nama, harga, stok, imageIcon);
+                itemContainer.add(card);
+                itemContainer.add(Box.createVerticalStrut(10));
             }
 
             if (!any) {
@@ -780,7 +780,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
                 l.setForeground(new Color(0, 51, 79));
                 l.setHorizontalAlignment(SwingConstants.CENTER);
                 messagePanel.add(l, BorderLayout.CENTER);
-                menuContainer.add(messagePanel);
+                itemContainer.add(messagePanel);
             }
 
         } catch (Exception e) {
@@ -793,11 +793,11 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             l.setForeground(Color.RED);
             l.setHorizontalAlignment(SwingConstants.CENTER);
             messagePanel.add(l, BorderLayout.CENTER);
-            menuContainer.add(messagePanel);
+            itemContainer.add(messagePanel);
         }
 
-        menuContainer.revalidate();
-        menuContainer.repaint();
+        itemContainer.revalidate();
+        itemContainer.repaint();
     }
 
     private void loadTransaksiFromDatabase() {
@@ -811,7 +811,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
                         "FROM pesanan p " +
                         "JOIN user u ON p.id_user = u.id_user " +
                         "LEFT JOIN detail_pesanan d ON p.id_pesanan = d.id_pesanan " +
-                        "WHERE p.id_restoran = " + currentRestoran.getIdRestoran() + " " +
+                        "WHERE p.id_toko = " + currentToko.getIdToko() + " " +
                         "GROUP BY p.id_pesanan, p.tanggal_pesan, p.status_pesanan, u.nama " +
                         "ORDER BY p.tanggal_pesan DESC";
 
@@ -874,7 +874,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         }
     }
     
-    private JPanel createMenuCard(int idMenu, String namaMenu, int harga, int stok, ImageIcon imageIcon) {
+    private JPanel createItemCard(int idItem, String namaItem, int harga, int stok, ImageIcon imageIcon) {
         JPanel card = new JPanel(new BorderLayout(10, 0)) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -909,13 +909,13 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
             leftPanel.add(noImageLabel, BorderLayout.CENTER);
         }
 
-        // Panel tengah untuk info menu
+        // Panel tengah untuk info item
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBorder(new EmptyBorder(5, 15, 5, 15));
 
-        JLabel lblNama = new JLabel(namaMenu);
+        JLabel lblNama = new JLabel(namaItem);
         lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 16));
         lblNama.setForeground(new Color(0, 51, 79));
 
@@ -956,10 +956,10 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         rightPanel.setBorder(new EmptyBorder(0, 0, 0, 5));
 
         JButton editBtn = createSmallButton("Edit", new Color(149, 189, 226));
-        editBtn.addActionListener(e -> openEditMenuFrame(idMenu, namaMenu, harga, stok));
+        editBtn.addActionListener(e -> openEditItemFrame(idItem, namaItem, harga, stok));
 
         JButton deleteBtn = createSmallButton("Hapus", new Color(0, 51, 79));
-        deleteBtn.addActionListener(e -> deleteMenu(idMenu));
+        deleteBtn.addActionListener(e -> deleteItem(idItem));
 
         rightPanel.add(editBtn);
         rightPanel.add(deleteBtn);
@@ -1000,7 +1000,7 @@ public class DashboardRestoranFrame extends javax.swing.JFrame {
         }
 
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, "Jalankan DashboardRestoranFrame dari Login setelah loginRestoran sukses.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Jalankan DashboardTokoFrame dari Login setelah loginToko sukses.", "Info", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 

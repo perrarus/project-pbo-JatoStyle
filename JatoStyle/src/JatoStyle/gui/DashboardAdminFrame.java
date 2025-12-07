@@ -34,8 +34,8 @@ public class DashboardAdminFrame extends JFrame {
     private DefaultTableModel usersModel;
     private JTable usersTable;
 
-    private DefaultTableModel restoModel;
-    private JTable restoTable;
+    private DefaultTableModel tokoModel;
+    private JTable tokoTable;
 
     /**
      * Creates new form DashboardAdminFrame
@@ -45,7 +45,7 @@ public class DashboardAdminFrame extends JFrame {
         styleTables();
         setupUI();
         loadAllUsers();
-        loadAllRestoran();
+        loadAllToko();
     }
     
     public DashboardAdminFrame(Admin admin) {
@@ -59,7 +59,7 @@ public class DashboardAdminFrame extends JFrame {
 
         setupUI();
         loadAllUsers();
-        loadAllRestoran();
+        loadAllToko();
         styleTables();
     }
 
@@ -83,17 +83,17 @@ public class DashboardAdminFrame extends JFrame {
         usersTable = new JTable(usersModel);
         usersTable.setRowHeight(28);
 
-        restoModel = new DefaultTableModel(
+        tokoModel = new DefaultTableModel(
             new String[]{"ID", "Nama Toko", "Jam Buka", "Jam Tutup", "Email", "Password"}, 0
         ) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
-        restoTable = new JTable(restoModel);
-        restoTable.setRowHeight(28);
+        tokoTable = new JTable(tokoModel);
+        tokoTable.setRowHeight(28);
     }
     
     private void styleTables() {
-        JTable[] tables = { usersTable, restoTable };
+        JTable[] tables = { usersTable, tokoTable };
         for (JTable t : tables) {
             t.setRowHeight(32);
             t.setShowGrid(false);
@@ -296,7 +296,7 @@ public class DashboardAdminFrame extends JFrame {
         }
 
         jTabbedPane.addTab("Users", buildUsersTab());
-        jTabbedPane.addTab("Toko", buildRestoranTab());
+        jTabbedPane.addTab("Toko", buildTokoTab());
         wrapper.add(jTabbedPane, BorderLayout.CENTER);
 
         add(wrapper, BorderLayout.CENTER);
@@ -467,12 +467,12 @@ public class DashboardAdminFrame extends JFrame {
         }
     }
     
-    // tab restoran
-    private JPanel buildRestoranTab() {
+    // tab toko
+    private JPanel buildTokoTab() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(new Color(206, 220, 239)); // DIUBAH [206,220,239]
         
-        JScrollPane scroll = new JScrollPane(restoTable);
+        JScrollPane scroll = new JScrollPane(tokoTable);
         scroll.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH
         scroll.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(149, 189, 226))); // #95BDE2 - DIUBAH
         p.add(scroll, BorderLayout.CENTER);
@@ -482,13 +482,13 @@ public class DashboardAdminFrame extends JFrame {
         bottom.setBackground(new Color(206, 220, 239)); // DIUBAH
         
         JButton refresh = new JButton("Refresh"); 
-        refresh.addActionListener(e -> loadAllRestoran());
+        refresh.addActionListener(e -> loadAllToko());
         JButton add = new JButton("Tambah Toko"); 
-        add.addActionListener(e -> addRestoranDialog());
+        add.addActionListener(e -> addTokoDialog());
         JButton edit = new JButton("Edit Toko"); 
-        edit.addActionListener(e -> editSelectedRestoran());
+        edit.addActionListener(e -> editSelectedToko());
         JButton del = new JButton("Hapus Toko"); 
-        del.addActionListener(e -> deleteSelectedRestoran());
+        del.addActionListener(e -> deleteSelectedToko());
         
         styleButton(refresh, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
         styleButton(add, new Color(149, 189, 226)); // #95BDE2 - DIUBAH
@@ -500,28 +500,28 @@ public class DashboardAdminFrame extends JFrame {
         return p;
     }
     
-    private void loadAllRestoran() {
-        restoModel.setRowCount(0);
+    private void loadAllToko() {
+        tokoModel.setRowCount(0);
         try {
-            String sql = "SELECT id_restoran, nama_restoran, jam_buka, jam_tutup, email, password FROM restoran ORDER BY id_restoran";
+            String sql = "SELECT id_toko, nama_toko, jam_buka, jam_tutup, email, password FROM toko ORDER BY id_toko";
             ResultSet rs = auth.getKonektor().getData(sql);
             while (rs != null && rs.next()) {
                 Vector<Object> row = new Vector<>();
-                row.add(rs.getInt("id_restoran"));
-                row.add(rs.getString("nama_restoran"));
+                row.add(rs.getInt("id_toko"));
+                row.add(rs.getString("nama_toko"));
                 row.add(rs.getString("jam_buka"));
                 row.add(rs.getString("jam_tutup"));
                 row.add(rs.getString("email"));
                 row.add(rs.getString("password"));
-                restoModel.addRow(row);
+                tokoModel.addRow(row);
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "loadAllRestoran", ex);
+            logger.log(Level.SEVERE, "loadAllToko", ex);
             JOptionPane.showMessageDialog(this, "Gagal memuat toko: " + ex.getMessage());
         }
     }
 
-    private void addRestoranDialog() {
+    private void addTokoDialog() {
         JTextField nama = new JTextField();
         JTextField email = new JTextField();
         JPasswordField pass = new JPasswordField();
@@ -541,7 +541,7 @@ public class DashboardAdminFrame extends JFrame {
                 String hashedPassword = PasswordHasher.hashPassword(plainPassword);
 
                 auth.getKonektor().query(String.format(
-                    "INSERT INTO restoran(id_admin,nama_restoran,email,password,jam_buka,jam_tutup) VALUES(%d,'%s','%s','%s','%s','%s')",
+                    "INSERT INTO toko(id_admin,nama_toko,email,password,jam_buka,jam_tutup) VALUES(%d,'%s','%s','%s','%s','%s')",
                     currentAdmin.getIdAdmin(),
                     nama.getText().trim().replace("'", "''"),
                     email.getText().trim().replace("'", "''"),
@@ -549,26 +549,26 @@ public class DashboardAdminFrame extends JFrame {
                     jamBuka.getText().trim(),
                     jamTutup.getText().trim()
                 ));
-                loadAllRestoran();
+                loadAllToko();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage());
             }
         });
     }
     
-    private void editSelectedRestoran() {
-        int r = restoTable.getSelectedRow();
+    private void editSelectedToko() {
+        int r = tokoTable.getSelectedRow();
         if (r == -1) { JOptionPane.showMessageDialog(this,"Pilih toko dulu!"); return; }
 
-        int id = (int) restoModel.getValueAt(r, 0);
+        int id = (int) tokoModel.getValueAt(r, 0);
 
         try {
             ResultSet rs = auth.getKonektor().getData(
-                "SELECT nama_restoran,email,jam_buka,jam_tutup FROM restoran WHERE id_restoran=" + id
+                "SELECT nama_toko,email,jam_buka,jam_tutup FROM toko WHERE id_toko=" + id
             );
 
             if (rs != null && rs.next()) {
-                JTextField nama = new JTextField(rs.getString("nama_restoran"));
+                JTextField nama = new JTextField(rs.getString("nama_toko"));
                 JTextField email = new JTextField(rs.getString("email"));
                 JTextField jamBuka = new JTextField(rs.getString("jam_buka"));
                 JTextField jamTutup = new JTextField(rs.getString("jam_tutup"));
@@ -581,14 +581,14 @@ public class DashboardAdminFrame extends JFrame {
                 }, () -> {
                     try {
                         auth.getKonektor().query(String.format(
-                            "UPDATE restoran SET nama_restoran='%s', email='%s', jam_buka='%s', jam_tutup='%s' WHERE id_restoran=%d",
+                            "UPDATE toko SET nama_toko='%s', email='%s', jam_buka='%s', jam_tutup='%s' WHERE id_toko=%d",
                             nama.getText().trim().replace("'", "''"),
                             email.getText().trim().replace("'", "''"),
                             jamBuka.getText().trim(),
                             jamTutup.getText().trim(),
                             id
                         ));
-                        loadAllRestoran();
+                        loadAllToko();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(this, ex.getMessage());
                     }
@@ -599,27 +599,27 @@ public class DashboardAdminFrame extends JFrame {
         }
     }
 
-    private void deleteSelectedRestoran() {
-        int r = restoTable.getSelectedRow();
+    private void deleteSelectedToko() {
+        int r = tokoTable.getSelectedRow();
         if (r == -1) { JOptionPane.showMessageDialog(this, "Pilih toko dulu"); return; }
-        int id = (int) restoModel.getValueAt(r, 0);
-        int ok = JOptionPane.showConfirmDialog(this, "Hapus toko ID " + id + " (akan menghapus menu & keranjang terkait)?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        int id = (int) tokoModel.getValueAt(r, 0);
+        int ok = JOptionPane.showConfirmDialog(this, "Hapus toko ID " + id + " (akan menghapus item & keranjang terkait)?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
         if (ok != JOptionPane.YES_OPTION) return;
         try {
-            // 1. hapus keranjang terkait menu dari restoran
+            // 1. hapus keranjang terkait item dari toko
             String delCart = "DELETE FROM keranjang " +
-                             "WHERE id_menu IN (SELECT id_menu FROM menu WHERE id_restoran = " + id + ")";
+                             "WHERE id_item IN (SELECT id_item FROM item WHERE id_toko = " + id + ")";
             auth.getKonektor().query(delCart);
 
-            // 2. hapus semua menu restoran
-            auth.getKonektor().query("DELETE FROM menu WHERE id_restoran = " + id);
+            // 2. hapus semua item toko
+            auth.getKonektor().query("DELETE FROM item WHERE id_toko = " + id);
 
-            // 3. hapus restoran
-            auth.getKonektor().query("DELETE FROM restoran WHERE id_restoran = " + id);
+            // 3. hapus toko
+            auth.getKonektor().query("DELETE FROM toko WHERE id_toko = " + id);
 
-            loadAllRestoran();
+            loadAllToko();
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "deleteSelectedRestoran", ex);
+            logger.log(Level.SEVERE, "deleteSelectedToko", ex);
             JOptionPane.showMessageDialog(this, "Gagal hapus toko: " + ex.getMessage());
         }
     }
