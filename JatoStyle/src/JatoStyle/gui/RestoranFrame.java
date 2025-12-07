@@ -228,26 +228,36 @@ public class RestoranFrame extends javax.swing.JFrame {
     lihatReviewButton.setFocusPainted(false);
     lihatReviewButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
     lihatReviewButton.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+    
+    // Set ukuran frame yang lebih besar untuk menampung layout
+    setSize(1000, 700); // Diperbesar dari 900x600
 }
     
-    private void initDynamicUI() {
+   private void initDynamicUI() {
     // menu container
     menuContainer = new JPanel();
-    menuContainer.setBackground(new Color(206, 220, 239)); // DIUBAH
+    menuContainer.setBackground(new Color(206, 220, 239));
     menuContainer.setLayout(new BoxLayout(menuContainer, BoxLayout.Y_AXIS));
     menuContainer.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-    // scrollpane
+    // scrollpane - perbesar untuk gambar
     jScrollPane1.setViewportView(menuContainer);
-    jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2)); // DIUBAH #95BDE2
-    jScrollPane1.getViewport().setBackground(new Color(206, 220, 239)); // DIUBAH
-    jScrollPane1.setBackground(new Color(206, 220, 239)); // DIUBAH
+    jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2));
+    jScrollPane1.getViewport().setBackground(new Color(206, 220, 239));
+    jScrollPane1.setBackground(new Color(206, 220, 239));
+    
+    // Set viewport preferred size untuk konsistensi
+    jScrollPane1.getViewport().setPreferredSize(new Dimension(800, 400));
 
     // scroll bar
     JScrollBar verticalBar = jScrollPane1.getVerticalScrollBar();
-    verticalBar.setUnitIncrement(16);
-    verticalBar.setBackground(new Color(206, 220, 239)); // DIUBAH
-    verticalBar.setForeground(new Color(149, 189, 226)); // DIUBAH #95BDE2
+    verticalBar.setUnitIncrement(20);
+    verticalBar.setBackground(new Color(206, 220, 239));
+    verticalBar.setForeground(new Color(149, 189, 226));
+    
+    // Horizontal scroll bar (nonaktifkan)
+    JScrollBar horizontalBar = jScrollPane1.getHorizontalScrollBar();
+    horizontalBar.setEnabled(false);
 }
     
     private void loadMenuFromDatabase() {
@@ -255,7 +265,15 @@ public class RestoranFrame extends javax.swing.JFrame {
     menuContainer.removeAll();
 
     try {
-        String sql = "SELECT * FROM menu WHERE id_restoran = " + currentRestoran.getIdRestoran() + " ORDER BY nama_menu";
+        // Update query untuk mengambil kolom gambar
+        String sql = "SELECT *, " +
+                    "CASE " +
+                    "   WHEN gambar IS NOT NULL THEN 'ADA' " +
+                    "   ELSE 'TIDAK ADA' " +
+                    "END AS status_gambar " +
+                    "FROM menu WHERE id_restoran = " + currentRestoran.getIdRestoran() + 
+                    " ORDER BY nama_menu";
+        
         System.out.println("Executing SQL: " + sql);
 
         ResultSet rs = auth.getKonektor().getData(sql);
@@ -270,10 +288,27 @@ public class RestoranFrame extends javax.swing.JFrame {
             int harga = rs.getInt("harga");
             int stok = rs.getInt("stok");
             boolean statusHabis = rs.getBoolean("status_habis");
+            
+            // Load gambar dari database (BLOB)
+            ImageIcon imageIcon = null;
+            try {
+                java.sql.Blob blob = rs.getBlob("gambar");
+                if (blob != null) {
+                    byte[] imageData = blob.getBytes(1, (int) blob.length());
+                    ImageIcon icon = new ImageIcon(imageData);
+                    // Resize gambar untuk tampilan
+                    Image image = icon.getImage();
+                    Image scaledImage = image.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                    imageIcon = new ImageIcon(scaledImage);
+                    System.out.println("Gambar ditemukan untuk menu: " + nama);
+                }
+            } catch (Exception e) {
+                System.out.println("Tidak ada gambar untuk menu: " + nama);
+            }
 
             System.out.println("Menu found: " + nama + " - Rp " + harga + " - Stok: " + stok);
 
-            JPanel card = createMenuCard(idMenu, nama, harga, stok, statusHabis);
+            JPanel card = createMenuCard(idMenu, nama, harga, stok, statusHabis, imageIcon);
             menuContainer.add(card);
             menuContainer.add(Box.createVerticalStrut(10));
         }
@@ -308,8 +343,8 @@ public class RestoranFrame extends javax.swing.JFrame {
     menuContainer.repaint();
 }
     
-    private JPanel createMenuCard(int idMenu, String namaMenu, int harga, int stok, boolean statusHabis) {
-    JPanel card = new JPanel(new BorderLayout()) {
+    private JPanel createMenuCard(int idMenu, String namaMenu, int harga, int stok, boolean statusHabis, ImageIcon imageIcon) {
+    JPanel card = new JPanel(new BorderLayout(10, 0)) {
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
@@ -322,29 +357,111 @@ public class RestoranFrame extends javax.swing.JFrame {
     };
     card.setOpaque(false);
     card.setBorder(new EmptyBorder(15, 20, 15, 20));
-    card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+    card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140)); // Diperbesar untuk gambar
 
-    JPanel left = new JPanel();
-    left.setOpaque(false);
-    left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
-    left.setBorder(new EmptyBorder(5, 10, 5, 10));
+    // Panel kiri untuk gambar (100px fixed width)
+    JPanel leftImagePanel = new JPanel(new BorderLayout());
+    leftImagePanel.setOpaque(false);
+    leftImagePanel.setPreferredSize(new Dimension(100, 100));
+    leftImagePanel.setMinimumSize(new Dimension(100, 100));
+    leftImagePanel.setMaximumSize(new Dimension(100, 100));
+    leftImagePanel.setBorder(new EmptyBorder(5, 5, 5, 15));
+    
+    if (imageIcon != null) {
+        // Tampilkan gambar
+        JLabel imageLabel = new JLabel(imageIcon);
+        imageLabel.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        leftImagePanel.add(imageLabel, BorderLayout.CENTER);
+    } else {
+        // Tampilkan placeholder jika tidak ada gambar
+        JPanel placeholderPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(240, 240, 240));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                
+                // Gambar ikon kamera
+                g2.setColor(new Color(200, 200, 200));
+                int centerX = getWidth() / 2;
+                int centerY = getHeight() / 2;
+                
+                // Lingkaran
+                g2.drawOval(centerX - 25, centerY - 25, 50, 50);
+                
+                // Persegi (badan kamera)
+                g2.drawRect(centerX - 15, centerY - 15, 30, 20);
+                
+                // Dot (lensa)
+                g2.fillOval(centerX - 5, centerY - 5, 10, 10);
+            }
+        };
+        placeholderPanel.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 1));
+        placeholderPanel.setOpaque(false);
+        
+        JLabel noImageLabel = new JLabel("No Image", SwingConstants.CENTER);
+        noImageLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 10));
+        noImageLabel.setForeground(new Color(150, 150, 150));
+        
+        JPanel placeholderContainer = new JPanel(new BorderLayout());
+        placeholderContainer.setBackground(new Color(240, 240, 240));
+        placeholderContainer.add(placeholderPanel, BorderLayout.CENTER);
+        placeholderContainer.add(noImageLabel, BorderLayout.SOUTH);
+        
+        leftImagePanel.add(placeholderContainer, BorderLayout.CENTER);
+    }
 
-    JLabel lblNama = new JLabel(namaMenu);
+    // Panel tengah untuk info menu - Menggunakan GridBagLayout untuk alignment yang tepat
+    JPanel centerPanel = new JPanel(new GridBagLayout());
+    centerPanel.setOpaque(false);
+    centerPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.weightx = 1.0;
+    gbc.gridwidth = GridBagConstraints.REMAINDER;
+
+    // Nama Menu - menggunakan HTML untuk wrap text jika panjang
+    String displayName = namaMenu.length() > 30 ? 
+        "<html>" + namaMenu.substring(0, 30) + "...</html>" : namaMenu;
+    
+    JLabel lblNama = new JLabel(displayName);
     lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-    lblNama.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
+    lblNama.setForeground(new Color(0, 51, 79)); // #00334F
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.insets = new Insets(0, 0, 8, 0); // Bottom margin 8px
+    centerPanel.add(lblNama, gbc);
 
+    // Harga - format dengan titik pemisah ribuan
     JLabel lblHarga = new JLabel("Rp " + String.format("%,d", harga));
     lblHarga.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-    lblHarga.setForeground(new Color(0, 51, 79)); // #00334F - DIUBAH
+    lblHarga.setForeground(new Color(0, 51, 79)); // #00334F
+    gbc.gridy = 1;
+    gbc.insets = new Insets(0, 0, 8, 0); // Bottom margin 8px
+    centerPanel.add(lblHarga, gbc);
 
-    left.add(lblNama);
-    left.add(Box.createVerticalStrut(5));
-    left.add(lblHarga);
+    // Panel stok - dengan layout yang konsisten
+    JPanel stokPanel = createStokPanel(stok);
+    gbc.gridy = 2;
+    gbc.insets = new Insets(0, 0, 0, 0); // No margin
+    centerPanel.add(stokPanel, gbc);
 
-    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    right.setOpaque(false);
-    right.setBorder(new EmptyBorder(0, 0, 0, 10));
+    // Panel kanan untuk tombol - menggunakan BoxLayout untuk alignment vertikal
+    JPanel rightPanel = new JPanel();
+    rightPanel.setOpaque(false);
+    rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+    rightPanel.setBorder(new EmptyBorder(0, 20, 0, 0)); // Margin kiri 20px
+    rightPanel.setPreferredSize(new Dimension(160, 100)); // Fixed width untuk konsistensi
 
+    // Panel untuk tombol - menggunakan FlowLayout dengan alignment kanan
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+    buttonPanel.setOpaque(false);
+    buttonPanel.setMaximumSize(new Dimension(160, 40));
+    
     JButton addToCartBtn = new JButton("Tambah Keranjang");
     addToCartBtn.setFont(new Font("Bahnschrift", Font.BOLD, 12));
     addToCartBtn.setFocusPainted(false);
@@ -353,13 +470,10 @@ public class RestoranFrame extends javax.swing.JFrame {
     // cek stok
     if (stok > 0) {
         // MASIH ADA STOK → ENABLE
-        addToCartBtn.setBackground(new Color(149, 189, 226)); // #95BDE2 - DIUBAH
-        addToCartBtn.setForeground(new Color(59, 31, 11)); // #3B1F0B - DIUBAH
+        addToCartBtn.setBackground(new Color(0, 51, 79)); // #00334F (dikembalikan ke warna semula)
+        addToCartBtn.setForeground(new Color(206, 220, 239)); // #CEDCEF (dikembalikan ke warna semula)
         addToCartBtn.setEnabled(true);
-        addToCartBtn.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(0, 51, 79), 1), // #00334F - DIUBAH
-            BorderFactory.createEmptyBorder(8, 15, 8, 15)
-        ));
+        addToCartBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15)); // Border kosong (dikembalikan ke semula)
 
         addToCartBtn.addActionListener(e -> {
             addToCart(idMenu, namaMenu, harga);
@@ -371,14 +485,77 @@ public class RestoranFrame extends javax.swing.JFrame {
         addToCartBtn.setForeground(Color.WHITE);
         addToCartBtn.setEnabled(false);
         addToCartBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        addToCartBtn.setText("Stok Habis");
     }
+    
+    buttonPanel.add(addToCartBtn);
+    
+    // Tambahkan vertical glue untuk mendorong tombol ke atas
+    rightPanel.add(Box.createVerticalGlue());
+    rightPanel.add(buttonPanel);
+    rightPanel.add(Box.createVerticalGlue());
 
-    right.add(addToCartBtn);
-
-    card.add(left, BorderLayout.WEST);
-    card.add(right, BorderLayout.EAST);
+    // Atur semua komponen ke card
+    card.add(leftImagePanel, BorderLayout.WEST);
+    card.add(centerPanel, BorderLayout.CENTER);
+    card.add(rightPanel, BorderLayout.EAST);
 
     return card;
+}
+
+private JPanel createStokPanel(int stok) {
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)) { // Diubah dari LEFT ke CENTER
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            // Warna background berdasarkan jumlah stok
+            Color bgColor;
+            if (stok <= 0) {
+                bgColor = new Color(255, 204, 204); // Merah muda untuk stok habis
+            } else if (stok <= 5) {
+                bgColor = new Color(255, 229, 204); // Orange untuk stok menipis
+            } else {
+                bgColor = new Color(204, 229, 255); // Biru muda untuk stok cukup
+            }
+            
+            g2.setColor(bgColor);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+            
+            // Border
+            g2.setColor(new Color(149, 189, 226)); // #95BDE2
+            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 8, 8);
+        }
+    };
+    
+    panel.setOpaque(false);
+    panel.setPreferredSize(new Dimension(120, 25));
+    panel.setMaximumSize(new Dimension(120, 25));
+    panel.setMinimumSize(new Dimension(120, 25));
+    
+    // Label stok dengan alignment tengah
+    JLabel stokLabel = new JLabel();
+    stokLabel.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+    stokLabel.setHorizontalAlignment(SwingConstants.CENTER); // Diubah ke CENTER
+    
+    // Warna teks berdasarkan stok
+    if (stok <= 0) {
+        stokLabel.setForeground(new Color(204, 0, 0)); // Merah untuk stok habis
+        stokLabel.setText("Stok: HABIS");
+    } else if (stok <= 5) {
+        stokLabel.setForeground(new Color(153, 76, 0)); // Coklat untuk stok menipis
+        stokLabel.setText("Stok: " + stok + " (Menipis)");
+    } else {
+        stokLabel.setForeground(new Color(0, 51, 79)); // #00334F untuk stok cukup
+        stokLabel.setText("Stok: " + stok);
+    }
+    
+    // Padding untuk teks (dihapus padding kiri yang sebelumnya ada)
+    stokLabel.setBorder(new EmptyBorder(0, 0, 0, 0)); // Diubah dari (0,10,0,0)
+    panel.add(stokLabel);
+    
+    return panel;
 }
     
     private void addToCart(int idMenu, String namaMenu, int harga) {

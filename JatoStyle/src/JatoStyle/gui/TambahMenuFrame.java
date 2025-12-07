@@ -10,6 +10,16 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.util.logging.Logger;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class TambahMenuFrame extends JDialog {
     
@@ -18,37 +28,29 @@ public class TambahMenuFrame extends JDialog {
     private DashboardRestoranFrame parent;
     private Restoran restoran;
     private AuthService auth = new AuthService();
+    private String imagePath;
 
     private JTextField namaField;
     private JTextField hargaField;
     private JTextField stokField;
+    private JLabel imageLabel;
+    private JButton browseButton;
     private JButton saveBtn;
     private JButton cancelBtn;
 
-    /**
-     * Creates new form TambahMenuFrame
-     */
-    // mode tambah menu
     public TambahMenuFrame(DashboardRestoranFrame parent, Restoran restoran) {
-        super(parent, "Tambah Menu", true); // modal dialog
+        super(parent, "Tambah Menu", true);
         this.parent = parent;
         this.restoran = restoran;
-        initUI(false, -1, "", 0);
-    }
-    
-    public TambahMenuFrame(DashboardRestoranFrame parent, Restoran restoran, int idMenu, String nama, int harga) {
-        super(parent, "Tambah Menu / Prefill", true);
-        this.parent = parent;
-        this.restoran = restoran;
-        initUI(true, idMenu, nama, harga);
+        initUI();
     }
 
-    private void initUI(boolean prefill, int idMenu, String nama, int harga) {
+    private void initUI() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(420, 230);
+        setSize(500, 450);
         setResizable(false);
         setLocationRelativeTo(parent);
-        getContentPane().setBackground(new Color(250, 240, 227));
+        getContentPane().setBackground(new Color(206, 220, 239)); // [206,220,239]
         setLayout(new BorderLayout());
 
         JPanel form = new JPanel(new GridBagLayout());
@@ -59,50 +61,97 @@ public class TambahMenuFrame extends JDialog {
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel lblNama = new JLabel("Nama Menu");
-        lblNama.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        // Label dan field untuk Nama Menu
+        JLabel lblNama = new JLabel("Nama Menu*");
+        lblNama.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        lblNama.setForeground(new Color(0, 51, 79)); // #00334F
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.2;
         form.add(lblNama, gbc);
 
         namaField = new JTextField();
+        namaField.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        namaField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(149, 189, 226), 2), // #95BDE2
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 0.8;
         form.add(namaField, gbc);
 
-        JLabel lblHarga = new JLabel("Harga (angka)");
-        lblHarga.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        // Label dan field untuk Harga
+        JLabel lblHarga = new JLabel("Harga*");
+        lblHarga.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        lblHarga.setForeground(new Color(0, 51, 79)); // #00334F
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.2;
         form.add(lblHarga, gbc);
 
         hargaField = new JTextField();
+        hargaField.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        hargaField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(149, 189, 226), 2),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 0.8;
         form.add(hargaField, gbc);
-        
-        JLabel stokLabel = new JLabel("Stok");
-        stokLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.2;
-        form.add(stokLabel, gbc);
 
-        stokField = new JTextField();
+        // Label dan field untuk Stok
+        JLabel lblStok = new JLabel("Stok*");
+        lblStok.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        lblStok.setForeground(new Color(0, 51, 79)); // #00334F
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.2;
+        form.add(lblStok, gbc);
+
+        stokField = new JTextField("0");
+        stokField.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        stokField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(149, 189, 226), 2),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         gbc.gridx = 1; gbc.gridy = 2; gbc.weightx = 0.8;
         form.add(stokField, gbc);
 
+        // Label dan field untuk Gambar
+        JLabel lblGambar = new JLabel("Gambar");
+        lblGambar.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        lblGambar.setForeground(new Color(0, 51, 79)); // #00334F
+        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.2;
+        form.add(lblGambar, gbc);
 
-        if (prefill) {
-            namaField.setText(nama);
-            hargaField.setText(String.valueOf(harga));
-        }
+        JPanel imagePanel = new JPanel(new BorderLayout(10, 0));
+        imagePanel.setOpaque(false);
+        
+        imageLabel = new JLabel("No Image", SwingConstants.CENTER);
+        imageLabel.setPreferredSize(new Dimension(100, 100));
+        imageLabel.setBorder(BorderFactory.createLineBorder(new Color(149, 189, 226), 2));
+        imageLabel.setOpaque(true);
+        imageLabel.setBackground(Color.WHITE);
+        imageLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 11));
+        imageLabel.setForeground(new Color(100, 100, 100));
+        
+        browseButton = new JButton("Browse...");
+        browseButton.setFont(new Font("Bahnschrift", Font.BOLD, 11));
+        browseButton.setBackground(new Color(149, 189, 226)); // #95BDE2
+        browseButton.setForeground(new Color(0, 51, 79)); // #00334F
+        browseButton.setFocusPainted(false);
+        browseButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        browseButton.addActionListener(e -> browseImage());
+        
+        imagePanel.add(imageLabel, BorderLayout.CENTER);
+        imagePanel.add(browseButton, BorderLayout.EAST);
+        
+        gbc.gridx = 1; gbc.gridy = 3; gbc.weightx = 0.8;
+        form.add(imagePanel, gbc);
 
-        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Panel tombol
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         bottom.setOpaque(false);
 
-        saveBtn = new JButton(prefill ? "Simpan / Tambah" : "Simpan");
-        saveBtn.setBackground(new Color(241, 124, 42));
-        saveBtn.setForeground(Color.WHITE);
-        saveBtn.setFocusPainted(false);
-        saveBtn.addActionListener(e -> onSave(prefill, idMenu));
-
         cancelBtn = new JButton("Batal");
+        styleButton(cancelBtn, new Color(149, 189, 226)); // #95BDE2
         cancelBtn.addActionListener(e -> dispose());
+
+        saveBtn = new JButton("Simpan");
+        styleButton(saveBtn, new Color(149, 189, 226)); // #95BDE2
+        saveBtn.addActionListener(e -> onSave());
 
         bottom.add(cancelBtn);
         bottom.add(saveBtn);
@@ -111,43 +160,60 @@ public class TambahMenuFrame extends JDialog {
         add(bottom, BorderLayout.SOUTH);
     }
 
-    private void onSave(boolean prefill, int idMenu) {
+    private void browseImage() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Pilih Gambar Menu");
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Image Files", "jpg", "jpeg", "png", "gif", "bmp");
+        fileChooser.addChoosableFileFilter(filter);
+        
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            imagePath = selectedFile.getAbsolutePath();
+            
+            // Tampilkan preview gambar
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image scaledImage = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImage));
+            imageLabel.setText("");
+        }
+    }
+
+    private void onSave() {
         String nama = namaField.getText().trim();
         String hargaText = hargaField.getText().trim();
         String stokText = stokField.getText().trim();
-
-        if (nama.isEmpty() || hargaText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nama dan harga harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int harga;
-        try {
-            harga = Integer.parseInt(hargaText);
-            if (harga < 0) throw new NumberFormatException();
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Harga harus berupa angka positif!", "Error", JOptionPane.ERROR_MESSAGE);
+        
+        if (nama.isEmpty() || hargaText.isEmpty() || stokText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field wajib diisi!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        if (stokText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Stok harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int stok;
+        int harga, stok;
         try {
+            harga = Integer.parseInt(hargaText);
             stok = Integer.parseInt(stokText);
-            if (stok < 0) throw new NumberFormatException();
+            if (harga < 0 || stok < 0) throw new NumberFormatException();
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Stok harus berupa angka positif!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Harga dan stok harus berupa angka positif!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        FileInputStream fis = null;
+        
         try {
-            // masukkan ke tabel menu
+            // Gunakan static getConnection() dari Konektor
+            conn = JatoStyle.Konektor.getConnection();
+            
+            // Insert data menu ke database
             String safeNama = nama.replace("'", "''");
-            String sql = String.format(
+            String insertSql = String.format(
                 "INSERT INTO menu (id_restoran, nama_menu, harga, stok, status_habis) " +
                 "VALUES (%d, '%s', %d, %d, %d)",
                 restoran.getIdRestoran(),
@@ -156,31 +222,99 @@ public class TambahMenuFrame extends JDialog {
                 stok,
                 (stok == 0 ? 1 : 0)
             );
-
-
-            auth.getKonektor().query(sql);
-
+            
+            // Execute insert dan dapatkan ID yang di-generate
+            pstmt = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
+            pstmt.executeUpdate();
+            
+            // Dapatkan ID menu yang baru dibuat
+            rs = pstmt.getGeneratedKeys();
+            int newMenuId = -1;
+            if (rs.next()) {
+                newMenuId = rs.getInt(1);
+                System.out.println("Menu baru dibuat dengan ID: " + newMenuId);
+            }
+            
+            // Jika ada gambar, simpan gambar
+            if (imagePath != null && newMenuId != -1) {
+                File imageFile = new File(imagePath);
+                fis = new FileInputStream(imageFile);
+                
+                // Update menu dengan gambar
+                PreparedStatement pstmt2 = conn.prepareStatement(
+                    "UPDATE menu SET gambar = ? WHERE id_menu = ?"
+                );
+                pstmt2.setBinaryStream(1, fis, (int) imageFile.length());
+                pstmt2.setInt(2, newMenuId);
+                pstmt2.executeUpdate();
+                pstmt2.close();
+                
+                // Juga simpan ke folder images
+                saveImageToFolder(imageFile, newMenuId);
+            }
+            
             JOptionPane.showMessageDialog(this, "Menu berhasil ditambahkan!");
             dispose();
-
             if (parent != null) parent.refreshAfterAddMenu();
-
+            
         } catch (Exception e) {
             logger.severe("Gagal menambahkan menu: " + e.getMessage());
             JOptionPane.showMessageDialog(this, "Gagal menambahkan menu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
+        } finally {
+            // Tutup resources
+            try { if (fis != null) fis.close(); } catch (Exception e) {}
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
     }
-    
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
 
+    private void saveImageToFolder(File imageFile, int menuId) {
+        try {
+            // Buat folder images/menu jika belum ada
+            File imagesDir = new File("images/menu");
+            if (!imagesDir.exists()) {
+                imagesDir.mkdirs();
+            }
+            
+            // Salin file ke folder images/menu
+            String newFileName = "menu_" + menuId + getFileExtension(imageFile.getName());
+            Path destination = Paths.get("images/menu", newFileName);
+            Files.copy(imageFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
+            
+            // Update path di database
+            String updatePathSql = "UPDATE menu SET gambar_path = '" + destination.toString() + "' WHERE id_menu = " + menuId;
+            auth.getKonektor().query(updatePathSql);
+            
+            System.out.println("Gambar disimpan di: " + destination.toString());
+            
+        } catch (Exception e) {
+            logger.warning("Failed to save image to folder: " + e.getMessage());
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? ".jpg" : fileName.substring(dotIndex);
+    }
+
+    private void styleButton(JButton btn, Color bg) {
+        btn.setBackground(bg);
+        btn.setFont(new Font("Bahnschrift", Font.BOLD, 12));
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        
+        if (bg.equals(new Color(0, 51, 79))) { // #00334F
+            btn.setForeground(new Color(206, 220, 239)); // #CEDCEF
+        } else {
+            btn.setForeground(new Color(0, 51, 79)); // #00334F
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -191,14 +325,9 @@ public class TambahMenuFrame extends JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 300, Short.MAX_VALUE)
         );
-
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    /**
-     * @param args the command line arguments
-     */
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify                     
+    // End of variables declaration                   
 }
